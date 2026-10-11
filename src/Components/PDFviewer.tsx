@@ -14,60 +14,57 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 export default function PDFviewer(
   { url }: { url: string }
 ) {
-
   const [numPages, setNumPages] = useState<number>(0);
-
   const [scale, setScale] = useState(1.2);
+  const minScale = 0.6;
+  const maxScale = 2;
 
   return (
-
-    <div className="flex flex-col items-center gap-4">
-
-      {/* Zoom Controls */}
-
-      <div className="flex items-center gap-4 sticky top-4 z-50 bg-black p-4 rounded-xl">
-
+    <section className="pdf-reader" aria-label="Publication reader">
+      <div className="pdf-toolbar" aria-label="Zoom controls">
         <button
-          onClick={() => setScale(scale - 0.2)}
-          className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-xl text-white"
+          type="button"
+          onClick={() => setScale((current) => Math.max(minScale, current - 0.2))}
+          disabled={scale <= minScale}
+          aria-label="Zoom out"
         >
-          -
+          −
         </button>
 
-        <p className="text-white text-lg">
+        <output aria-live="polite">
           {Math.round(scale * 100)}%
-        </p>
+        </output>
 
         <button
-          onClick={() => setScale(scale + 0.2)}
-          className="bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-xl text-white"
+          type="button"
+          onClick={() => setScale((current) => Math.min(maxScale, current + 0.2))}
+          disabled={scale >= maxScale}
+          aria-label="Zoom in"
         >
           +
         </button>
-
       </div>
-
-      {/* PDF */}
 
       <Document
         file={url}
         onLoadSuccess={({ numPages }) => setNumPages(numPages)}
         onLoadError={(err) => console.error("PDF load error:", err)}
+        loading={<p className="pdf-status">Loading publication…</p>}
+        error={
+          <p className="pdf-status pdf-status--error">
+            The publication could not be loaded. Try opening it again later.
+          </p>
+        }
       >
-
         {Array.from({ length: numPages }, (_, i) => (
-
           <Page
             key={i + 1}
             pageNumber={i + 1}
             scale={scale}
-            className="mb-6 shadow-2xl"
+            className="pdf-page"
           />
-
         ))}
-
       </Document>
-
-    </div>
+    </section>
   );
 }

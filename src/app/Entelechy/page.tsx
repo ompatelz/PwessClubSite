@@ -1,42 +1,65 @@
-import { supabase } from "@/lib/supabase";
-type Edition={
+import type { Metadata } from "next";
+import Link from "next/link";
+import ArchiveState from "@/Components/ArchiveState";
+import { getSupabaseClient } from "@/lib/supabase";
+
+export const metadata: Metadata = {
+  title: "Entelechy",
+  description: "Browse editions of Entelechy, DAU's flagship college magazine.",
+};
+
+type Edition = {
   id: number;
   edition: number;
-  pdf_url: string;}
+  pdf_url: string;
+};
 
 export default async function EntelechyPage() {
-   const { data, error } = await supabase
-    .from("Entelechy")
-    .select("*")
-    .order("id", { ascending: true });
-
-  console.log(data);
+  const supabase = getSupabaseClient();
+  const result = supabase
+    ? await supabase
+        .from("Entelechy")
+        .select("*")
+        .order("id", { ascending: false })
+    : { data: null, error: new Error("Supabase is not configured") };
+  const editions = (result.data ?? []) as Edition[];
 
   return (
-    <main className="min-h-screen bg-black text-white p-10">
-      <h1 className="text-5xl font-bold mb-8">
-        Entelechy
-      </h1>
+    <main id="main-content" className="site-main archive-page">
+      <header className="archive-header archive-header--entelechy">
+        <h1>Entelechy</h1>
+        <p>
+          A longer-form home for the college’s writing and creative work,
+          gathered edition by edition.
+        </p>
+      </header>
 
-      <p className="text-zinc-400 mb-10">
-        Browse current and previous editions of the college Magazine - Entelechy
-      </p>
-      <div className="grid gap-6">
-        {data?.map((edition : Edition) => (
-          <a
-            key={edition.id}
-            href={`/Entelechy/${edition.id}`}
-            target="_blank"
-            className="rounded-2xl border border-zinc-800 p-6 hover:border-zinc-600 transition"
-          >
-            <h2 className="text-2xl font-semibold">
-            Edition {edition.edition}
-            </h2>
-
-  
-          </a>
-        ))}
-      </div>
+      {result.error ? (
+        <ArchiveState
+          title="The Entelechy archive is unavailable."
+          message="The publication archive could not be reached. Please check back soon."
+        />
+      ) : editions.length === 0 ? (
+        <ArchiveState
+          title="No Entelechy editions are listed yet."
+          message="Magazine editions will appear here when the archive is updated."
+        />
+      ) : (
+        <ol className="edition-list" aria-label="Entelechy editions">
+          {editions.map((edition) => (
+            <li key={edition.id}>
+              <Link href={`/Entelechy/${edition.id}`}>
+                <span className="edition-list__date">
+                  Edition {edition.edition}
+                </span>
+                <span className="edition-list__action">
+                  Read magazine <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      )}
     </main>
   );
 }

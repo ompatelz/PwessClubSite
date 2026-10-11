@@ -1,40 +1,75 @@
-import { supabase } from "@/lib/supabase";
-type Edition={
+import type { Metadata } from "next";
+import Link from "next/link";
+import ArchiveState from "@/Components/ArchiveState";
+import { getSupabaseClient } from "@/lib/supabase";
+
+export const metadata: Metadata = {
+  title: "NNN",
+  description: "Browse editions of News and Nonsense, DAU's monthly newspaper.",
+};
+
+type Edition = {
   id: number;
-  Month: number;
+  Month: number | string;
   Year: number;
   Pdf_url: string;
-  };
-export default async function NNNPage() {
- const { data, error } = await supabase
-    .from("NNN")
-    .select("*")
-    .order("id", { ascending: true });
+};
 
-  console.log(data);
+function formatMonth(month: number | string) {
+  const monthNumber = Number(month);
+
+  if (Number.isInteger(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+    return new Intl.DateTimeFormat("en", { month: "long" }).format(
+      new Date(2000, monthNumber - 1, 1),
+    );
+  }
+
+  return String(month);
+}
+
+export default async function NNNPage() {
+  const supabase = getSupabaseClient();
+  const result = supabase
+    ? await supabase.from("NNN").select("*").order("id", { ascending: false })
+    : { data: null, error: new Error("Supabase is not configured") };
+  const editions = (result.data ?? []) as Edition[];
 
   return (
-    <main className="min-h-screen bg-black text-white p-10">
-      <h1 className="text-5xl font-bold mb-8">News and Nonsense</h1>
-      <p className="text-zinc-400 mb-10">
-      Browse current and previous editions of the college newspaper - NNN
-      </p>
-      <div className="grid gap-6">
-        {data?.map((edition : Edition) => (
-          <a
-            key={edition.id}
-            href={`/NNN/${edition.id}`}
-            target="_blank"
-            className="rounded-2xl border border-zinc-800 p-6 hover:border-zinc-600 transition"
-          >
-            <h2 className="text-2xl font-semibold">
-            {edition.Month} <span className="text-zinc-500">{edition.Year}</span>
-            </h2>
+    <main id="main-content" className="site-main archive-page">
+      <header className="archive-header">
+        <h1>News and Nonsense</h1>
+        <p>
+          NNN is the college newspaper: a month-by-month record of campus news,
+          observations, and everything between the serious and the strange.
+        </p>
+      </header>
 
-  
-          </a>
-        ))}
-      </div>
+      {result.error ? (
+        <ArchiveState
+          title="The NNN archive is unavailable."
+          message="The publication archive could not be reached. Please check back soon."
+        />
+      ) : editions.length === 0 ? (
+        <ArchiveState
+          title="No NNN editions are listed yet."
+          message="Newspaper editions will appear here when the archive is updated."
+        />
+      ) : (
+        <ol className="edition-list" aria-label="NNN editions">
+          {editions.map((edition) => (
+            <li key={edition.id}>
+              <Link href={`/NNN/${edition.id}`}>
+                <span className="edition-list__date">
+                  {formatMonth(edition.Month)} {edition.Year}
+                </span>
+                <span className="edition-list__action">
+                  Read edition <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
+      )}
     </main>
   );
 }

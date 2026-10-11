@@ -1,0 +1,15 @@
+{
+  "scanned_at": "2026-10-11",
+  "framework": "Next.js 16 App Router",
+  "font_stack": "Geist and Geist Mono via next/font",
+  "palette": "Basic light/dark variables with hard-coded page colours",
+  "motion": "motion-cut; no animation library detected",
+  "spacing": "Tailwind utilities; no semantic scale detected",
+  "preserved": [
+    "Next.js App Router",
+    "Tailwind CSS 4 entry import",
+    "existing routes",
+    "Supabase-backed publication data",
+    "Geist font loading"
+  ]
+}
