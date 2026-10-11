@@ -4,61 +4,55 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main id="main-content" className="site-main home-page">
-      <section className="studio-hero" aria-labelledby="home-title">
-        <div className="studio-hero__copy">
-          <h1 id="home-title">Two ways to read the campus.</h1>
-          <p>
-            The Press Club at DAU publishes the quick pulse and the long view:
-            a monthly newspaper and a flagship college magazine.
-          </p>
-        </div>
-        <div className="studio-hero__proof" aria-label="Our two publications">
-          <Link href="/NNN">
-            <span>Monthly</span>
-            <strong>NNN</strong>
-          </Link>
-          <Link href="/Entelechy">
-            <span>Flagship</span>
-            <strong>Entelechy</strong>
-          </Link>
-        </div>
+      <section className="marquee-hero" aria-labelledby="home-title">
+        <h1 id="home-title">The campus keeps talking.</h1>
       </section>
 
-      <section className="publication-studios" aria-label="Press Club publications">
-        <article className="publication-studio publication-studio--nnn">
-          <div className="publication-studio__poster" aria-hidden="true">
-            <span>N</span><span>N</span><span>N</span>
+      <section className="publication-portals" aria-labelledby="publications-title">
+        <div className="publication-portals__intro">
+          <h2 id="publications-title">Two publications. Two speeds.</h2>
+          <p>
+            The Press Club at DAU records the month as it unfolds, then returns
+            to the ideas and creative work worth keeping.
+          </p>
+        </div>
+
+        <article className="publication-portal publication-portal--nnn">
+          <div className="publication-portal__index" aria-hidden="true">01</div>
+          <div className="publication-portal__copy">
+            <p className="publication-portal__cadence">Monthly newspaper</p>
+            <h3>News and Nonsense</h3>
+            <p>
+              Campus news, observations, and everything between the serious
+              and the strange.
+            </p>
           </div>
-          <div className="publication-studio__copy">
-            <p className="publication-studio__cadence">Every month</p>
-            <h2>News and Nonsense</h2>
-            <p>Campus news, observations, and everything between the serious and the strange.</p>
-            <Link className="studio-link" href="/NNN">
-              Read NNN <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
+          <Link className="portal-link" href="/NNN">
+            Open NNN archive <span aria-hidden="true">↗</span>
+          </Link>
         </article>
 
-        <article className="publication-studio publication-studio--entelechy">
-          <div className="publication-studio__poster" aria-hidden="true">
-            <span>EN</span><span>TE</span><span>LECHY</span>
+        <article className="publication-portal publication-portal--entelechy">
+          <div className="publication-portal__index" aria-hidden="true">02</div>
+          <div className="publication-portal__copy">
+            <p className="publication-portal__cadence">Flagship magazine</p>
+            <h3>Entelechy</h3>
+            <p>
+              Long-form writing and creative work, gathered into the college
+              magazine.
+            </p>
           </div>
-          <div className="publication-studio__copy">
-            <p className="publication-studio__cadence">The flagship</p>
-            <h2>Entelechy</h2>
-            <p>Long-form writing and creative work, gathered into the college magazine.</p>
-            <Link className="studio-link" href="/Entelechy">
-              Read Entelechy <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
+          <Link className="portal-link" href="/Entelechy">
+            Open Entelechy archive <span aria-hidden="true">↗</span>
+          </Link>
         </article>
       </section>
 
       <section className="club-note" aria-labelledby="club-note-title">
-        <h2 id="club-note-title">Made on campus. Kept in print.</h2>
+        <h2 id="club-note-title">One newsroom, two kinds of attention.</h2>
         <p>
-          One newsroom works at two speeds. NNN follows the month; Entelechy
-          pauses long enough to preserve the work worth returning to.
+          NNN follows the month. Entelechy slows down. Together, they keep a
+          record of what the campus reported, questioned, wrote, and made.
         </p>
       </section>
     </main>

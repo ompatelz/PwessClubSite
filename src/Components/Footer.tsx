@@ -2,14 +2,14 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="site-footer">
-      <p className="site-footer__wordmark">The Press Club</p>
-      <p className="site-footer__statement">
-        Campus reporting in the moment. College culture for the long view.
+    <footer className="site-footer foot-statement">
+      <p className="foot-statement__line">
+        What happens here should not disappear.
       </p>
-      <div className="site-footer__meta">
-        <span>Dhirubhai Ambani University</span>
+      <div className="foot-statement__meta">
+        <span>The Press Club · Dhirubhai Ambani University</span>
         <nav aria-label="Footer navigation">
+          <Link href="/">Home</Link>
           <Link href="/NNN">NNN</Link>
           <Link href="/Entelechy">Entelechy</Link>
         </nav>

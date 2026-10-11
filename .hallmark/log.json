@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-10-11",
+    "macrostructure": "Marquee Hero",
+    "theme": "Midnight",
+    "enrichment": "none",
+    "nav": "N5",
+    "footer": "Ft5",
+    "brief": "Alternative DAU Press Club design with a midnight newsroom atmosphere"
+  },
+  {
+    "date": "2026-10-11",
     "macrostructure": "Split Studio",
     "theme": "Riso",
     "enrichment": "none",
