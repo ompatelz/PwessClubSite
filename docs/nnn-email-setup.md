@@ -1,19 +1,21 @@
-# NNN email delivery
+# NNN email delivery through Press Club Gmail
 
-The NNN page offers the supplied **August 2026, Part 1** test issue by email. The PDF is stored at `issues/nnn/august-2026-part-1.pdf` and is attached by the server route at `/api/nnn/request`. The route only accepts `@dau.ac.in` recipient addresses. An address does not need a site account: receiving the message is the proof that the person controls that inbox.
+The NNN page offers the supplied **August 2026, Part 1** test issue by email. The PDF is stored at `issues/nnn/august-2026-part-1.pdf`. The website checks that recipients use `@dau.ac.in`, and a Google Apps Script owned by `pressclub@dau.ac.in` sends the attached PDF. The script also checks the recipient domain, the PDF's SHA-256 hash, and a shared secret kept on the server.
 
-## Enable delivery
+## One-time Press Club account setup
 
-1. Create a Resend account and verify a domain that the Press Club can send from. Resend must authorize the sender address you choose.
-2. In the Vercel project, add these **server-side** environment variables for Production (and Preview if testing there):
-   - `RESEND_API_KEY`: a Resend API key with permission to send email.
-   - `NNN_FROM_EMAIL`: `pressclub@dau.ac.in`, provided `dau.ac.in` is verified for sending in the Press Club Resend account.
-3. Redeploy after saving the variables. Open `/NNN`, submit an actual `@dau.ac.in` address, and confirm the PDF arrives. Check spam if necessary.
+1. Sign in as `pressclub@dau.ac.in` and create a project at [Google Apps Script](https://script.google.com/home/projects/create). Confirm the avatar shows the Press Club account.
+2. Replace the starter code with `integrations/apps-script/Code.gs` from this repository and save it. Name the project `Press Club NNN Mailer`.
+3. Select the `initializeSecret` function in the editor and click **Run**. It creates a random `NNN_GMAIL_SCRIPT_SECRET` under **Project Settings → Script properties**. Copy that property value directly into Vercel later; do not paste it into chat or the repository.
+4. Select the `authorize` function in the editor and click **Run**. Review and grant the requested Gmail permission while signed in as the Press Club account.
+5. Select **Deploy → New deployment → Web app**. Set **Execute as** to **Me** and **Who has access** to **Anyone**, then deploy. If the DAU Workspace policy blocks that access setting, ask the Workspace administrator to permit this web app. Copy the URL ending in `/exec`.
+6. In the Vercel `pwess-club-site` project, set **Production** server-side variables `NNN_GMAIL_SCRIPT_URL` to that `/exec` URL and `NNN_GMAIL_SCRIPT_SECRET` to the value copied from Script properties. Mark the secret as sensitive. Redeploy after changing variables.
+7. Open `/NNN`, submit a DAU address, and confirm the August PDF arrives from the Press Club Gmail account.
 
-Do not prefix these variables with `NEXT_PUBLIC_` or commit credentials to the repository. The existing Supabase connection continues to supply the archive list; it is not used to send mail. The PDF is bundled with the server route for Vercel deployments.
+Do not prefix these variables with `NEXT_PUBLIC_`. The existing Supabase connection supplies the archive list; it is not used to send mail. The PDF is bundled with the website's server route.
 
 ## Changing the test issue
 
-When a new PDF is ready, add it under `issues/nnn/`, then update the filename, subject and body in `src/app/api/nnn/request/route.ts` and the form copy in `src/Components/NNNEmailRequest.tsx`. Redeploy. The archive's Supabase `NNN` record is separate and can be updated on its normal schedule.
+When a new PDF is ready, add it under `issues/nnn/`. Update its path in `src/app/api/nnn/request/route.ts`, the form copy in `src/Components/NNNEmailRequest.tsx`, and the subject, filename, body, and SHA-256 hash in `integrations/apps-script/Code.gs`. Redeploy both the Apps Script and website. The archive's Supabase `NNN` record is separate and can be updated on its normal schedule.
 
-The route has a five-minute, per-address cooldown in server memory. This is a basic guard for the test, not a shared rate limit across Vercel instances. Add a persistent rate limit or bot challenge before promoting the form broadly.
+Both the website and Apps Script apply a five-minute, per-address cooldown in their own caches. These are basic guards for a test, not a persistent global rate limit. Add durable abuse protection before a broad launch.

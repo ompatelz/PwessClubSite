@@ -3,8 +3,6 @@ import { readFile } from "node:fs/promises";
 export const runtime = "nodejs";
 
 const issue = {
-  subject: "News and Nonsense — August 2026, Part 1",
-  filename: "NNN-August-2026-Part-1.pdf",
   path: "issues/nnn/august-2026-part-1.pdf",
 };
 
@@ -42,10 +40,20 @@ export async function POST(request: Request) {
     return json("Enter your @dau.ac.in email address.", 400);
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.NNN_FROM_EMAIL;
-  if (!apiKey || !from) {
-    console.error("NNN email: RESEND_API_KEY or NNN_FROM_EMAIL is missing");
+  const gatewayUrl = process.env.NNN_GMAIL_SCRIPT_URL;
+  const gatewaySecret = process.env.NNN_GMAIL_SCRIPT_SECRET;
+  if (!gatewayUrl || !gatewaySecret) {
+    console.error("NNN email: Gmail script URL or secret is missing");
+    return json("Email delivery is being set up. Please try again later.", 503);
+  }
+
+  let destination: URL;
+  try {
+    destination = new URL(gatewayUrl);
+  } catch {
+    return json("Email delivery is being set up. Please try again later.", 503);
+  }
+  if (destination.protocol !== "https:" || destination.hostname !== "script.google.com") {
     return json("Email delivery is being set up. Please try again later.", 503);
   }
 
@@ -57,23 +65,24 @@ export async function POST(request: Request) {
 
   try {
     const pdf = await readFile(issue.path);
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await fetch(destination, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
+        "Content-Type": "text/plain;charset=utf-8",
       },
       body: JSON.stringify({
-        from,
-        to: [email],
-        subject: issue.subject,
-        text: "Here is your copy of News and Nonsense, August 2026 Part 1. — The Press Club at DAU",
-        attachments: [{ filename: issue.filename, content: pdf.toString("base64") }],
+        secret: gatewaySecret,
+        email,
+        pdfBase64: pdf.toString("base64"),
       }),
+      signal: AbortSignal.timeout(30000),
     });
 
-    if (!response.ok) {
-      console.error("NNN email provider returned", response.status);
+    const result = (await response.json().catch(() => null)) as
+      | { ok?: boolean; error?: string }
+      | null;
+    if (!response.ok || result?.ok !== true) {
+      console.error("NNN Gmail script returned", response.status, result?.error);
       cooldown.delete(email);
       return json("We couldn't send the issue right now. Please try again later.", 502);
     }
