@@ -782,9 +782,22 @@ summary[aria-disabled="true"] {
 
 .tea-header__login {
   width: fit-content;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
   font-size: var(--text-sm);
   font-weight: 800;
-  text-underline-offset: var(--space-xs);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.tea-header__login:hover,
+.tea-header__login:focus-visible {
+  background: var(--color-paper-blue);
 }
 
 .tea-page__columns {
