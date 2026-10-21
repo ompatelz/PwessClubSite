@@ -9,8 +9,11 @@ const issue = {
 const cooldown = new Map<string, number>();
 const cooldownMs = 5 * 60 * 1000;
 
-function json(message: string, status: number) {
-  return Response.json({ message }, { status, headers: { "Cache-Control": "no-store" } });
+function json(message: string, status: number, code?: string) {
+  return Response.json(
+    { message, ...(code ? { code } : {}) },
+    { status, headers: { "Cache-Control": "no-store" } },
+  );
 }
 
 export async function POST(request: Request) {
@@ -84,12 +87,16 @@ export async function POST(request: Request) {
     if (!response.ok || result?.ok !== true) {
       console.error("NNN Gmail script returned", response.status, result?.error);
       cooldown.delete(email);
-      return json("We couldn't send the issue right now. Please try again later.", 502);
+      return json(
+        "We couldn't send the issue right now. Please try again later.",
+        502,
+        result?.error ?? `gateway_http_${response.status}`,
+      );
     }
     return json("The August issue is on its way to your DAU inbox.", 200);
   } catch (error) {
     console.error("NNN email send failed", error);
     cooldown.delete(email);
-    return json("We couldn't send the issue right now. Please try again later.", 502);
+    return json("We couldn't send the issue right now. Please try again later.", 502, "gateway_request_failed");
   }
 }
