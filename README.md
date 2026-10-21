@@ -23,3 +23,5 @@ The home page needs no environment variables. The NNN and Entelechy archive page
 The expected tables are `NNN` and `Entelechy`; their rows and public storage objects must exist for the archive and reader pages to work. If Supabase is not configured, the site stays available and shows a setup message on the archive pages.
 
 The August NNN email form is **off by default** while delivery is being set up. After the [Gmail gateway setup](docs/nnn-email-setup.md) is complete and a test email arrives, set `NNN_EMAIL_ENABLED=true` in Vercel Production and redeploy to show the form. Keep the gateway URL and secret server-side; never prefix them with `NEXT_PUBLIC_`.
+
+Anonymous campus posts and the Press Club review desk are also **off by default**. See [the campus posts setup](docs/tea-setup.md) for the database migration, shared reviewer password, and feature flag. This feature has no public login or email notifications.

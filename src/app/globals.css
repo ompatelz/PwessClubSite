@@ -750,6 +750,350 @@ summary[aria-disabled="true"] {
   }
 }
 
+/* Campus tea extends the Press Club's ink-and-paper system. */
+.tea-page {
+  padding: var(--space-2xl) var(--space-md) var(--space-4xl);
+}
+
+.tea-header {
+  display: grid;
+  gap: var(--space-lg);
+  align-items: end;
+  padding-block-end: var(--space-2xl);
+  border-block-end: var(--rule-heavy) solid var(--color-ink);
+}
+
+.tea-header h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+.tea-header p {
+  max-width: 54ch;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-md);
+}
+
+.tea-header__login {
+  width: fit-content;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.tea-header__login:hover,
+.tea-header__login:focus-visible {
+  background: var(--color-paper-blue);
+}
+
+.tea-page__columns {
+  display: grid;
+  gap: var(--space-2xl);
+  padding-block-start: var(--space-2xl);
+}
+
+.tea-feed h2,
+.tea-form h2,
+.tea-desk__group h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 4vw, var(--text-3xl));
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.tea-feed h2 {
+  margin-block-end: var(--space-xl);
+}
+
+.tea-feed__empty {
+  max-width: 58ch;
+  margin: 0;
+  padding: var(--space-xl);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-blue);
+  font-size: var(--text-md);
+}
+
+.tea-post {
+  padding-block: var(--space-xl);
+  border-block-start: var(--rule-heavy) solid var(--color-ink);
+}
+
+.tea-post__meta,
+.tea-review-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-xs) var(--space-lg);
+  color: var(--color-accent-2-dark);
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.tea-post h3 {
+  max-width: 20ch;
+  margin: var(--space-md) 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-lg), 3vw, var(--text-2xl));
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.tea-post p,
+.tea-review-item__original p {
+  max-width: 70ch;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.tea-form,
+.tea-login,
+.tea-review-item {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+  padding: var(--space-lg);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-red);
+}
+
+.tea-form {
+  order: -1;
+}
+
+.tea-form__intro {
+  margin-block-end: var(--space-md);
+}
+
+.tea-form__intro p {
+  max-width: 45ch;
+  margin: var(--space-sm) 0 0;
+  color: var(--color-ink-2);
+}
+
+.tea-form__fields {
+  display: grid;
+  gap: var(--space-sm);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tea-form__fields:disabled {
+  opacity: 0.65;
+}
+
+.tea-form label,
+.tea-login label,
+.tea-review-item > label {
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.tea-form input:not([type="checkbox"]),
+.tea-form textarea,
+.tea-login input,
+.tea-review-item input,
+.tea-review-item textarea {
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  border-radius: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font: inherit;
+  caret-color: var(--color-accent-2-dark);
+}
+
+.tea-form textarea,
+.tea-review-item textarea {
+  resize: vertical;
+}
+
+.tea-form input::placeholder,
+.tea-form textarea::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+.tea-form__agreement {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: start;
+  margin-block: var(--space-sm);
+  font-weight: 500 !important;
+}
+
+.tea-form__agreement input {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  margin-block-start: var(--space-3xs);
+  accent-color: var(--color-accent-2-dark);
+}
+
+.tea-form button,
+.tea-login button,
+.tea-review-item button,
+.tea-desk__toolbar button {
+  min-height: 2.75rem;
+  width: fit-content;
+  padding: var(--space-sm) var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  border-radius: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tea-form button:hover,
+.tea-login button:hover,
+.tea-review-item button:hover,
+.tea-desk__toolbar button:hover {
+  background: var(--color-accent-2-dark);
+}
+
+.tea-form button:disabled,
+.tea-login button:disabled,
+.tea-review-item button:disabled,
+.tea-desk__toolbar button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.tea-form__notice,
+.tea-review-item__notice {
+  margin: var(--space-sm) 0 0;
+  font-weight: 750;
+}
+
+.tea-page--review .tea-header {
+  margin-block-end: var(--space-2xl);
+}
+
+.tea-login {
+  max-width: 30rem;
+  background: var(--color-paper-blue);
+}
+
+.tea-desk__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-block-end: var(--space-2xl);
+}
+
+.tea-desk__toolbar p {
+  max-width: 55ch;
+  margin: 0;
+}
+
+.tea-desk__group {
+  display: grid;
+  gap: var(--space-lg);
+  margin-block-end: var(--space-3xl);
+}
+
+.tea-desk__group h2 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding-block-end: var(--space-sm);
+  border-block-end: var(--rule-heavy) solid var(--color-ink);
+}
+
+.tea-desk__group h2 span {
+  color: var(--color-accent-2-dark);
+  font-size: var(--text-md);
+}
+
+.tea-desk__empty {
+  margin: 0;
+  color: var(--color-ink-2);
+}
+
+.tea-review-item {
+  max-width: 55rem;
+  background: var(--color-paper-blue);
+}
+
+.tea-review-item__original {
+  margin-block: var(--space-sm) var(--space-lg);
+  padding-block: var(--space-md);
+  border-block: var(--rule-hair) solid var(--color-rule-strong);
+}
+
+.tea-review-item__original summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.tea-review-item__original h3 {
+  margin: var(--space-md) 0 var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.tea-review-item__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-md);
+}
+
+@media (min-width: 48rem) {
+  .tea-page {
+    padding-inline: var(--space-xl);
+  }
+
+  .tea-header {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  }
+
+  .tea-header__login {
+    grid-column: 2;
+  }
+
+  .tea-page__columns {
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+    align-items: start;
+  }
+
+  .tea-form {
+    order: 0;
+  }
+}
+
+@media (min-width: 60rem) {
+  .tea-page {
+    padding-inline: var(--space-2xl);
+  }
+}
+
 /* Riso split-studio redesign */
 
 body {
