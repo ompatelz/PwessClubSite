@@ -1207,10 +1207,18 @@ body {
   background: var(--color-paper-red);
 }
 
+.archive-state--pending {
+  background: var(--color-paper-blue);
+}
+
 .archive-state__mark {
   color: var(--color-accent);
   font-family: var(--font-display);
   font-weight: 800;
+}
+
+.archive-state--pending .archive-state__mark {
+  color: var(--color-accent-2-dark);
 }
 
 .archive-state h2 {
