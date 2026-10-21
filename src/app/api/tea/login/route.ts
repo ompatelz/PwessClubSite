@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { createReviewerSession, passwordMatches, reviewerCookie, reviewerSessionSeconds } from "@/lib/tea-auth";
-import { getTeaDb, sameOrigin, teaEnabled, teaJson } from "@/lib/tea";
+import { sameOrigin, teaEnabled, teaJson } from "@/lib/tea";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  if (!teaEnabled() || !getTeaDb()) return teaJson("The review desk is not open yet.", 503);
+  if (!teaEnabled()) return teaJson("The review desk is not open yet.", 503);
   if (!sameOrigin(request)) return teaJson("Request rejected.", 403);
   if (Number(request.headers.get("content-length") ?? 0) > 256) return teaJson("Request rejected.", 413);
 

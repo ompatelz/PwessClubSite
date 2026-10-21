@@ -16,10 +16,10 @@ export const metadata: Metadata = {
 export default async function ReviewPage() {
   if (!teaEnabled()) notFound();
   const db = getTeaDb();
-  const configured = Boolean(db && reviewerConfigured());
+  const configured = reviewerConfigured();
   const token = (await cookies()).get(reviewerCookie)?.value;
   const signedIn = configured && validReviewerSession(token);
-  const result = signedIn ? await db!.from("tea_posts")
+  const result = signedIn && db ? await db.from("tea_posts")
     .select("id,submitted_title,submitted_body,edited_title,edited_body,status,created_at,updated_at,published_at")
     .order("created_at", { ascending: false }).limit(100) : null;
   const posts = (result?.data ?? []) as TeaPost[];
@@ -32,6 +32,7 @@ export default async function ReviewPage() {
       </header>
       {!configured ? <p className="tea-feed__empty">The review desk is being prepared.</p>
         : !signedIn ? <TeaReviewerLogin />
+          : !db ? <p className="tea-feed__empty">Signed in. The review queue will open when storage is connected.</p>
           : result?.error ? <p className="tea-feed__empty">Posts could not be loaded. Please refresh the page.</p>
             : <TeaReviewDesk posts={posts} />}
     </main>
