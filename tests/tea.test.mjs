@@ -1,7 +1,29 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createReviewerSession, passwordMatches, validReviewerSession } from "../src/lib/tea-auth.ts";
-import { cleanPost, sameOrigin } from "../src/lib/tea.ts";
+import { cleanPost, getTeaDb, sameOrigin } from "../src/lib/tea.ts";
+
+test("review desk accepts server-only Supabase integration credentials", () => {
+  const names = [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "TEA_SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+  ];
+  const previous = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+  try {
+    for (const name of names) delete process.env[name];
+    assert.equal(getTeaDb(), null);
+    process.env.SUPABASE_URL = "https://example.supabase.co";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "server-only-test-key";
+    assert.ok(getTeaDb());
+  } finally {
+    for (const name of names) {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    }
+  }
+});
 
 test("reviewer sessions are signed and stop working after a password change", () => {
   const previousPassword = process.env.TEA_REVIEW_PASSWORD;
