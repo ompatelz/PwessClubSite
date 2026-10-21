@@ -34,7 +34,13 @@ export default async function EntelechyPage() {
         </p>
       </header>
 
-      {result.error ? (
+      {!supabase ? (
+        <ArchiveState
+          tone="pending"
+          title="The Entelechy archive is being prepared."
+          message="Check back soon for editions of Entelechy."
+        />
+      ) : result.error ? (
         <ArchiveState
           title="The Entelechy archive is unavailable."
           message="The publication archive could not be reached. Please check back soon."

@@ -30,6 +30,7 @@ function formatMonth(month: number | string) {
 
 export default async function NNNPage() {
   const supabase = getSupabaseClient();
+  const emailEnabled = process.env.NNN_EMAIL_ENABLED === "true";
   const result = supabase
     ? await supabase.from("NNN").select("*").order("id", { ascending: false })
     : { data: null, error: new Error("Supabase is not configured") };
@@ -45,9 +46,15 @@ export default async function NNNPage() {
         </p>
       </header>
 
-      <NNNEmailRequest />
+      {emailEnabled && <NNNEmailRequest />}
 
-      {result.error ? (
+      {!supabase ? (
+        <ArchiveState
+          tone="pending"
+          title="The NNN archive is being prepared."
+          message="Check back soon for editions of News and Nonsense."
+        />
+      ) : result.error ? (
         <ArchiveState
           title="The NNN archive is unavailable."
           message="The publication archive could not be reached. Please check back soon."

@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Press Club at DAU
 
-## Getting Started
+Next.js site for the News and Nonsense newspaper and Entelechy magazine.
 
-First, run the development server:
+## Run locally
 
 ```bash
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+For a production check, run `npm run lint`, `npx tsc --noEmit`, and `npm run build`. The build downloads the site's Google Fonts, so it requires network access to Google Fonts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The home page needs no environment variables. The NNN and Entelechy archive pages read their public edition lists from Supabase when these variables are set:
 
-## Learn More
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL of the Supabase project containing the publication tables |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key for reading the public archive |
 
-To learn more about Next.js, take a look at the following resources:
+The expected tables are `NNN` and `Entelechy`; their rows and public storage objects must exist for the archive and reader pages to work. If Supabase is not configured, the site stays available and shows a setup message on the archive pages.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The August NNN email form is **off by default** while delivery is being set up. After the [Gmail gateway setup](docs/nnn-email-setup.md) is complete and a test email arrives, set `NNN_EMAIL_ENABLED=true` in Vercel Production and redeploy to show the form. Keep the gateway URL and secret server-side; never prefix them with `NEXT_PUBLIC_`.

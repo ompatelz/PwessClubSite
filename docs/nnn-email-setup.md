@@ -12,6 +12,8 @@ The NNN page offers the supplied **August 2026, Part 1** test issue by email. Th
 6. In the Vercel `pwess-club-site` project, set **Production** server-side variables `NNN_GMAIL_SCRIPT_URL` to that `/exec` URL and `NNN_GMAIL_SCRIPT_SECRET` to the value copied from Script properties. Mark the secret as sensitive. Redeploy after changing variables.
 7. Open `/NNN`, submit a DAU address, and confirm the August PDF arrives from the Press Club Gmail account.
 
+The request form is hidden until `NNN_EMAIL_ENABLED=true` is set for the Vercel Production environment and the site is redeployed. Keep that flag unset while Gmail authorization or delivery testing is incomplete. The API route and Apps Script remain available for controlled testing before the form is enabled.
+
 Do not prefix these variables with `NEXT_PUBLIC_`. The existing Supabase connection supplies the archive list; it is not used to send mail. The PDF is bundled with the website's server route.
 
 ## Changing the test issue
