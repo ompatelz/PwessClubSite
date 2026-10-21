@@ -350,6 +350,91 @@ summary[aria-disabled="true"] {
   list-style: none;
 }
 
+.nnn-email {
+  display: grid;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  margin-block-end: var(--space-2xl);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-blue);
+}
+
+.nnn-email h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+  line-height: 1.05;
+}
+
+.nnn-email p {
+  max-width: 56ch;
+  margin: var(--space-sm) 0 0;
+}
+
+.nnn-email form {
+  display: grid;
+  gap: var(--space-xs);
+  align-content: end;
+}
+
+.nnn-email label {
+  font-size: var(--text-sm);
+  font-weight: 750;
+}
+
+.nnn-email__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.nnn-email input,
+.nnn-email button {
+  min-height: 2.75rem;
+  border: var(--rule-heavy) solid var(--color-ink);
+  border-radius: 0;
+  font: inherit;
+}
+
+.nnn-email input {
+  min-width: 0;
+  flex: 1 1 15rem;
+  padding-inline: var(--space-md);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.nnn-email button {
+  padding-inline: var(--space-md);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.nnn-email button:hover,
+.nnn-email button:focus-visible {
+  background: var(--color-accent-2-dark);
+}
+
+.nnn-email button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.nnn-email [role="status"] {
+  min-height: 1.5em;
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+@media (min-width: 48rem) {
+  .nnn-email {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
 .edition-list li {
   border-block-end: var(--rule-hair) solid var(--color-rule-strong);
 }

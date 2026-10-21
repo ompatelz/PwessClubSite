@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ArchiveState from "@/Components/ArchiveState";
+import NNNEmailRequest from "@/Components/NNNEmailRequest";
 import { getSupabaseClient } from "@/lib/supabase";
 
 export const metadata: Metadata = {
@@ -43,6 +44,8 @@ export default async function NNNPage() {
           observations, and everything between the serious and the strange.
         </p>
       </header>
+
+      <NNNEmailRequest />
 
       {result.error ? (
         <ArchiveState
