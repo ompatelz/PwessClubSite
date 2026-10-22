@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import TeaReviewerLogin from "@/Components/TeaReviewerLogin";
 import TeaReviewDesk from "@/Components/TeaReviewDesk";
-import { reviewerConfigured, reviewerCookie, validReviewerSession } from "@/lib/tea-auth";
+import { reviewerConfigured, reviewerCookie, reviewerSessionRevoked, validReviewerSession } from "@/lib/tea-auth";
 import { getTeaDb, teaEnabled, type TeaPost } from "@/lib/tea";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +18,8 @@ export default async function ReviewPage() {
   const db = getTeaDb();
   const configured = reviewerConfigured();
   const token = (await cookies()).get(reviewerCookie)?.value;
-  const signedIn = configured && validReviewerSession(token);
+  const signedIn = Boolean(configured && db && token && validReviewerSession(token)
+    && !await reviewerSessionRevoked(db, token));
   const result = signedIn && db ? await db.from("tea_posts")
     .select("id,submitted_title,submitted_body,edited_title,edited_body,status,created_at,updated_at,published_at")
     .order("created_at", { ascending: false }).limit(100) : null;

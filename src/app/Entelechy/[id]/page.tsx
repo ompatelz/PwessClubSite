@@ -24,7 +24,7 @@ export default async function EntelechyEditionPage({
 
   const { data, error } = await supabase
     .from("Entelechy")
-    .select("*")
+    .select("id,edition,pdf_url")
     .eq("id", id)
     .single();
 
