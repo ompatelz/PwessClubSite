@@ -750,6 +750,426 @@ summary[aria-disabled="true"] {
   }
 }
 
+/* Stories: signed editorial work beside anonymous campus posts */
+
+.home-stories {
+  display: grid;
+  gap: var(--space-xl);
+  padding: var(--space-3xl) var(--space-md);
+  border-block-start: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.home-stories h2,
+.stories-header h1,
+.story-stream h2,
+.story-reader h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.96;
+}
+
+.home-stories h2 {
+  max-width: 13ch;
+  font-size: clamp(var(--text-2xl), 6vw, var(--text-4xl));
+}
+
+.home-stories .publication-studio__cadence {
+  color: currentColor;
+}
+
+.home-stories__copy {
+  display: grid;
+  gap: var(--space-lg);
+  align-content: end;
+}
+
+.home-stories__copy p {
+  max-width: 50ch;
+  margin: 0;
+  font-size: var(--text-md);
+}
+
+.home-stories .studio-link {
+  border-color: currentColor;
+  color: currentColor;
+}
+
+.stories-page {
+  overflow: clip;
+}
+
+.stories-header {
+  display: grid;
+  gap: var(--space-lg);
+  min-height: min(42rem, 82dvh);
+  padding: var(--space-2xl) var(--space-md);
+  align-content: end;
+  border-block-end: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-red);
+}
+
+.stories-header__eyebrow,
+.story-stream__number {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stories-header h1 {
+  max-width: 11ch;
+  font-size: var(--text-display);
+}
+
+.stories-header__intro {
+  max-width: 56ch;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-md);
+}
+
+.stories-header__jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-block-start: var(--space-sm);
+}
+
+.stories-header__jump a,
+.story-stream__cta,
+.story-reader__back {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 2.75rem;
+  align-items: center;
+  padding-inline: var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  color: var(--color-ink);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.stories-header__jump a:first-child {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.stories-header__jump a:hover,
+.stories-header__jump a:focus-visible,
+.story-stream__cta:hover,
+.story-stream__cta:focus-visible,
+.story-reader__back:hover,
+.story-reader__back:focus-visible {
+  background: var(--color-accent-2);
+  color: var(--color-accent-ink);
+}
+
+.story-stream {
+  display: grid;
+  gap: var(--space-2xl);
+  padding: var(--space-3xl) var(--space-md);
+  scroll-margin-block-start: var(--space-lg);
+}
+
+.story-stream--tea {
+  border-block-start: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-blue);
+}
+
+.story-stream__heading {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.story-stream__heading > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: baseline;
+}
+
+.story-stream__number {
+  color: var(--color-accent);
+}
+
+.story-stream--tea .story-stream__number {
+  color: var(--color-accent-2-dark);
+}
+
+.story-stream h2 {
+  max-width: 12ch;
+  font-size: clamp(var(--text-2xl), 7vw, var(--text-4xl));
+}
+
+.story-stream__heading > p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-md);
+}
+
+.story-empty {
+  display: grid;
+  gap: var(--space-xs);
+  max-width: 52rem;
+  padding: var(--space-xl);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-red);
+}
+
+.story-empty--tea {
+  background: var(--color-paper);
+}
+
+.story-empty strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: -0.025em;
+}
+
+.story-empty span {
+  color: var(--color-ink-2);
+}
+
+.blog-grid {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blog-card {
+  min-width: 0;
+}
+
+.blog-card a {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: var(--rule-heavy) solid var(--color-ink);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.blog-card:nth-child(odd) a {
+  background: var(--color-paper-red);
+}
+
+.blog-card:nth-child(even) a {
+  background: var(--color-paper-blue);
+}
+
+.blog-card a:hover,
+.blog-card a:focus-visible {
+  transform: translateY(calc(var(--space-xs) * -1));
+}
+
+.blog-card__meta,
+.tea-preview__meta,
+.story-reader__byline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.blog-card h3,
+.tea-preview h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-lg), 3vw, var(--text-2xl));
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.blog-card p,
+.tea-preview p {
+  max-width: 65ch;
+  margin: 0;
+  color: var(--color-ink-2);
+  overflow-wrap: anywhere;
+}
+
+.blog-card__action {
+  margin-block-start: auto;
+  padding-block-start: var(--space-lg);
+  font-weight: 800;
+}
+
+.tea-preview-grid {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tea-preview {
+  display: grid;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
+}
+
+.tea-preview p {
+  white-space: pre-wrap;
+}
+
+.story-reader {
+  padding: var(--space-xl) var(--space-md) var(--space-4xl);
+}
+
+.story-reader__back {
+  margin-block-end: var(--space-2xl);
+}
+
+.story-reader article {
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+.story-reader__header {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper-red);
+}
+
+.story-reader h1 {
+  max-width: 15ch;
+  font-size: var(--text-display);
+}
+
+.story-reader__byline {
+  justify-content: flex-start;
+}
+
+.story-reader__byline span::after {
+  content: "·";
+  margin-inline-start: var(--space-sm);
+}
+
+.story-reader__dek {
+  max-width: 55ch;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-md);
+}
+
+.story-reader__body {
+  display: grid;
+  gap: var(--space-lg);
+  max-width: 44rem;
+  margin-inline: auto;
+  font-size: var(--text-md);
+  line-height: 1.75;
+}
+
+.story-reader__body p {
+  margin: 0;
+}
+
+@media (min-width: 48rem) {
+  .home-stories,
+  .stories-header,
+  .story-stream__heading {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: end;
+  }
+
+  .home-stories,
+  .stories-header,
+  .story-stream,
+  .story-reader {
+    padding-inline: var(--space-xl);
+  }
+
+  .stories-header__eyebrow,
+  .stories-header h1 {
+    grid-column: 1;
+  }
+
+  .stories-header__intro,
+  .stories-header__jump {
+    grid-column: 2;
+  }
+
+  .stories-header__intro {
+    grid-row: 2;
+  }
+
+  .blog-grid,
+  .tea-preview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .blog-card--lead {
+    grid-column: 1 / -1;
+  }
+
+  .blog-card--lead a {
+    min-height: 22rem;
+    justify-content: flex-end;
+  }
+
+  .story-reader__header {
+    padding: var(--space-2xl);
+  }
+}
+
+@media (min-width: 60rem) {
+  .home-stories,
+  .stories-header,
+  .story-stream,
+  .story-reader {
+    padding-inline: var(--space-2xl);
+  }
+
+  .blog-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .blog-card {
+    grid-column: span 6;
+  }
+
+  .blog-card--lead {
+    grid-column: span 8;
+    grid-row: span 2;
+  }
+
+  .blog-card--lead + .blog-card,
+  .blog-card--lead + .blog-card + .blog-card {
+    grid-column: span 4;
+  }
+
+  .tea-preview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-card a {
+    transition-duration: 0.01ms;
+    transform: none !important;
+  }
+}
+
 /* Campus tea extends the Press Club's ink-and-paper system. */
 .tea-page {
   padding: var(--space-2xl) var(--space-md) var(--space-4xl);
