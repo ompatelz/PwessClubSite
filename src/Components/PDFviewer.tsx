@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -15,56 +15,89 @@ export default function PDFviewer(
   { url }: { url: string }
 ) {
   const [numPages, setNumPages] = useState<number>(0);
-  const [scale, setScale] = useState(1.2);
-  const minScale = 0.6;
-  const maxScale = 2;
+  const [pageNumber, setPageNumber] = useState(1);
+  const [zoom, setZoom] = useState(1);
+  const [readerWidth, setReaderWidth] = useState(0);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const minZoom = 0.75;
+  const maxZoom = 1.75;
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const updateWidth = () => setReaderWidth(Math.max(240, Math.min(stage.clientWidth - 32, 960)));
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  function changePage(nextPage: number) {
+    setPageNumber(Math.min(Math.max(nextPage, 1), numPages));
+    stageRef.current?.scrollTo({ top: 0, left: 0 });
+  }
 
   return (
     <section className="pdf-reader" aria-label="Publication reader">
-      <div className="pdf-toolbar" aria-label="Zoom controls">
-        <button
-          type="button"
-          onClick={() => setScale((current) => Math.max(minScale, current - 0.2))}
-          disabled={scale <= minScale}
-          aria-label="Zoom out"
-        >
-          −
-        </button>
+      <div className="pdf-toolbar" aria-label="Reader controls">
+        <div className="pdf-toolbar__group" aria-label="Page controls">
+          <button type="button" onClick={() => changePage(pageNumber - 1)} disabled={pageNumber <= 1}>
+            Previous
+          </button>
+          <output className="pdf-page-status" aria-live="polite">
+            {numPages ? `Page ${pageNumber} of ${numPages}` : "Loading pages"}
+          </output>
+          <button type="button" onClick={() => changePage(pageNumber + 1)} disabled={!numPages || pageNumber >= numPages}>
+            Next
+          </button>
+        </div>
 
-        <output aria-live="polite">
-          {Math.round(scale * 100)}%
-        </output>
+        <div className="pdf-toolbar__group" aria-label="Zoom controls">
+          <button type="button" onClick={() => setZoom((current) => Math.max(minZoom, current - 0.25))}
+            disabled={zoom <= minZoom}>
+            Zoom out
+          </button>
+          <output aria-live="polite">{Math.round(zoom * 100)}%</output>
+          <button type="button" onClick={() => setZoom((current) => Math.min(maxZoom, current + 0.25))}
+            disabled={zoom >= maxZoom}>
+            Zoom in
+          </button>
+          <button type="button" onClick={() => setZoom(1)} disabled={zoom === 1}>
+            Fit width
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={() => setScale((current) => Math.min(maxScale, current + 0.2))}
-          disabled={scale >= maxScale}
-          aria-label="Zoom in"
-        >
-          +
-        </button>
+        <a className="pdf-original-link" href={url} target="_blank" rel="noreferrer">
+          Open original PDF
+        </a>
       </div>
 
-      <Document
-        file={url}
-        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-        onLoadError={(err) => console.error("PDF load error:", err)}
-        loading={<p className="pdf-status">Loading publication…</p>}
-        error={
-          <p className="pdf-status pdf-status--error">
-            The publication could not be loaded. Try opening it again later.
-          </p>
-        }
-      >
-        {Array.from({ length: numPages }, (_, i) => (
+      <div className="pdf-stage" ref={stageRef}>
+        <Document
+          file={url}
+          onLoadSuccess={({ numPages: loadedPages }) => {
+            setNumPages(loadedPages);
+            setPageNumber(1);
+          }}
+          onLoadError={(error) => console.error("PDF load error:", error)}
+          loading={<p className="pdf-status">Loading publication…</p>}
+          error={
+            <div className="pdf-status pdf-status--error" role="alert">
+              <p>The publication could not be loaded in the reader.</p>
+              <a href={url} target="_blank" rel="noreferrer">Open the original PDF instead</a>
+            </div>
+          }
+        >
           <Page
-            key={i + 1}
-            pageNumber={i + 1}
-            scale={scale}
+            pageNumber={pageNumber}
+            width={readerWidth ? Math.round(readerWidth * zoom) : undefined}
             className="pdf-page"
+            loading={<p className="pdf-status">Rendering page {pageNumber}…</p>}
+            error={<p className="pdf-status pdf-status--error">This page could not be rendered.</p>}
           />
-        ))}
-      </Document>
+        </Document>
+      </div>
     </section>
   );
 }
