@@ -1,9 +1,9 @@
 # Stories publishing
 
-`/Stories` is the public home for two streams:
+`/Blog` is the public home for signed Press Club writing. Each article opens at
+`/Blog/<slug>`.
 
-- signed Press Club blogs from `public.blog_posts`
-- published anonymous posts from the existing `public.tea_posts` review flow
+Campus Tea remains separate at `/Tea`; moderation remains at `/press-club`.
 
 ## Publish a blog
 
@@ -21,7 +21,7 @@ Draft rows are not readable through the public API. A published row also needs a
 
 ## Tea
 
-Tea continues to use `/Tea` for submissions and `/press-club` for moderation. Only posts marked `published` appear on `/Stories` or `/Tea`.
+Tea continues to use `/Tea` for submissions and `/press-club` for moderation. Only posts marked `published` appear on `/Tea`.
 
 ## Future workflow
 

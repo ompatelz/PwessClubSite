@@ -787,6 +787,26 @@ summary[aria-disabled="true"] {
   align-content: end;
 }
 
+.home-stories__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.blog-header {
+  min-height: min(34rem, 72dvh);
+}
+
+.blog-stream__heading > h2 {
+  max-width: 12ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-2xl), 7vw, var(--text-4xl));
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
 .home-stories__copy p {
   max-width: 50ch;
   margin: 0;

@@ -12,7 +12,8 @@ export default function Footer() {
         <nav aria-label="Footer navigation">
           <Link href="/NNN">NNN</Link>
           <Link href="/Entelechy">Entelechy</Link>
-          <Link href="/Stories">Stories</Link>
+          <Link href="/Blog">Blog</Link>
+          {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
         </nav>
       </div>
     </footer>
