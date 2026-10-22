@@ -8,6 +8,24 @@ export type BlogPost = {
   published_at: string;
 };
 
+export const NEW_POST_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function partitionPostsByAge<T extends { published_at: string | null }>(
+  posts: T[],
+  now = new Date(),
+) {
+  const cutoff = now.getTime() - NEW_POST_WINDOW_MS;
+  const newest: T[] = [];
+  const older: T[] = [];
+
+  for (const post of posts) {
+    const publishedAt = post.published_at ? Date.parse(post.published_at) : Number.NaN;
+    (Number.isFinite(publishedAt) && publishedAt > cutoff ? newest : older).push(post);
+  }
+
+  return { newest, older };
+}
+
 export function formatStoryDate(value: string) {
   return new Intl.DateTimeFormat("en-IN", {
     dateStyle: "medium",

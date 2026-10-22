@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getSupabaseClient } from "@/lib/supabase";
-import { formatStoryDate, type BlogPost } from "@/lib/stories";
+import { formatStoryDate, partitionPostsByAge, type BlogPost } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
 
@@ -14,15 +14,35 @@ type BlogPreview = Pick<BlogPost, "id" | "slug" | "title" | "excerpt" | "author"
 
 export default async function BlogPage() {
   const db = getSupabaseClient();
+  const now = new Date();
   const result = db
     ? await db.from("blog_posts")
       .select("id,slug,title,excerpt,author,published_at")
       .eq("status", "published")
-      .lte("published_at", new Date().toISOString())
+      .lte("published_at", now.toISOString())
       .order("published_at", { ascending: false })
       .limit(24)
     : { data: null, error: new Error("Blog database is not configured") };
   const posts = (result.data ?? []) as BlogPreview[];
+  const { newest, older } = partitionPostsByAge(posts, now);
+
+  const renderPosts = (items: BlogPreview[], lead = false) => (
+    <ol className="blog-grid">
+      {items.map((post, index) => (
+        <li key={post.id} className={lead && index === 0 ? "blog-card blog-card--lead" : "blog-card"}>
+          <Link href={`/Blog/${post.slug}`}>
+            <div className="blog-card__meta">
+              <span>{post.author}</span>
+              <time dateTime={post.published_at}>{formatStoryDate(post.published_at)}</time>
+            </div>
+            <h3>{post.title}</h3>
+            <p>{post.excerpt}</p>
+            <span className="blog-card__action">Read article <span aria-hidden="true">→</span></span>
+          </Link>
+        </li>
+      ))}
+    </ol>
+  );
 
   return (
     <main id="main-content" className="site-main stories-page blog-page">
@@ -35,11 +55,6 @@ export default async function BlogPage() {
       </header>
 
       <section className="story-stream story-stream--blogs" aria-labelledby="latest-blogs-title">
-        <div className="story-stream__heading blog-stream__heading">
-          <h2 id="latest-blogs-title">Latest from the desk</h2>
-          <p>Every article carries its writer&apos;s name and publication date.</p>
-        </div>
-
         {result.error ? (
           <div className="story-empty">
             <strong>The blog desk is temporarily unavailable.</strong>
@@ -51,21 +66,26 @@ export default async function BlogPage() {
             <span>Signed Press Club stories will appear here when they are published.</span>
           </div>
         ) : (
-          <ol className="blog-grid">
-            {posts.map((post, index) => (
-              <li key={post.id} className={index === 0 ? "blog-card blog-card--lead" : "blog-card"}>
-                <Link href={`/Blog/${post.slug}`}>
-                  <div className="blog-card__meta">
-                    <span>{post.author}</span>
-                    <time dateTime={post.published_at}>{formatStoryDate(post.published_at)}</time>
-                  </div>
-                  <h3>{post.title}</h3>
-                  <p>{post.excerpt}</p>
-                  <span className="blog-card__action">Read article <span aria-hidden="true">→</span></span>
-                </Link>
-              </li>
-            ))}
-          </ol>
+          <>
+            <section className="post-age-group" aria-labelledby="latest-blogs-title">
+              <div className="story-stream__heading blog-stream__heading">
+                <h2 id="latest-blogs-title">Newest</h2>
+                <p>Published in the past seven days. Every article carries its writer&apos;s name and publication date.</p>
+              </div>
+              {newest.length > 0
+                ? renderPosts(newest, true)
+                : <p className="post-age-group__empty">No posts were published in the past week.</p>}
+            </section>
+            {older.length > 0 && (
+              <section className="post-age-group" aria-labelledby="older-blogs-title">
+                <div className="story-stream__heading blog-stream__heading">
+                  <h2 id="older-blogs-title">Older posts</h2>
+                  <p>Browse reporting and writing from the archive.</p>
+                </div>
+                {renderPosts(older)}
+              </section>
+            )}
+          </>
         )}
       </section>
     </main>

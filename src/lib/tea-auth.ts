@@ -1,12 +1,13 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const reviewerCookie = "press_club_review";
-export const reviewerSessionSeconds = 12 * 60 * 60;
+export const reviewerSessionSeconds = 4 * 60 * 60;
 
 function authKey() {
   const secret = process.env.TEA_SESSION_SECRET;
   const password = process.env.TEA_REVIEW_PASSWORD;
-  if (!secret || !password) return null;
+  if (!secret || secret.length < 32 || !password || password.length < 12) return null;
   return createHash("sha256").update(secret).update("\0").update(password).digest();
 }
 
@@ -48,4 +49,39 @@ export function validReviewerSession(token: string | undefined) {
     return false;
   }
   return supplied.length === expected.length && timingSafeEqual(supplied, expected);
+}
+
+function sessionRecord(token: string) {
+  const [expiryText] = token.split(".");
+  return {
+    session_hash: createHash("sha256").update(token).digest("hex"),
+    expires_at: new Date(Number(expiryText) * 1000).toISOString(),
+  };
+}
+
+export async function reviewerSessionRevoked(db: SupabaseClient, token: string) {
+  try {
+    const { data, error } = await db
+      .from("revoked_reviewer_sessions")
+      .select("session_hash")
+      .eq("session_hash", sessionRecord(token).session_hash)
+      .maybeSingle();
+    if (error) throw error;
+    return Boolean(data);
+  } catch (error) {
+    console.error("Reviewer session check failed", error instanceof Error ? error.name : "database_error");
+    return true;
+  }
+}
+
+export async function revokeReviewerSession(db: SupabaseClient, token: string) {
+  if (!validReviewerSession(token)) return true;
+  try {
+    const { error } = await db.from("revoked_reviewer_sessions").upsert(sessionRecord(token));
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error("Reviewer session revocation failed", error instanceof Error ? error.name : "database_error");
+    return false;
+  }
 }

@@ -75,8 +75,8 @@ export default function TeaReviewDesk({ posts }: { posts: TeaPost[] }) {
   async function logout() {
     setBusy(true);
     try {
-      await fetch("/api/tea/logout", { method: "POST" });
-      window.location.reload();
+      const response = await fetch("/api/tea/logout", { method: "POST" });
+      if (response.ok) window.location.reload();
     } finally {
       setBusy(false);
     }

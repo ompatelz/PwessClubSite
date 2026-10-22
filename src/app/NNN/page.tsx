@@ -32,7 +32,7 @@ export default async function NNNPage() {
   const supabase = getSupabaseClient();
   const emailEnabled = process.env.NNN_EMAIL_ENABLED === "true";
   const result = supabase
-    ? await supabase.from("NNN").select("*").order("id", { ascending: false })
+    ? await supabase.from("NNN").select("id,Month,Year,Pdf_url").order("id", { ascending: false })
     : { data: null, error: new Error("Supabase is not configured") };
   const editions = (result.data ?? []) as Edition[];
 

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
-import { reviewerCookie, validReviewerSession } from "@/lib/tea-auth";
+import { reviewerCookie, reviewerSessionRevoked, validReviewerSession } from "@/lib/tea-auth";
 import { cleanPost, getTeaDb, sameOrigin, teaEnabled, teaJson } from "@/lib/tea";
+import { readJsonBody } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 
@@ -11,22 +12,20 @@ export async function PATCH(request: Request, context: Context) {
   if (!sameOrigin(request)) return teaJson("Request rejected.", 403);
   const session = (await cookies()).get(reviewerCookie)?.value;
   if (!validReviewerSession(session)) return teaJson("Sign in to review posts.", 401);
-  if (Number(request.headers.get("content-length") ?? 0) > 7000) {
-    return teaJson("This post is too long.", 413);
-  }
   const db = getTeaDb();
   if (!db) return teaJson("The review desk is not configured yet.", 503);
+  if (await reviewerSessionRevoked(db, session!)) return teaJson("Sign in to review posts.", 401);
   const { id } = await context.params;
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
     return teaJson("Post not found.", 404);
   }
 
-  let input: unknown;
-  try {
-    input = await request.json();
-  } catch {
+  const parsed = await readJsonBody(request, 7000);
+  if (!parsed.ok && parsed.reason === "too_large") return teaJson("This post is too long.", 413);
+  if (!parsed.ok) {
     return teaJson("Check the post and try again.", 400);
   }
+  const input = parsed.value;
   if (typeof input !== "object" || input === null) return teaJson("Check the post and try again.", 400);
   const fields = input as Record<string, unknown>;
   const action = fields.action;

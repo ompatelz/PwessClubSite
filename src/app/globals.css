@@ -1018,6 +1018,23 @@ summary[aria-disabled="true"] {
   color: var(--color-ink-2);
 }
 
+.post-age-group {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.post-age-group + .post-age-group {
+  padding-block-start: var(--space-2xl);
+  border-block-start: var(--rule-heavy) solid var(--color-ink);
+}
+
+.post-age-group__empty {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-md);
+}
+
 .blog-grid {
   display: grid;
   gap: var(--space-md);
@@ -1320,7 +1337,7 @@ summary[aria-disabled="true"] {
 }
 
 .tea-feed h2 {
-  margin-block-end: var(--space-xl);
+  margin-block-end: 0;
 }
 
 .tea-feed__empty {

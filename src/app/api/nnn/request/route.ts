@@ -1,13 +1,12 @@
 import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { getTeaDb } from "../../../../lib/tea.ts";
+import { consumeRateLimit, readJsonBody } from "../../../../lib/request-security.ts";
 
 export const runtime = "nodejs";
 
-const issue = {
-  path: "issues/nnn/august-2026-part-1.pdf",
-};
+const issuePath = join(process.cwd(), "issues", "nnn", "august-2026-part-1.pdf");
 
-const cooldown = new Map<string, number>();
-const cooldownMs = 5 * 60 * 1000;
 const maxRequestBytes = 1024;
 
 function json(message: string, status: number, code?: string) {
@@ -26,20 +25,12 @@ export async function POST(request: Request) {
     return json("Request rejected.", 403);
   }
 
-  if (Number(request.headers.get("content-length") ?? 0) > maxRequestBytes) {
-    return json("Request too large.", 413);
-  }
-
-  let submitted: unknown;
-  try {
-    const body = await request.text();
-    if (new TextEncoder().encode(body).byteLength > maxRequestBytes) {
-      return json("Request too large.", 413);
-    }
-    submitted = JSON.parse(body);
-  } catch {
+  const parsed = await readJsonBody(request, maxRequestBytes);
+  if (!parsed.ok && parsed.reason === "too_large") return json("Request too large.", 413);
+  if (!parsed.ok) {
     return json("Enter a DAU email address.", 400);
   }
+  const submitted = parsed.value;
 
   const email =
     typeof submitted === "object" && submitted !== null && "email" in submitted &&
@@ -49,6 +40,16 @@ export async function POST(request: Request) {
 
   if (email.length > 254 || !/^[a-z0-9._%+-]+@dau\.ac\.in$/.test(email)) {
     return json("Enter your @dau.ac.in email address.", 400);
+  }
+
+  const db = getTeaDb();
+  if (!db) return json("Email delivery is temporarily unavailable.", 503, "delivery_unavailable");
+  const rateLimit = await consumeRateLimit(db, request, `nnn-email:${email}`, 1, 5 * 60);
+  if (rateLimit === "unavailable") {
+    return json("Email delivery is temporarily unavailable.", 503, "delivery_unavailable");
+  }
+  if (rateLimit === "limited") {
+    return json("An issue was recently requested. Please wait and try again.", 429);
   }
 
   const gatewayUrl = process.env.NNN_GMAIL_SCRIPT_URL;
@@ -68,14 +69,8 @@ export async function POST(request: Request) {
     return json("Email delivery is being set up. Please try again later.", 503);
   }
 
-  const now = Date.now();
-  if ((cooldown.get(email) ?? 0) > now) {
-    return json("An issue was recently requested for this address. Please check your inbox.", 429);
-  }
-  cooldown.set(email, now + cooldownMs);
-
   try {
-    const pdf = await readFile(issue.path);
+    const pdf = await readFile(issuePath);
     const response = await fetch(destination, {
       method: "POST",
       headers: {
@@ -94,17 +89,15 @@ export async function POST(request: Request) {
       | null;
     if (!response.ok || result?.ok !== true) {
       console.error("NNN Gmail script returned", response.status, result?.error);
-      cooldown.delete(email);
       return json(
         "We couldn't send the issue right now. Please try again later.",
         502,
-        result?.error ?? `gateway_http_${response.status}`,
+        "delivery_failed",
       );
     }
     return json("The August issue is on its way to your DAU inbox.", 200);
   } catch (error) {
     console.error("NNN email send failed", error);
-    cooldown.delete(email);
     return json("We couldn't send the issue right now. Please try again later.", 502, "gateway_request_failed");
   }
 }

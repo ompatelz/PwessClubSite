@@ -19,7 +19,7 @@ export default async function EntelechyPage() {
   const result = supabase
     ? await supabase
         .from("Entelechy")
-        .select("*")
+        .select("id,edition,pdf_url")
         .order("id", { ascending: false })
     : { data: null, error: new Error("Supabase is not configured") };
   const editions = (result.data ?? []) as Edition[];

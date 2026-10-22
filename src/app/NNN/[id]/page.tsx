@@ -24,7 +24,7 @@ export default async function NNNEditionPage({
 
   const { data, error } = await supabase
     .from("NNN")
-    .select("*")
+    .select("id,Month,Year,Pdf_url")
     .eq("id", id)
     .single();
 
