@@ -61,12 +61,17 @@ export default function Home() {
         </div>
         <div className="home-stories__copy">
           <p>
-            Read signed blogs from the Press Club and anonymous, moderated Tea
-            from students—all together on the live Stories page.
+            Read signed blogs from the Press Club, or head to Campus Tea for
+            anonymous posts reviewed before publication.
           </p>
-          <Link className="studio-link" href="/Stories">
-            Open Stories <span aria-hidden="true">→</span>
-          </Link>
+          <div className="home-stories__actions">
+            <Link className="studio-link" href="/Blog">
+              Read the blog <span aria-hidden="true">→</span>
+            </Link>
+            <Link className="studio-link" href="/Tea">
+              Open Campus Tea <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </div>
       </section>
 

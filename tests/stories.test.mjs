@@ -4,7 +4,7 @@ import test from "node:test";
 import { previewStoryText } from "../src/lib/stories.ts";
 
 const migrationUrl = new URL("../supabase/migrations/20261022051830_add_blog_posts.sql", import.meta.url);
-const pageUrl = new URL("../src/app/Stories/page.tsx", import.meta.url);
+const pageUrl = new URL("../src/app/Blog/page.tsx", import.meta.url);
 
 test("blog publishing exposes only approved, non-future stories", async () => {
   const migration = await readFile(migrationUrl, "utf8");
@@ -15,10 +15,10 @@ test("blog publishing exposes only approved, non-future stories", async () => {
   assert.doesNotMatch(migration, /grant (insert|update|delete|all).*anon/i);
 });
 
-test("the public Stories feed never selects original Tea submissions", async () => {
+test("the public Blog page only selects approved blog fields", async () => {
   const page = await readFile(pageUrl, "utf8");
 
-  assert.match(page, /edited_title,edited_body,published_at/);
+  assert.match(page, /id,slug,title,excerpt,author,published_at/);
   assert.doesNotMatch(page, /submitted_title|submitted_body/);
   assert.match(page, /\.eq\("status", "published"\)/);
 });

@@ -11,7 +11,8 @@ export default function Navbar() {
         <Link href="/">Home</Link>
         <Link href="/NNN">NNN</Link>
         <Link href="/Entelechy">Entelechy</Link>
-        <Link href="/Stories">Stories</Link>
+        <Link href="/Blog">Blog</Link>
+        {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
       </nav>
 
       <p className="site-rail__seal" aria-hidden="true">DAU</p>
@@ -22,7 +23,8 @@ export default function Navbar() {
           <Link href="/">Home</Link>
           <Link href="/NNN">NNN</Link>
           <Link href="/Entelechy">Entelechy</Link>
-          <Link href="/Stories">Stories</Link>
+          <Link href="/Blog">Blog</Link>
+          {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
         </nav>
       </details>
     </header>
