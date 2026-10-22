@@ -13,6 +13,7 @@ export default function Footer() {
           <Link href="/NNN">NNN</Link>
           <Link href="/Entelechy">Entelechy</Link>
           <Link href="/Blog">Blog</Link>
+          <Link href="/Media-Consent">Media consent</Link>
           {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
         </nav>
       </div>
