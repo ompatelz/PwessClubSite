@@ -11,6 +11,12 @@ npm run dev
 
 For a production check, run `npm run lint`, `npx tsc --noEmit`, and `npm run build`. The build downloads the site's Google Fonts, so it requires network access to Google Fonts.
 
+## Live content test
+
+`npm run test:e2e:content` exercises the complete Blog and Tea publishing paths against an explicitly selected deployment. It creates uniquely named temporary rows, checks draft privacy and public rendering, publishes and unpublishes Tea through the real moderation API, and removes the test rows in a `finally` cleanup.
+
+Set `E2E_BASE_URL`, the production Supabase and Tea reviewer variables, and `E2E_ALLOW_PRODUCTION=true` when testing a remote deployment. The production opt-in is intentional: this test briefly publishes clearly labelled test content. Never commit the environment file or service-role credentials.
+
 ## Deployment configuration
 
 The home page needs no environment variables. The NNN and Entelechy archive pages read their public edition lists from Supabase when these variables are set:
