@@ -20,7 +20,7 @@ The home page needs no environment variables. The NNN and Entelechy archive page
 | `NEXT_PUBLIC_SUPABASE_URL` | URL of the Supabase project containing the publication tables |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Publishable key for reading the public archive |
 
-The expected tables are `NNN` and `Entelechy`; their rows and public storage objects must exist for the archive and reader pages to work. If Supabase is not configured, the site stays available and shows a setup message on the archive pages.
+The expected tables and public PDF-only storage buckets are `NNN` and `Entelechy`. Their schema and read-only RLS policies are defined in `supabase/migrations/20261022044134_publication_archives.sql`. Archive rows and matching storage objects must exist for the reader pages to work. If Supabase is not configured, the site stays available and shows a setup message on the archive pages.
 
 The August NNN email form is **off by default** while delivery is being set up. After the [Gmail gateway setup](docs/nnn-email-setup.md) is complete and a test email arrives, set `NNN_EMAIL_ENABLED=true` in Vercel Production and redeploy to show the form. Keep the gateway URL and secret server-side; never prefix them with `NEXT_PUBLIC_`.
 
