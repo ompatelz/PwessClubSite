@@ -7,7 +7,7 @@ export const reviewerSessionSeconds = 4 * 60 * 60;
 function authKey() {
   const secret = process.env.TEA_SESSION_SECRET;
   const password = process.env.TEA_REVIEW_PASSWORD;
-  if (!secret || secret.length < 32 || !password || password.length < 12) return null;
+  if (!secret || !password) return null;
   return createHash("sha256").update(secret).update("\0").update(password).digest();
 }
 
