@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · The Press Club",
   },
   description:
-    "The Press Club at DAU — home of the monthly NNN newspaper and Entelechy magazine.",
+    "The Press Club at DAU — NNN, Entelechy, signed campus stories, and moderated anonymous Tea.",
 };
 
 export default function RootLayout({

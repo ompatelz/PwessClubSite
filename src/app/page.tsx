@@ -6,10 +6,10 @@ export default function Home() {
     <main id="main-content" className="site-main home-page">
       <section className="studio-hero" aria-labelledby="home-title">
         <div className="studio-hero__copy">
-          <h1 id="home-title">Two ways to read the campus.</h1>
+          <h1 id="home-title">A campus, read at every speed.</h1>
           <p>
             The Press Club at DAU publishes the quick pulse and the long view:
-            a monthly newspaper and a flagship college magazine.
+            current stories, anonymous Tea, a monthly newspaper, and a flagship magazine.
           </p>
         </div>
         <div className="studio-hero__proof" aria-label="Our two publications">
@@ -52,6 +52,22 @@ export default function Home() {
             </Link>
           </div>
         </article>
+      </section>
+
+      <section className="home-stories" aria-labelledby="home-stories-title">
+        <div>
+          <p className="publication-studio__cadence">Between editions</p>
+          <h2 id="home-stories-title">The campus keeps talking.</h2>
+        </div>
+        <div className="home-stories__copy">
+          <p>
+            Read signed blogs from the Press Club and anonymous, moderated Tea
+            from students—all together on the live Stories page.
+          </p>
+          <Link className="studio-link" href="/Stories">
+            Open Stories <span aria-hidden="true">→</span>
+          </Link>
+        </div>
       </section>
 
       <section className="club-note" aria-labelledby="club-note-title">
