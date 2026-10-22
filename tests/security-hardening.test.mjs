@@ -45,6 +45,20 @@ test("durable limiter and published-only Tea policy are migration-backed", async
   assert.match(migration, /status = 'published' and published_at <= now\(\)/i);
 });
 
+test("rate-limit upsert avoids the rate_key parameter collision", async () => {
+  const migration = await readFile(
+    new URL(
+      "../supabase/migrations/20261022164222_fix_rate_limit_parameter_collision.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+
+  assert.match(migration, /on conflict on constraint request_rate_limits_pkey/i);
+  assert.match(migration, /set search_path = ''/i);
+  assert.doesNotMatch(migration, /on conflict \(rate_key\)/i);
+});
+
 test("public archive queries select explicit fields", async () => {
   const paths = [
     "../src/app/NNN/page.tsx",
