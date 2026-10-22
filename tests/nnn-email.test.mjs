@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { POST } from "../src/app/api/nnn/request/route.ts";
 
@@ -55,4 +56,16 @@ test("email API validates malformed JSON", async () => {
     const response = await POST(request("{"));
     assert.equal(response.status, 400);
   });
+});
+
+test("email API uses Brevo without an Apps Script gateway", async () => {
+  const source = await readFile(
+    new URL("../src/app/api/nnn/request/route.ts", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /https:\/\/api\.brevo\.com\/v3\/smtp\/email/);
+  assert.match(source, /process\.env\.BREVO_API_KEY/);
+  assert.match(source, /attachment:/);
+  assert.doesNotMatch(source, /script\.google\.com|NNN_GMAIL_SCRIPT/);
 });
