@@ -8,6 +8,7 @@ const issue = {
 
 const cooldown = new Map<string, number>();
 const cooldownMs = 5 * 60 * 1000;
+const maxRequestBytes = 1024;
 
 function json(message: string, status: number, code?: string) {
   return Response.json(
@@ -17,18 +18,25 @@ function json(message: string, status: number, code?: string) {
 }
 
 export async function POST(request: Request) {
-  const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) {
+  if (process.env.NNN_EMAIL_ENABLED !== "true") {
+    return json("Email delivery is not available yet.", 503, "email_disabled");
+  }
+
+  if (request.headers.get("origin") !== new URL(request.url).origin) {
     return json("Request rejected.", 403);
   }
 
-  if (Number(request.headers.get("content-length") ?? 0) > 1024) {
+  if (Number(request.headers.get("content-length") ?? 0) > maxRequestBytes) {
     return json("Request too large.", 413);
   }
 
   let submitted: unknown;
   try {
-    submitted = await request.json();
+    const body = await request.text();
+    if (new TextEncoder().encode(body).byteLength > maxRequestBytes) {
+      return json("Request too large.", 413);
+    }
+    submitted = JSON.parse(body);
   } catch {
     return json("Enter a DAU email address.", 400);
   }

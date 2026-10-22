@@ -16,12 +16,23 @@ export type TeaPost = {
 
 export const teaEnabled = () => process.env.TEA_ENABLED === "true";
 
-export function getTeaDb(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
-  const key = process.env.TEA_SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
+export function getTeaCredentials() {
+  const explicitUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const explicitKey = process.env.TEA_SUPABASE_SERVICE_ROLE_KEY;
+  if (explicitUrl && explicitKey) return { url: explicitUrl, key: explicitKey };
 
-  return createClient(url, key, {
+  const integrationUrl = process.env.SUPABASE_URL;
+  const integrationKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (integrationUrl && integrationKey) return { url: integrationUrl, key: integrationKey };
+
+  return null;
+}
+
+export function getTeaDb(): SupabaseClient | null {
+  const credentials = getTeaCredentials();
+  if (!credentials) return null;
+
+  return createClient(credentials.url, credentials.key, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }

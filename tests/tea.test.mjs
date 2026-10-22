@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createReviewerSession, passwordMatches, validReviewerSession } from "../src/lib/tea-auth.ts";
-import { cleanPost, getTeaDb, sameOrigin } from "../src/lib/tea.ts";
+import { cleanPost, getTeaCredentials, getTeaDb, sameOrigin } from "../src/lib/tea.ts";
 
 test("review desk accepts server-only Supabase integration credentials", () => {
   const names = [
     "NEXT_PUBLIC_SUPABASE_URL",
     "TEA_SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL",
+    "SUPABASE_SECRET_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
   ];
   const previous = Object.fromEntries(names.map((name) => [name, process.env[name]]));
@@ -15,8 +16,23 @@ test("review desk accepts server-only Supabase integration credentials", () => {
     for (const name of names) delete process.env[name];
     assert.equal(getTeaDb(), null);
     process.env.SUPABASE_URL = "https://example.supabase.co";
-    process.env.SUPABASE_SERVICE_ROLE_KEY = "server-only-test-key";
+    process.env.SUPABASE_SECRET_KEY = "server-only-test-key";
     assert.ok(getTeaDb());
+
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://legacy.supabase.co";
+    assert.deepEqual(getTeaCredentials(), {
+      url: "https://example.supabase.co",
+      key: "server-only-test-key",
+    });
+
+    delete process.env.SUPABASE_URL;
+    assert.equal(getTeaCredentials(), null, "never mix a legacy URL with an integration key");
+
+    process.env.TEA_SUPABASE_SERVICE_ROLE_KEY = "legacy-service-role-key";
+    assert.deepEqual(getTeaCredentials(), {
+      url: "https://legacy.supabase.co",
+      key: "legacy-service-role-key",
+    });
   } finally {
     for (const name of names) {
       if (previous[name] === undefined) delete process.env[name];
