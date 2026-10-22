@@ -13,32 +13,18 @@ export default function Home() {
           </p>
         </div>
         <div className="studio-hero__proof" aria-label="Our two publications">
-          <Link href="/NNN">
-            <span>Monthly</span>
-            <strong>NNN</strong>
-          </Link>
           <Link href="/Entelechy">
             <span>Flagship</span>
             <strong>Entelechy</strong>
+          </Link>
+          <Link href="/NNN">
+            <span>Monthly</span>
+            <strong>NNN</strong>
           </Link>
         </div>
       </section>
 
       <section className="publication-studios" aria-label="Press Club publications">
-        <article className="publication-studio publication-studio--nnn">
-          <div className="publication-studio__poster" aria-hidden="true">
-            <span>N</span><span>N</span><span>N</span>
-          </div>
-          <div className="publication-studio__copy">
-            <p className="publication-studio__cadence">Every month</p>
-            <h2>News and Nonsense</h2>
-            <p>Campus news, observations, and everything between the serious and the strange.</p>
-            <Link className="studio-link" href="/NNN">
-              Read NNN <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
-        </article>
-
         <article className="publication-studio publication-studio--entelechy">
           <div className="publication-studio__poster" aria-hidden="true">
             <span>EN</span><span>TE</span><span>LECHY</span>
@@ -49,6 +35,20 @@ export default function Home() {
             <p>Long-form writing and creative work, gathered into the college magazine.</p>
             <Link className="studio-link" href="/Entelechy">
               Read Entelechy <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+        </article>
+
+        <article className="publication-studio publication-studio--nnn">
+          <div className="publication-studio__poster" aria-hidden="true">
+            <span>N</span><span>N</span><span>N</span>
+          </div>
+          <div className="publication-studio__copy">
+            <p className="publication-studio__cadence">Every month</p>
+            <h2>News and Nonsense</h2>
+            <p>Campus news, observations, and everything between the serious and the strange.</p>
+            <Link className="studio-link" href="/NNN">
+              Read NNN <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </article>
@@ -78,8 +78,8 @@ export default function Home() {
       <section className="club-note" aria-labelledby="club-note-title">
         <h2 id="club-note-title">Made on campus. Kept in print.</h2>
         <p>
-          One newsroom works at two speeds. NNN follows the month; Entelechy
-          pauses long enough to preserve the work worth returning to.
+          One newsroom works at two speeds. Entelechy preserves the work worth
+          returning to; NNN follows the month as campus life unfolds.
         </p>
       </section>
     </main>

@@ -12,7 +12,7 @@ DAU students and the wider campus community use the site to read Press Club publ
 
 ## Product Purpose
 
-The Press Club website is DAU's public home for NNN, Entelechy, signed online stories, and moderated anonymous campus conversation. Success means readers can quickly distinguish these formats, find current and archived work, and understand who is accountable for each kind of writing.
+The Press Club website is DAU's public home for its flagship Entelechy magazine, NNN, signed online stories, and moderated anonymous campus conversation. Success means readers can quickly distinguish these formats, find current and archived work, and understand who is accountable for each kind of writing.
 
 ## Positioning
 
@@ -24,7 +24,7 @@ Readers browse the public site without an account. Tea submissions go to a priva
 
 ## Capabilities and Constraints
 
-- NNN and Entelechy are PDF publication archives.
+- Entelechy and NNN are PDF publication archives, with Entelechy treated as the flagship throughout the interface.
 - Blogs are signed Press Club stories with a public index and individual reading pages.
 - Tea is anonymous, but every submission must be reviewed before it becomes public.
 - Service credentials remain server-only; public database reads are limited with row-level security.
@@ -36,7 +36,7 @@ The product name is The Press Club at Dhirubhai Ambani University. Existing copy
 
 ## Evidence on Hand
 
-The repository contains the live Next.js site, a working Tea moderation flow, NNN and Entelechy archive foundations, and one unapproved NNN PDF. No authentic blog posts or Entelechy PDFs have been supplied, so empty states must remain honest.
+The repository contains the live Next.js site, a working Tea moderation flow, Entelechy and NNN archive foundations, one published authentic Entelechy edition, and one unapproved NNN PDF. Clearly labelled test drafts exist only to exercise the Blog and Tea editorial workflows; they are not authentic campus reporting.
 
 ## Product Principles
 
