@@ -9,8 +9,8 @@ export default function Navbar() {
 
       <nav className="site-rail__nav" aria-label="Primary navigation">
         <Link href="/">Home</Link>
-        <Link href="/NNN">NNN</Link>
         <Link href="/Entelechy">Entelechy</Link>
+        <Link href="/NNN">NNN</Link>
         <Link href="/Blog">Blog</Link>
         {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
       </nav>
@@ -21,8 +21,8 @@ export default function Navbar() {
         <summary>Menu</summary>
         <nav aria-label="Mobile navigation">
           <Link href="/">Home</Link>
-          <Link href="/NNN">NNN</Link>
           <Link href="/Entelechy">Entelechy</Link>
+          <Link href="/NNN">NNN</Link>
           <Link href="/Blog">Blog</Link>
           {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
         </nav>

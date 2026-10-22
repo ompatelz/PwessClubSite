@@ -10,8 +10,8 @@ export default function Footer() {
       <div className="site-footer__meta">
         <span>Dhirubhai Ambani University</span>
         <nav aria-label="Footer navigation">
-          <Link href="/NNN">NNN</Link>
           <Link href="/Entelechy">Entelechy</Link>
+          <Link href="/NNN">NNN</Link>
           <Link href="/Blog">Blog</Link>
           <Link href="/Media-Consent">Media consent</Link>
           {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
