@@ -1987,6 +1987,12 @@ body {
   font-size: var(--text-display);
 }
 
+.reader-header--document h1 {
+  max-width: 18ch;
+  overflow-wrap: normal;
+  font-size: clamp(var(--text-2xl), 5vw, 4.5rem);
+}
+
 .archive-header > p:last-child,
 .reader-header p {
   max-width: 62ch;

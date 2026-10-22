@@ -13,7 +13,7 @@ const documentUrl = "/documents/media-consent-agreement.pdf";
 export default function MediaConsentPage() {
   return (
     <main id="main-content" className="site-main reader-page">
-      <header className="reader-header">
+      <header className="reader-header reader-header--document">
         <Link className="type-link" href="/">
           <span aria-hidden="true">←</span> Press Club home
         </Link>

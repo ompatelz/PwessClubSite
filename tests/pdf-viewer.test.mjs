@@ -30,6 +30,7 @@ test("the media consent agreement has a dedicated reader page", async () => {
   const page = await readFile(mediaConsentUrl, "utf8");
 
   assert.match(page, /title: "Media Consent & Editorial Independence Agreement"/);
+  assert.match(page, /reader-header reader-header--document/);
   assert.match(page, /const documentUrl = "\/documents\/media-consent-agreement\.pdf"/);
   assert.match(page, /<PDFWrapper url=\{documentUrl\}/);
 });
