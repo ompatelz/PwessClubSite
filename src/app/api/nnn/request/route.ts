@@ -52,43 +52,42 @@ export async function POST(request: Request) {
     return json("An issue was recently requested. Please wait and try again.", 429);
   }
 
-  const gatewayUrl = process.env.NNN_GMAIL_SCRIPT_URL;
-  const gatewaySecret = process.env.NNN_GMAIL_SCRIPT_SECRET;
-  if (!gatewayUrl || !gatewaySecret) {
-    console.error("NNN email: Gmail script URL or secret is missing");
-    return json("Email delivery is being set up. Please try again later.", 503);
-  }
-
-  let destination: URL;
-  try {
-    destination = new URL(gatewayUrl);
-  } catch {
-    return json("Email delivery is being set up. Please try again later.", 503);
-  }
-  if (destination.protocol !== "https:" || destination.hostname !== "script.google.com") {
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderEmail = process.env.BREVO_SENDER_EMAIL?.trim().toLowerCase();
+  if (!apiKey || !senderEmail || !/^[a-z0-9._%+-]+@dau\.ac\.in$/.test(senderEmail)) {
+    console.error("NNN email: Brevo API key or DAU sender is missing");
     return json("Email delivery is being set up. Please try again later.", 503);
   }
 
   try {
     const pdf = await readFile(issuePath);
-    const response = await fetch(destination, {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        "Content-Type": "text/plain;charset=utf-8",
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "api-key": apiKey,
       },
       body: JSON.stringify({
-        secret: gatewaySecret,
-        email,
-        pdfBase64: pdf.toString("base64"),
+        sender: { name: "The Press Club", email: senderEmail },
+        replyTo: { name: "The Press Club", email: senderEmail },
+        to: [{ email }],
+        subject: "News and Nonsense — August 2026, Part 1",
+        textContent: "Here is your copy of News and Nonsense, August 2026 Part 1.\n\nThe Press Club at DAU",
+        attachment: [{
+          name: "NNN-August-2026-Part-1.pdf",
+          content: pdf.toString("base64"),
+        }],
+        tags: ["nnn-august-2026-part-1"],
       }),
       signal: AbortSignal.timeout(30000),
     });
 
     const result = (await response.json().catch(() => null)) as
-      | { ok?: boolean; error?: string }
+      | { messageId?: string; code?: string }
       | null;
-    if (!response.ok || result?.ok !== true) {
-      console.error("NNN Gmail script returned", response.status, result?.error);
+    if (!response.ok || !result?.messageId) {
+      console.error("NNN Brevo API returned", response.status, result?.code);
       return json(
         "We couldn't send the issue right now. Please try again later.",
         502,
@@ -97,7 +96,7 @@ export async function POST(request: Request) {
     }
     return json("The August issue is on its way to your DAU inbox.", 200);
   } catch (error) {
-    console.error("NNN email send failed", error);
+    console.error("NNN Brevo request failed", error instanceof Error ? error.name : "request_error");
     return json("We couldn't send the issue right now. Please try again later.", 502, "gateway_request_failed");
   }
 }

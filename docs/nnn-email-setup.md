@@ -1,23 +1,41 @@
-# NNN email delivery through Press Club Gmail
+# NNN email delivery through Brevo
 
-The NNN page offers the supplied **August 2026, Part 1** test issue by email. The PDF is stored at `issues/nnn/august-2026-part-1.pdf`. The website checks that recipients use `@dau.ac.in`, and a Google Apps Script owned by `pressclub@dau.ac.in` sends the attached PDF. The script also checks the recipient domain, the PDF's SHA-256 hash, and a shared secret kept on the server.
+The NNN request form sends the supplied **August 2026, Part 1** issue only to
+addresses ending in `@dau.ac.in`. The PDF is bundled server-side at
+`issues/nnn/august-2026-part-1.pdf`; it is never supplied by the browser.
 
-## One-time Press Club account setup
+Brevo replaces the previous Google Apps Script gateway. Recipients do not sign
+in and no Google OAuth flow is involved. The website calls Brevo's transactional
+email API directly with a server-only API key and attaches the PDF as base64.
 
-1. Sign in as `pressclub@dau.ac.in` and create a project at [Google Apps Script](https://script.google.com/home/projects/create). Confirm the avatar shows the Press Club account.
-2. Replace the starter code with `integrations/apps-script/Code.gs` from this repository and save it. Name the project `Press Club NNN Mailer`.
-3. Select the `initializeSecret` function in the editor and click **Run**. It creates a random `NNN_GMAIL_SCRIPT_SECRET` under **Project Settings → Script properties**. Copy that property value directly into Vercel later; do not paste it into chat or the repository.
-4. Select the `authorize` function in the editor and click **Run**. Review and grant the requested Gmail permission while signed in as the Press Club account.
-5. Select **Deploy → New deployment → Web app**. Set **Execute as** to **Me** and **Who has access** to **Anyone**, then deploy. If the DAU Workspace policy blocks that access setting, ask the Workspace administrator to permit this web app. Copy the URL ending in `/exec`.
-6. In the Vercel `pwess-club-site` project, set **Production** server-side variables `NNN_GMAIL_SCRIPT_URL` to that `/exec` URL and `NNN_GMAIL_SCRIPT_SECRET` to the value copied from Script properties. Mark the secret as sensitive. Redeploy after changing variables.
-7. Open `/NNN`, submit a DAU address, and confirm the August PDF arrives from the Press Club Gmail account.
+## One-time setup
 
-Both the request form and its API route remain disabled until `NNN_EMAIL_ENABLED=true` is set for the Vercel Production environment and the site is redeployed. Keep that flag unset while Gmail authorization or delivery testing is incomplete. Before enabling it, add a Vercel firewall rate limit for `/api/nnn/request`; the in-memory website cooldown and Apps Script cache are only secondary safeguards and are not durable across all instances or recipients.
+1. Create a Brevo account at <https://www.brevo.com/>.
+2. Under **Settings → Senders, Domains & Dedicated IPs → Senders**, add
+   `pressclub@dau.ac.in` as a sender. Brevo sends a six-digit verification code
+   to that inbox; enter it once to verify the sender.
+3. Under **SMTP & API → API Keys**, generate an API key named
+   `Press Club NNN website`.
+4. In the Vercel `pwess-club-site` project, add these **Production** variables:
+   - `BREVO_API_KEY`: the generated API key, marked sensitive.
+   - `BREVO_SENDER_EMAIL`: `pressclub@dau.ac.in`.
+5. Redeploy, submit one DAU test address, and confirm the PDF arrives.
+6. Only after the delivery test succeeds, set `NNN_EMAIL_ENABLED=true` in
+   Production and redeploy.
 
-Do not prefix these variables with `NEXT_PUBLIC_`. The existing Supabase connection supplies the archive list; it is not used to send mail. The PDF is bundled with the website's server route.
+If the DAU domain is not authenticated with Brevo DNS records, Brevo may rewrite
+the visible From domain to a Brevo-managed domain for deliverability. Replies
+still use the verified DAU sender. DNS authentication can be added later with
+the university administrator; it is not required for the website integration.
 
-## Changing the test issue
+The endpoint also enforces same-origin requests, actual request-size limits,
+`@dau.ac.in` recipient validation, and a durable per-address/IP rate limit in
+Supabase. Keep the API key server-only and never prefix it with `NEXT_PUBLIC_`.
 
-When a new PDF is ready, add it under `issues/nnn/`. Update its path in `src/app/api/nnn/request/route.ts`, the form copy in `src/Components/NNNEmailRequest.tsx`, and the subject, filename, body, and SHA-256 hash in `integrations/apps-script/Code.gs`. Redeploy both the Apps Script and website. The archive's Supabase `NNN` record is separate and can be updated on its normal schedule.
+Brevo API reference: <https://developers.brevo.com/reference/send-transac-email>
 
-Both the website and Apps Script apply a five-minute, per-address cooldown in their own caches. These are basic guards for a test, not a persistent global rate limit. Add durable abuse protection before a broad launch.
+## Changing the issue
+
+For a new issue, add the PDF under `issues/nnn/`, then update the path, subject,
+attachment name, body copy, and tag in `src/app/api/nnn/request/route.ts`. Update
+the request-form copy if the edition name changes, then redeploy the website.
