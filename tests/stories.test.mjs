@@ -58,8 +58,10 @@ test("Blog and Tea expose newest and older sections from publication time", asyn
 
   for (const page of [blogPage, teaPage]) {
     assert.match(page, /partitionPostsByAge/);
-    assert.match(page, />Newest</);
     assert.match(page, />Older posts</);
     assert.match(page, /\.lte\("published_at", now\.toISOString\(\)\)/);
   }
+
+  assert.match(blogPage, /posts\.length > 0 \? "Newest"/);
+  assert.match(teaPage, />Newest</);
 });

@@ -19,3 +19,15 @@ test("Entelechy precedes NNN across primary publication navigation", async () =>
     assert.ok(entelechy < nnn, `${path} should present Entelechy before NNN`);
   }
 });
+
+test("navigation exposes current-page state and publication grouping", async () => {
+  const [navbar, activeLink] = await Promise.all([
+    readFile(new URL("../src/Components/Navbar.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/Components/ActiveNavLink.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(navbar, /aria-label="Publications"/);
+  assert.match(navbar, /aria-label="Between editions"/);
+  assert.match(activeLink, /aria-current/);
+  assert.match(activeLink, /usePathname/);
+});
