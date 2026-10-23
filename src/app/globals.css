@@ -2634,3 +2634,37 @@ body {
     transform: none !important;
   }
 }
+
+/* Final responsive overrides must follow the legacy compatibility layer above. */
+
+.tea-form {
+  order: 0;
+}
+
+@media (max-width: 47.99rem) {
+  .blog-header {
+    min-height: auto;
+    padding-block: var(--space-2xl);
+  }
+
+  .publication-studio__poster {
+    min-height: 13rem;
+  }
+
+  .publication-studio--entelechy .publication-studio__poster {
+    font-size: clamp(3.25rem, 18vw, 6rem);
+  }
+
+  .publication-studio--nnn .publication-studio__poster {
+    font-size: clamp(5rem, 25vw, 8rem);
+  }
+
+  .pdf-toolbar {
+    align-items: stretch;
+  }
+
+  .pdf-toolbar__group {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
