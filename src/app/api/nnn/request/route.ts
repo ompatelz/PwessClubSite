@@ -2,10 +2,11 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getTeaDb } from "../../../../lib/tea.ts";
 import { consumeRateLimit, readJsonBody } from "../../../../lib/request-security.ts";
+import { NNN_EMAIL_ISSUE } from "../../../../lib/nnn-email-issue.ts";
 
 export const runtime = "nodejs";
 
-const issuePath = join(process.cwd(), "issues", "nnn", "august-2026-part-1.pdf");
+const issuePath = join(process.cwd(), ...NNN_EMAIL_ISSUE.relativePath);
 
 const maxRequestBytes = 1024;
 
@@ -72,13 +73,13 @@ export async function POST(request: Request) {
         sender: { name: "The Press Club", email: senderEmail },
         replyTo: { name: "The Press Club", email: senderEmail },
         to: [{ email }],
-        subject: "News and Nonsense — August 2026, Part 1",
-        textContent: "Here is your copy of News and Nonsense, August 2026 Part 1.\n\nThe Press Club at DAU",
+        subject: NNN_EMAIL_ISSUE.subject,
+        textContent: `Here is your copy of News and Nonsense, ${NNN_EMAIL_ISSUE.label}.\n\nThe Press Club at DAU`,
         attachment: [{
-          name: "NNN-August-2026-Part-1.pdf",
+          name: NNN_EMAIL_ISSUE.filename,
           content: pdf.toString("base64"),
         }],
-        tags: ["nnn-august-2026-part-1"],
+        tags: [NNN_EMAIL_ISSUE.tag],
       }),
       signal: AbortSignal.timeout(30000),
     });
@@ -94,7 +95,7 @@ export async function POST(request: Request) {
         "delivery_failed",
       );
     }
-    return json("The August issue is on its way to your DAU inbox.", 200);
+    return json(`${NNN_EMAIL_ISSUE.label} is on its way to your DAU inbox.`, 200);
   } catch (error) {
     console.error("NNN Brevo request failed", error instanceof Error ? error.name : "request_error");
     return json("We couldn't send the issue right now. Please try again later.", 502, "gateway_request_failed");

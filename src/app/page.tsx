@@ -76,11 +76,11 @@ export default function Home() {
       </section>
 
       <section className="club-note" aria-labelledby="club-note-title">
-        <h2 id="club-note-title">Made on campus. Kept in print.</h2>
-        <p>
-          One newsroom works at two speeds. Entelechy preserves the work worth
-          returning to; NNN follows the month as campus life unfolds.
-        </p>
+        <div>
+          <h2 id="club-note-title">Made on campus. Kept in print.</h2>
+          <Link className="studio-link" href="/Editorial">How we publish <span aria-hidden="true">→</span></Link>
+        </div>
+        <p>One newsroom works at two speeds. Entelechy preserves the work worth returning to; NNN follows the month as campus life unfolds.</p>
       </section>
     </main>
   );

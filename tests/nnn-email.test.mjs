@@ -59,13 +59,15 @@ test("email API validates malformed JSON", async () => {
 });
 
 test("email API uses Brevo without an Apps Script gateway", async () => {
-  const source = await readFile(
-    new URL("../src/app/api/nnn/request/route.ts", import.meta.url),
-    "utf8",
-  );
+  const [source, issue] = await Promise.all([
+    readFile(new URL("../src/app/api/nnn/request/route.ts", import.meta.url), "utf8"),
+    readFile(new URL("../src/lib/nnn-email-issue.ts", import.meta.url), "utf8"),
+  ]);
 
   assert.match(source, /https:\/\/api\.brevo\.com\/v3\/smtp\/email/);
   assert.match(source, /process\.env\.BREVO_API_KEY/);
   assert.match(source, /attachment:/);
+  assert.match(source, /NNN_EMAIL_ISSUE/);
+  assert.match(issue, /August 2026, Part 1/);
   assert.doesNotMatch(source, /script\.google\.com|NNN_GMAIL_SCRIPT/);
 });

@@ -13,8 +13,10 @@ export default function Footer() {
           <Link href="/Entelechy">Entelechy</Link>
           <Link href="/NNN">NNN</Link>
           <Link href="/Blog">Blog</Link>
+          <Link href="/Editorial">How we publish</Link>
           <Link href="/Media-Consent">Media consent</Link>
           {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
+          {process.env.TEA_ENABLED === "true" && <Link href="/press-club">Staff desk</Link>}
         </nav>
       </div>
     </footer>

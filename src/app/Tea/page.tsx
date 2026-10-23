@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import TeaSubmissionForm from "@/Components/TeaSubmissionForm";
 import { teaEnabled, type TeaPost } from "@/lib/tea";
@@ -44,7 +43,7 @@ export default async function TeaPage() {
       <header className="tea-header">
         <h1>Campus tea.</h1>
         <p>Anonymous posts from around DAU. Every submission reaches the Press Club review desk before it can appear here.</p>
-        <Link className="tea-header__login" href="/press-club">Press Club login <span aria-hidden="true">↗</span></Link>
+        <a className="tea-header__login" href="#submit-tea">Submit Tea <span aria-hidden="true">↓</span></a>
       </header>
 
       <div className="tea-page__columns">

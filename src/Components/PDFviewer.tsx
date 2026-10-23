@@ -63,8 +63,8 @@ export default function PDFviewer(
             disabled={zoom >= maxZoom}>
             Zoom in
           </button>
-          <button type="button" onClick={() => setZoom(1)} disabled={zoom === 1}>
-            Fit width
+          <button type="button" onClick={() => setZoom(1)} disabled={zoom === 1} aria-pressed={zoom === 1}>
+            {zoom === 1 ? "Fit width · active" : "Fit width"}
           </button>
         </div>
 

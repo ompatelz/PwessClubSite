@@ -55,23 +55,29 @@ export default async function BlogPage() {
       </header>
 
       <section className="story-stream story-stream--blogs" aria-labelledby="latest-blogs-title">
+        <div className="story-stream__heading blog-stream__heading">
+          <h2 id="latest-blogs-title">{posts.length > 0 ? "Newest" : "From the blog desk"}</h2>
+          <p>Signed reporting and writing lives here; anonymous submissions belong in Campus Tea.</p>
+        </div>
         {result.error ? (
           <div className="story-empty">
             <strong>The blog desk is temporarily unavailable.</strong>
-            <span>Please check back soon.</span>
+            <span>Please check back soon, or read the current Entelechy edition while the desk reconnects.</span>
+            <Link className="story-stream__cta" href="/Entelechy">Read Entelechy</Link>
           </div>
         ) : posts.length === 0 ? (
           <div className="story-empty">
             <strong>The first blog is still on the desk.</strong>
-            <span>Signed Press Club stories will appear here when they are published.</span>
+            <span>When the first signed story is published, it will appear here with its writer and date. Until then, read the flagship magazine or visit Campus Tea.</span>
+            <div className="story-empty__actions">
+              <Link className="story-stream__cta" href="/Entelechy">Read Entelechy</Link>
+              <Link className="story-stream__cta" href="/Tea">Open Campus Tea</Link>
+            </div>
           </div>
         ) : (
           <>
             <section className="post-age-group" aria-labelledby="latest-blogs-title">
-              <div className="story-stream__heading blog-stream__heading">
-                <h2 id="latest-blogs-title">Newest</h2>
-                <p>Published in the past seven days. Every article carries its writer&apos;s name and publication date.</p>
-              </div>
+              <p className="post-age-group__context">Published in the past seven days. Every article carries its writer&apos;s name and publication date.</p>
               {newest.length > 0
                 ? renderPosts(newest, true)
                 : <p className="post-age-group__empty">No posts were published in the past week.</p>}

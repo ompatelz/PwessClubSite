@@ -34,7 +34,7 @@ export default function TeaSubmissionForm({ available }: { available: boolean })
   }
 
   return (
-    <form className="tea-form" onSubmit={submit}>
+    <form id="submit-tea" className="tea-form" onSubmit={submit}>
       <div className="tea-form__intro">
         <h2>Send something in</h2>
         <p>No account or display name. Your words go to the Press Club review desk before anything appears here. Leave out details that identify you if you want to stay anonymous.</p>
@@ -43,15 +43,17 @@ export default function TeaSubmissionForm({ available }: { available: boolean })
       <fieldset disabled={!available} className="tea-form__fields">
       <label htmlFor="tea-title">A title for your post</label>
       <input id="tea-title" name="title" value={title} onChange={(event) => setTitle(event.target.value)}
-        minLength={4} maxLength={120} required placeholder="What’s the story?" />
+        minLength={4} maxLength={120} required placeholder="What’s the story?" aria-describedby="tea-title-count" />
+      <span id="tea-title-count" className="tea-form__count" aria-live="polite">{title.length} / 120</span>
       <label htmlFor="tea-body">Your post</label>
       <textarea id="tea-body" name="body" value={body} onChange={(event) => setBody(event.target.value)}
-        minLength={20} maxLength={5000} required rows={8} placeholder="Write it in your own words…" />
+        minLength={20} maxLength={5000} required rows={8} placeholder="Write it in your own words…" aria-describedby="tea-body-count" />
+      <span id="tea-body-count" className="tea-form__count" aria-live="polite">{body.length} / 5000</span>
       <label className="tea-form__agreement">
         <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
         <span>I understand the Press Club may edit this before deciding whether to publish it.</span>
       </label>
-      <button type="submit" disabled={busy}>{busy ? "Sending…" : "Request a post"}</button>
+      <button type="submit" disabled={busy}>{busy ? "Sending for review…" : "Submit for review"}</button>
       </fieldset>
       {notice && <p className="tea-form__notice" role="status">{notice}</p>}
     </form>

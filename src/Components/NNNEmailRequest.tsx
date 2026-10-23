@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { NNN_EMAIL_ISSUE } from "@/lib/nnn-email-issue";
 
 export default function NNNEmailRequest() {
   const [email, setEmail] = useState("");
@@ -36,8 +37,8 @@ export default function NNNEmailRequest() {
   return (
     <section className="nnn-email" aria-labelledby="nnn-email-title">
       <div>
-        <h2 id="nnn-email-title">Get August’s NNN in your inbox.</h2>
-        <p>Enter your DAU email and we’ll send the August 2026 Part 1 PDF there.</p>
+        <h2 id="nnn-email-title">Request the available NNN issue.</h2>
+        <p>Enter your DAU email and we’ll send the {NNN_EMAIL_ISSUE.label} reading copy. The label updates from the same issue record used by delivery.</p>
       </div>
       <form onSubmit={submit}>
         <label htmlFor="nnn-email-address">DAU email address</label>

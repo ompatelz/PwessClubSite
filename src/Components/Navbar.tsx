@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ActiveNavLink from "./ActiveNavLink";
 
 export default function Navbar() {
   return (
@@ -8,11 +9,15 @@ export default function Navbar() {
       </Link>
 
       <nav className="site-rail__nav" aria-label="Primary navigation">
-        <Link href="/">Home</Link>
-        <Link href="/Entelechy">Entelechy</Link>
-        <Link href="/NNN">NNN</Link>
-        <Link href="/Blog">Blog</Link>
-        {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
+        <ActiveNavLink href="/">Home</ActiveNavLink>
+        <span className="site-rail__group" role="group" aria-label="Publications">
+          <ActiveNavLink href="/Entelechy">Entelechy</ActiveNavLink>
+          <ActiveNavLink href="/NNN">NNN</ActiveNavLink>
+        </span>
+        <span className="site-rail__group" role="group" aria-label="Between editions">
+          <ActiveNavLink href="/Blog">Blog</ActiveNavLink>
+          {process.env.TEA_ENABLED === "true" && <ActiveNavLink href="/Tea">Tea</ActiveNavLink>}
+        </span>
       </nav>
 
       <p className="site-rail__seal" aria-hidden="true">DAU</p>
@@ -20,11 +25,13 @@ export default function Navbar() {
       <details className="site-rail__menu">
         <summary>Menu</summary>
         <nav aria-label="Mobile navigation">
-          <Link href="/">Home</Link>
-          <Link href="/Entelechy">Entelechy</Link>
-          <Link href="/NNN">NNN</Link>
-          <Link href="/Blog">Blog</Link>
-          {process.env.TEA_ENABLED === "true" && <Link href="/Tea">Tea</Link>}
+          <ActiveNavLink href="/">Home</ActiveNavLink>
+          <span className="site-rail__menu-label">Publications</span>
+          <ActiveNavLink href="/Entelechy">Entelechy</ActiveNavLink>
+          <ActiveNavLink href="/NNN">News and Nonsense</ActiveNavLink>
+          <span className="site-rail__menu-label">Between editions</span>
+          <ActiveNavLink href="/Blog">Blog</ActiveNavLink>
+          {process.env.TEA_ENABLED === "true" && <ActiveNavLink href="/Tea">Campus Tea</ActiveNavLink>}
         </nav>
       </details>
     </header>
