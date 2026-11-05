@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "pageCount": 5,
+  "widths": [
+    1000,
+    1600
+  ],
+  "pages": [
+    {
+      "width": 1600,
+      "height": 2071,
+      "files": {
+        "1000": "page-001-1000.webp",
+        "1600": "page-001-1600.webp"
+      }
+    },
+    {
+      "width": 1600,
+      "height": 2071,
+      "files": {
+        "1000": "page-002-1000.webp",
+        "1600": "page-002-1600.webp"
+      }
+    },
+    {
+      "width": 1600,
+      "height": 2071,
+      "files": {
+        "1000": "page-003-1000.webp",
+        "1600": "page-003-1600.webp"
+      }
+    },
+    {
+      "width": 1600,
+      "height": 2071,
+      "files": {
+        "1000": "page-004-1000.webp",
+        "1600": "page-004-1600.webp"
+      }
+    },
+    {
+      "width": 1600,
+      "height": 2071,
+      "files": {
+        "1000": "page-005-1000.webp",
+        "1600": "page-005-1600.webp"
+      }
+    }
+  ]
+}

@@ -133,3 +133,21 @@ test("the PDF reader never sends readers back to page 1 on its own", async () =>
   assert.match(viewer, /useTransition/);
   assert.match(viewer, /setPageNumber\(\(current\) =>/);
 });
+
+test("the media consent agreement reads as page images, with the PDF as fallback", async () => {
+  const [page, manifestText] = await Promise.all([
+    read("../src/app/Media-Consent/page.tsx"),
+    read("../public/documents/media-consent-agreement-pages/manifest.json"),
+  ]);
+  const pages = parseEditionPagesManifest(JSON.parse(manifestText), "/documents/media-consent-agreement-pages/");
+
+  assert.match(page, /<PageImageReader /);
+  assert.match(page, /<PDFWrapper url=\{documentUrl\} \/>/);
+  assert.equal(pages.length, 5);
+  for (const entry of pages) {
+    for (const source of entry.srcSet.split(", ")) {
+      const file = source.split(" ")[0];
+      await readFile(new URL(`../public${file}`, import.meta.url));
+    }
+  }
+});
