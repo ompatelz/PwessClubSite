@@ -15,7 +15,21 @@ const bricolage = Bricolage_Grotesque({
   display: "swap",
 });
 
+// Absolute base for canonical and share URLs. NEXT_PUBLIC_SITE_URL wins when the
+// club moves to its own domain; otherwise Vercel's production URL is used.
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteOrigin),
+  openGraph: {
+    siteName: "The Press Club at DAU",
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image" },
   title: {
     default: "The Press Club · DAU",
     template: "%s · The Press Club",

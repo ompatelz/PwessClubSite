@@ -1,17 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import PDFWrapper from "@/Components/PDF_wrapper";
 import ArchiveState from "@/Components/ArchiveState";
-import { getSupabaseClient } from "@/lib/supabase";
+import ShareLinks from "@/Components/ShareLinks";
+import { shareMetadata } from "@/lib/share";
+import { getNNNEdition, nnnEditionTitle, publicPdfUrl } from "@/lib/publications";
 
-export default async function NNNEditionPage({
-  params,
-}: {
+// Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
+export const revalidate = 300;
+
+type EditionPageProps = {
   params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const supabase = getSupabaseClient();
+};
 
-  if (!supabase) {
+export async function generateMetadata({ params }: EditionPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const result = await getNNNEdition(id);
+  if (result.status !== "found") return { title: "NNN edition" };
+
+  const title = `NNN, ${nnnEditionTitle(result.edition)}`;
+  const description = "Read this edition of News and Nonsense, the Press Club's newspaper at DAU.";
+
+  return shareMetadata({ title, description, path: `/NNN/${result.edition.id}` });
+}
+
+export default async function NNNEditionPage({ params }: EditionPageProps) {
+  const { id } = await params;
+  const result = await getNNNEdition(id);
+
+  if (result.status === "unconfigured") {
     return (
       <main id="main-content" className="site-main reader-page">
         <ArchiveState
@@ -22,13 +39,7 @@ export default async function NNNEditionPage({
     );
   }
 
-  const { data, error } = await supabase
-    .from("NNN")
-    .select("id,Month,Year,Pdf_url")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) {
+  if (result.status === "missing") {
     return (
       <main id="main-content" className="site-main reader-page">
         <ArchiveState
@@ -39,12 +50,9 @@ export default async function NNNEditionPage({
     );
   }
 
-  const { data: publicUrlData } = supabase.storage
-    .from("NNN")
-    .getPublicUrl(data.Pdf_url);
-  const documentUrl = String(data.Pdf_url).startsWith("http")
-    ? data.Pdf_url
-    : publicUrlData.publicUrl;
+  const { edition } = result;
+  const documentUrl = publicPdfUrl("NNN", edition.Pdf_url);
+  const editionTitle = nnnEditionTitle(edition);
 
   return (
     <main id="main-content" className="site-main reader-page">
@@ -52,10 +60,9 @@ export default async function NNNEditionPage({
         <Link className="type-link" href="/NNN">
           <span aria-hidden="true">←</span> NNN archive
         </Link>
-        <h1>
-          {data.Month} {data.Year}
-        </h1>
+        <h1>{editionTitle}</h1>
         <p>News and Nonsense · digital reading copy</p>
+        <ShareLinks title={`NNN, ${editionTitle}`} path={`/NNN/${edition.id}`} />
       </header>
       <PDFWrapper url={documentUrl} />
     </main>

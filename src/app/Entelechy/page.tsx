@@ -2,17 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ArchiveState from "@/Components/ArchiveState";
 import { getSupabaseClient } from "@/lib/supabase";
+import type { EntelechyEdition } from "@/lib/publications";
 
 export const metadata: Metadata = {
   title: "Entelechy",
   description: "Browse editions of Entelechy, DAU's flagship college magazine.",
 };
 
-type Edition = {
-  id: number;
-  edition: number;
-  pdf_url: string;
-};
+// Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
+export const revalidate = 300;
 
 export default async function EntelechyPage() {
   const supabase = getSupabaseClient();
@@ -22,7 +20,7 @@ export default async function EntelechyPage() {
         .select("id,edition,pdf_url")
         .order("id", { ascending: false })
     : { data: null, error: new Error("Supabase is not configured") };
-  const editions = (result.data ?? []) as Edition[];
+  const editions = (result.data ?? []) as EntelechyEdition[];
   const [featuredEdition, ...earlierEditions] = editions;
 
   return (

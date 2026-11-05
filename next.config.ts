@@ -17,6 +17,10 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Share images read their fonts from disk at request time.
+  outputFileTracingIncludes: {
+    "/**/opengraph-image*": ["./assets/og-fonts/*.woff"],
+  },
   turbopack: {
     root: process.cwd(),
   },
