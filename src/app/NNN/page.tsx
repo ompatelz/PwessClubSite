@@ -3,30 +3,15 @@ import Link from "next/link";
 import ArchiveState from "@/Components/ArchiveState";
 import NNNEmailRequest from "@/Components/NNNEmailRequest";
 import { getSupabaseClient } from "@/lib/supabase";
+import { nnnEditionTitle, type NNNEdition } from "@/lib/publications";
 
 export const metadata: Metadata = {
   title: "NNN",
   description: "Browse editions of News and Nonsense, DAU's monthly newspaper.",
 };
 
-type Edition = {
-  id: number;
-  Month: number | string;
-  Year: number;
-  Pdf_url: string;
-};
-
-function formatMonth(month: number | string) {
-  const monthNumber = Number(month);
-
-  if (Number.isInteger(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
-    return new Intl.DateTimeFormat("en", { month: "long" }).format(
-      new Date(2000, monthNumber - 1, 1),
-    );
-  }
-
-  return String(month);
-}
+// Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
+export const revalidate = 300;
 
 export default async function NNNPage() {
   const supabase = getSupabaseClient();
@@ -34,7 +19,7 @@ export default async function NNNPage() {
   const result = supabase
     ? await supabase.from("NNN").select("id,Month,Year,Pdf_url").order("id", { ascending: false })
     : { data: null, error: new Error("Supabase is not configured") };
-  const editions = (result.data ?? []) as Edition[];
+  const editions = (result.data ?? []) as NNNEdition[];
 
   return (
     <main id="main-content" className="site-main archive-page">
@@ -70,7 +55,7 @@ export default async function NNNPage() {
             <li key={edition.id}>
               <Link href={`/NNN/${edition.id}`}>
                 <span className="edition-list__date">
-                  {formatMonth(edition.Month)} {edition.Year}
+                  {nnnEditionTitle(edition)}
                 </span>
                 <span className="edition-list__action">
                   Read edition <span aria-hidden="true">→</span>

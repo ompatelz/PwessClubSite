@@ -1,17 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import PDFWrapper from "@/Components/PDF_wrapper";
 import ArchiveState from "@/Components/ArchiveState";
-import { getSupabaseClient } from "@/lib/supabase";
+import ShareLinks from "@/Components/ShareLinks";
+import { shareMetadata } from "@/lib/share";
+import { getEntelechyEdition, publicPdfUrl } from "@/lib/publications";
 
-export default async function EntelechyEditionPage({
-  params,
-}: {
+// Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
+export const revalidate = 300;
+
+type EditionPageProps = {
   params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const supabase = getSupabaseClient();
+};
 
-  if (!supabase) {
+export async function generateMetadata({ params }: EditionPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const result = await getEntelechyEdition(id);
+  if (result.status !== "found") return { title: "Entelechy edition" };
+
+  const title = `Entelechy, Edition ${result.edition.edition}`;
+  const description = "Read this edition of Entelechy, the flagship magazine of the Press Club at DAU.";
+
+  return shareMetadata({ title, description, path: `/Entelechy/${result.edition.id}` });
+}
+
+export default async function EntelechyEditionPage({ params }: EditionPageProps) {
+  const { id } = await params;
+  const result = await getEntelechyEdition(id);
+
+  if (result.status === "unconfigured") {
     return (
       <main id="main-content" className="site-main reader-page">
         <ArchiveState
@@ -22,13 +39,7 @@ export default async function EntelechyEditionPage({
     );
   }
 
-  const { data, error } = await supabase
-    .from("Entelechy")
-    .select("id,edition,pdf_url")
-    .eq("id", id)
-    .single();
-
-  if (error || !data) {
+  if (result.status === "missing") {
     return (
       <main id="main-content" className="site-main reader-page">
         <ArchiveState
@@ -39,12 +50,8 @@ export default async function EntelechyEditionPage({
     );
   }
 
-  const { data: publicUrlData } = supabase.storage
-    .from("Entelechy")
-    .getPublicUrl(data.pdf_url);
-  const documentUrl = String(data.pdf_url).startsWith("http")
-    ? data.pdf_url
-    : publicUrlData.publicUrl;
+  const { edition } = result;
+  const documentUrl = publicPdfUrl("Entelechy", edition.pdf_url);
 
   return (
     <main id="main-content" className="site-main reader-page">
@@ -52,8 +59,12 @@ export default async function EntelechyEditionPage({
         <Link className="type-link" href="/Entelechy">
           <span aria-hidden="true">←</span> Entelechy archive
         </Link>
-        <h1>Edition {data.edition}</h1>
+        <h1>Edition {edition.edition}</h1>
         <p>Entelechy · digital reading copy</p>
+        <ShareLinks
+          title={`Entelechy, Edition ${edition.edition}`}
+          path={`/Entelechy/${edition.id}`}
+        />
       </header>
       <PDFWrapper url={documentUrl} />
     </main>
