@@ -1,5 +1,18 @@
 import type { NextConfig } from "next";
 
+// Supabase hosts edition PDFs and page images. Production projects live on
+// *.supabase.co; the configured origin is added too, for local stand-ins.
+function configuredSupabaseOrigin() {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").origin;
+  } catch {
+    return "";
+  }
+}
+const supabaseSources = ["https://*.supabase.co", configuredSupabaseOrigin()]
+  .filter((source, index, all) => source && all.indexOf(source) === index)
+  .join(" ");
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -8,9 +21,9 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  `img-src 'self' data: blob: ${supabaseSources}`,
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co",
+  `connect-src 'self' ${supabaseSources}`,
   "worker-src 'self' blob:",
   "upgrade-insecure-requests",
 ].join("; ");

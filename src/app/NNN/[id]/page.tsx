@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PDFWrapper from "@/Components/PDF_wrapper";
+import PageImageReader from "@/Components/PageImageReader";
 import ArchiveState from "@/Components/ArchiveState";
 import ShareLinks from "@/Components/ShareLinks";
 import { shareMetadata } from "@/lib/share";
+import { getEditionPages } from "@/lib/edition-pages";
 import { getNNNEdition, nnnEditionTitle, publicPdfUrl } from "@/lib/publications";
 
 // Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
@@ -51,6 +53,7 @@ export default async function NNNEditionPage({ params }: EditionPageProps) {
   }
 
   const { edition } = result;
+  const pages = await getEditionPages("NNN", edition.id);
   const documentUrl = publicPdfUrl("NNN", edition.Pdf_url);
   const editionTitle = nnnEditionTitle(edition);
 
@@ -64,7 +67,9 @@ export default async function NNNEditionPage({ params }: EditionPageProps) {
         <p>News and Nonsense · digital reading copy</p>
         <ShareLinks title={`NNN, ${editionTitle}`} path={`/NNN/${edition.id}`} />
       </header>
-      <PDFWrapper url={documentUrl} />
+      {pages
+        ? <PageImageReader pages={pages} pdfUrl={documentUrl} title={`NNN, ${editionTitle}`} />
+        : <PDFWrapper url={documentUrl} />}
     </main>
   );
 }

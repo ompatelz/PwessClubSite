@@ -679,7 +679,10 @@ summary[aria-disabled="true"] {
   padding: var(--space-md);
   border: var(--rule-hair) solid var(--color-rule);
   background: var(--color-paper-2);
-  overscroll-behavior: contain;
+  /* Contain only sideways panning of a zoomed page. Containing the vertical axis
+     trapped the mouse wheel: the stage never scrolls vertically, so wheel input
+     over the PDF went nowhere. */
+  overscroll-behavior-x: contain;
 }
 
 .pdf-page {
@@ -692,6 +695,33 @@ summary[aria-disabled="true"] {
 .pdf-page canvas {
   display: block;
   height: auto !important;
+}
+
+/* Page-image reader: a plain scrolling column, so the wheel, touch scrolling and
+   pinch-zoom all behave like the rest of the page. */
+.page-reader__pages {
+  display: grid;
+  gap: var(--space-lg);
+  justify-items: center;
+  padding: var(--space-md);
+  border: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-paper-2);
+}
+
+.page-reader__page {
+  width: 100%;
+  max-width: 60rem;
+  margin: 0;
+  /* Leave room for the sticky toolbar when jumping to a page. */
+  scroll-margin-top: 9rem;
+}
+
+.page-reader__page img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
 }
 
 .pdf-status {
