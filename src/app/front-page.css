@@ -705,3 +705,222 @@
   --format-ink: var(--ink-tea);
   --format-paper: var(--paper-tea);
 }
+
+/* Media consent agreement: readable text with a contents list, plus tabs for the
+   original pages and the PDF. */
+.agreement-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  grid-column: 1 / -1;
+}
+
+.agreement-views a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.agreement-views a:hover,
+.agreement-views a:focus-visible {
+  background: var(--color-paper-2);
+}
+
+.agreement-views a[aria-current="page"] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.agreement-layout {
+  display: grid;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.agreement-contents__fold,
+.agreement-contents__panel {
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
+}
+
+.agreement-contents__panel {
+  display: none;
+}
+
+.agreement-contents summary,
+.agreement-contents__panel > p {
+  display: flex;
+  align-items: center;
+  min-height: 2.9rem;
+  padding-inline: var(--space-md);
+  cursor: pointer;
+  margin: 0;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.agreement-contents ol {
+  display: grid;
+  margin: 0;
+  padding: 0 0 var(--space-sm);
+  list-style: none;
+}
+
+.agreement-contents a {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  padding: 0.45rem var(--space-md);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.agreement-contents a span {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.agreement-contents a:hover,
+.agreement-contents a:focus-visible {
+  background: var(--color-paper-2);
+  text-decoration: underline;
+}
+
+.agreement-text {
+  min-width: 0;
+  max-width: 46rem;
+  padding: var(--space-lg) var(--space-md);
+  border: var(--rule-heavy) solid var(--color-ink);
+  background: var(--color-paper);
+}
+
+.agreement-text__header {
+  display: grid;
+  gap: var(--space-xs);
+  padding-block-end: var(--space-md);
+  border-block-end: 4px double var(--color-ink);
+}
+
+.agreement-text__header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 3vw, var(--text-2xl));
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.agreement-text p,
+.agreement-text li {
+  max-width: 68ch;
+  color: var(--color-ink-2);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+.agreement-text p {
+  margin: var(--space-md) 0 0;
+}
+
+.agreement-text__intro {
+  color: var(--color-ink) !important;
+}
+
+.agreement-text strong {
+  color: var(--color-ink);
+  font-weight: 750;
+}
+
+.agreement-text section {
+  scroll-margin-top: var(--space-lg);
+}
+
+.agreement-text section > h2 {
+  margin: var(--space-2xl) 0 0;
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.agreement-text__number {
+  color: var(--color-accent);
+}
+
+.agreement-text h3 {
+  margin: var(--space-lg) 0 0;
+  scroll-margin-top: var(--space-lg);
+  font-size: var(--text-md);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.agreement-text ul {
+  display: grid;
+  gap: var(--space-xs);
+  margin: var(--space-md) 0 0;
+  padding-inline-start: 1.25rem;
+}
+
+.agreement-text li::marker {
+  color: var(--color-accent);
+}
+
+.agreement-text__source {
+  margin-block-start: var(--space-2xl) !important;
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-muted) !important;
+  font-size: var(--text-sm) !important;
+}
+
+@media (min-width: 48rem) {
+  .agreement-text {
+    padding: var(--space-2xl) var(--space-xl);
+  }
+}
+
+@media (min-width: 64rem) {
+  .agreement-layout {
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .agreement-contents__fold {
+    display: none;
+  }
+
+  .agreement-contents__panel {
+    display: block;
+  }
+
+  .agreement-contents {
+    position: sticky;
+    inset-block-start: var(--space-md);
+    max-height: calc(100dvh - 2rem);
+    overflow: auto;
+  }
+}
+
+/* The agreement's own title sits in the document, so the page header stays compact. */
+.agreement-header {
+  padding-block-end: var(--space-lg);
+}
+
+.agreement-header h1 {
+  font-size: clamp(var(--text-2xl), 4vw, var(--text-3xl));
+}

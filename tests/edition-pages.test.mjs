@@ -136,7 +136,7 @@ test("the PDF reader never sends readers back to page 1 on its own", async () =>
 
 test("the media consent agreement reads as page images, with the PDF as fallback", async () => {
   const [page, manifestText] = await Promise.all([
-    read("../src/app/Media-Consent/page.tsx"),
+    read("../src/app/Media-Consent/pages/page.tsx"),
     read("../public/documents/media-consent-agreement-pages/manifest.json"),
   ]);
   const pages = parseEditionPagesManifest(JSON.parse(manifestText), "/documents/media-consent-agreement-pages/");
