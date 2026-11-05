@@ -10,7 +10,6 @@ export default function AgreementHeader({ view }: { view: "text" | "pages" }) {
         <span aria-hidden="true">←</span> Press Club home
       </Link>
       <h1>Media Consent &amp; Editorial Independence Agreement</h1>
-      <p>Press Club · official agreement</p>
       <nav className="agreement-views" aria-label="Ways to read the agreement">
         <Link href="/Media-Consent" aria-current={view === "text" ? "page" : undefined}>Read as text</Link>
         <Link href="/Media-Consent/pages" aria-current={view === "pages" ? "page" : undefined}>Original pages</Link>

@@ -37,8 +37,8 @@ export default function NNNEmailRequest() {
   return (
     <section className="nnn-email" aria-labelledby="nnn-email-title">
       <div>
-        <h2 id="nnn-email-title">Request the available NNN issue.</h2>
-        <p>Enter your DAU email and we’ll send the {NNN_EMAIL_ISSUE.label} reading copy currently available through email delivery.</p>
+        <h2 id="nnn-email-title">Get the {NNN_EMAIL_ISSUE.label} issue by email.</h2>
+        <p>Enter your DAU email and we’ll send you the PDF.</p>
       </div>
       <form onSubmit={submit}>
         <label htmlFor="nnn-email-address">DAU email address</label>

@@ -28,7 +28,7 @@ export default async function EntelechyPage() {
       <header className="archive-header archive-header--entelechy">
         <h1>Entelechy</h1>
         <p>
-          A longer-form home for the college’s writing and creative work,
+          A long-form home for the college’s writing and creative work,
           gathered edition by edition.
         </p>
       </header>
@@ -56,7 +56,7 @@ export default async function EntelechyPage() {
             <div className="entelechy-feature__copy">
               <p>Latest in the archive</p>
               <h2 id="featured-entelechy-title">Edition {featuredEdition.edition}</h2>
-              <p>Open the complete magazine in the Press Club reader, with page controls and an original-PDF fallback.</p>
+              <p>Read the whole magazine here, page by page, or download the PDF.</p>
               <Link className="front-button front-button--entelechy" href={`/Entelechy/${featuredEdition.id}`}>
                 Read this edition <span aria-hidden="true">→</span>
               </Link>
@@ -71,7 +71,7 @@ export default async function EntelechyPage() {
                   <li key={edition.id}>
                     <Link href={`/Entelechy/${edition.id}`}>
                       <span className="edition-list__date">Edition {edition.edition}</span>
-                      <span className="edition-list__action">Read magazine <span aria-hidden="true">→</span></span>
+                      <span className="edition-list__action">Read edition <span aria-hidden="true">→</span></span>
                     </Link>
                   </li>
                 ))}

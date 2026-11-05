@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     template: "%s · The Press Club",
   },
   description:
-    "The Press Club at DAU — Entelechy, NNN, signed blog writing, and moderated anonymous Tea.",
+    "The Press Club at Dhirubhai Ambani University: the Entelechy magazine, the NNN newspaper and signed stories on the blog.",
 };
 
 export default function RootLayout({

@@ -7,7 +7,7 @@ import { nnnEditionTitle, type NNNEdition } from "@/lib/publications";
 
 export const metadata: Metadata = {
   title: "NNN",
-  description: "Browse editions of News and Nonsense, DAU's monthly newspaper.",
+  description: "Browse editions of News and Nonsense, DAU's campus newspaper.",
 };
 
 // Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
@@ -26,7 +26,7 @@ export default async function NNNPage() {
       <header className="archive-header">
         <h1>News and Nonsense</h1>
         <p>
-          NNN is the college newspaper: a month-by-month record of campus news,
+          NNN is the college newspaper: a record of campus news,
           observations, and everything between the serious and the strange.
         </p>
       </header>

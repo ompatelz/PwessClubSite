@@ -63,7 +63,6 @@ export default async function EntelechyEditionPage({ params }: EditionPageProps)
           <span aria-hidden="true">←</span> Entelechy archive
         </Link>
         <h1>Edition {edition.edition}</h1>
-        <p>Entelechy · digital reading copy</p>
         <ShareLinks
           title={`Entelechy, Edition ${edition.edition}`}
           path={`/Entelechy/${edition.id}`}

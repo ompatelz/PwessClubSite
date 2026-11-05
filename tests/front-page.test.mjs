@@ -61,3 +61,31 @@ test("stylesheets have no unclosed comments that would swallow the rules after t
     }
   }
 });
+
+test("retired wording from the copy review does not come back", async () => {
+  const { readdir } = await import("node:fs/promises");
+  const files = [];
+  async function walk(dir) {
+    for (const entry of await readdir(new URL(dir, import.meta.url), { withFileTypes: true })) {
+      const path = `${dir}${entry.name}`;
+      if (entry.isDirectory()) { if (entry.name !== "content") await walk(`${path}/`); }
+      else if (/\.(tsx?|css)$/.test(entry.name)) files.push(path);
+    }
+  }
+  await walk("../src/");
+  const retired = [
+    /monthly newspaper/i, /month by month/i, /month-by-month/i, /Kept in print/, /two speeds/,
+    /digital reading copy/, /original-PDF fallback/, /Fit width · active/, /hit a snag/,
+    /No private error details/, /make the campus record/, /reading copy explains/, /Campus tea\./,
+  ];
+  for (const path of files) {
+    const source = await read(path);
+    for (const phrase of retired) assert.doesNotMatch(source, phrase, `${path} still says ${phrase}`);
+  }
+});
+
+test("How we publish only describes Campus Tea when it is switched on", async () => {
+  const page = await read("../src/app/Editorial/page.tsx");
+  assert.match(page, /\{tea && \(\s*<section>\s*<h2>Campus Tea<\/h2>/);
+  assert.match(page, /\{tea \? "Four" : "Three"\} formats/);
+});

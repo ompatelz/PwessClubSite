@@ -32,8 +32,9 @@ export default async function Home() {
         <div className="studio-hero__copy">
           <h1 id="home-title">A campus, read at every speed.</h1>
           <p>
-            The Press Club at DAU publishes the quick pulse and the long view:
-            signed stories on the blog{tea ? ", anonymous Campus Tea" : ""}, a monthly newspaper, and a flagship magazine.
+            The Press Club is DAU&apos;s student newsroom. We publish Entelechy, the college
+            magazine; NNN, the campus newspaper; and signed stories on the blog.
+            {tea && " Campus Tea carries anonymous posts, each read by an editor before it goes up."}
           </p>
         </div>
         <div className="hero-issues" aria-label="Latest from our two publications">
@@ -45,7 +46,7 @@ export default async function Home() {
             </span>
           </Link>
           <Link className="hero-issue hero-issue--nnn" href={latestNNN ? `/NNN/${latestNNN.id}` : "/NNN"}>
-            <span className="hero-issue__label">Monthly newspaper</span>
+            <span className="hero-issue__label">Campus newspaper</span>
             <strong>News and Nonsense</strong>
             <span className="hero-issue__latest">
               {latestNNN ? `Read ${nnnEditionTitle(latestNNN)}` : "Browse the archive"} <span aria-hidden="true">→</span>
@@ -85,7 +86,7 @@ export default async function Home() {
             <span>N</span><span>N</span><span>N</span>
           </div>
           <div className="publication-studio__copy">
-            <p className="kicker kicker--nnn">Every month</p>
+            <p className="kicker kicker--nnn">The newspaper</p>
             <h2>News and Nonsense</h2>
             <p>Campus news, observations, and everything between the serious and the strange.</p>
             {latestNNN && (
@@ -124,8 +125,9 @@ export default async function Home() {
         </div>
         <div className="home-stories__copy">
           <p>
-            Signed blogs from Press Club writers carry their name and date
-            {tea ? ". Campus Tea takes anonymous posts, and an editor reads each one before it goes up." : ", and appear here as soon as they are published."}
+            Between editions, Press Club writers post signed stories on the blog: news,
+            interviews, opinion and creative work.
+            {tea && " Campus Tea takes anonymous posts, and an editor reads each one before it goes up."}
           </p>
           <div className="home-stories__actions">
             <Link className="studio-link" href="/Blog">
@@ -175,10 +177,10 @@ export default async function Home() {
 
       <section className="club-note" aria-labelledby="club-note-title">
         <div>
-          <h2 id="club-note-title">Made on campus. Kept in print.</h2>
+          <h2 id="club-note-title">Made on campus. Kept on record.</h2>
           <Link className="studio-link" href="/Editorial">How we publish <span aria-hidden="true">→</span></Link>
         </div>
-        <p>One newsroom works at two speeds. Entelechy preserves the work worth returning to; NNN follows the month as campus life unfolds.</p>
+        <p>Entelechy keeps the work worth returning to. NNN keeps up with campus life. The blog fills the days between.</p>
       </section>
     </main>
   );

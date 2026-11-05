@@ -41,7 +41,7 @@ export default async function TeaPage() {
   return (
     <main id="main-content" className="site-main tea-page">
       <header className="tea-header">
-        <h1>Campus tea.</h1>
+        <h1>Campus Tea.</h1>
         <p>Anonymous posts from around DAU. Every submission reaches the Press Club review desk before it can appear here.</p>
         <a className="tea-header__login" href="#submit-tea">Submit Tea <span aria-hidden="true">↓</span></a>
       </header>

@@ -64,7 +64,6 @@ export default async function NNNEditionPage({ params }: EditionPageProps) {
           <span aria-hidden="true">←</span> NNN archive
         </Link>
         <h1>{editionTitle}</h1>
-        <p>News and Nonsense · digital reading copy</p>
         <ShareLinks title={`NNN, ${editionTitle}`} path={`/NNN/${edition.id}`} />
       </header>
       {pages

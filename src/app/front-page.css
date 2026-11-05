@@ -924,3 +924,20 @@
 .agreement-header h1 {
   font-size: clamp(var(--text-2xl), 4vw, var(--text-3xl));
 }
+
+/* Three format boxes (Campus Tea off) sit in one row instead of leaving a gap. */
+@media (min-width: 64rem) {
+  .editorial-principles:has(> section:nth-child(3):last-child) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Reader headers: the back link gets its own row; the title and the share
+   buttons share the next one. */
+.reader-header > .type-link {
+  grid-column: 1 / -1;
+}
+
+.reader-header > .share-links {
+  align-self: end;
+}
