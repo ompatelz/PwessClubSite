@@ -98,8 +98,10 @@
   color: var(--color-ink);
   font-size: var(--text-sm);
   font-weight: 750;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-decoration: none;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -675,4 +677,31 @@
 
 .reader-header--nnn p {
   background: var(--paper-nnn);
+}
+
+/* How we publish: each format's box takes its own paper tint and ink stripe,
+   instead of alternating by position. Order: Entelechy, NNN, Blog, Campus Tea. */
+.editorial-principles section:nth-child(n) {
+  border-block-start: 0.5rem solid var(--format-ink, var(--color-ink));
+  background: var(--format-paper, var(--color-paper));
+}
+
+.editorial-principles section:nth-child(1) {
+  --format-ink: var(--ink-entelechy);
+  --format-paper: var(--paper-entelechy);
+}
+
+.editorial-principles section:nth-child(2) {
+  --format-ink: var(--ink-nnn);
+  --format-paper: var(--paper-nnn);
+}
+
+.editorial-principles section:nth-child(3) {
+  --format-ink: var(--ink-blog);
+  --format-paper: var(--paper-blog);
+}
+
+.editorial-principles section:nth-child(4) {
+  --format-ink: var(--ink-tea);
+  --format-paper: var(--paper-tea);
 }

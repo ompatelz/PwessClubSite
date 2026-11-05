@@ -87,44 +87,6 @@ a {
   transform: translateY(0);
 }
 
-.masthead {
-  width: min(100% - 2rem, 76rem);
-  margin-inline: auto;
-  padding-block-start: var(--space-md);
-  text-align: center;
-}
-
-.masthead__line {
-  margin: 0;
-  color: var(--color-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.masthead__brand-row {
-  padding-block: var(--space-sm);
-}
-
-.masthead__brand {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: clamp(var(--text-2xl), 8vw, var(--text-4xl));
-  font-weight: 700;
-  font-style: normal;
-  letter-spacing: -0.035em;
-  line-height: 0.95;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.masthead__nav {
-  display: none;
-}
-
-.masthead__nav a,
-.masthead__menu a,
 .site-footer a,
 .type-link,
 .publication-row__action,
@@ -143,49 +105,6 @@ summary[aria-disabled="true"] {
   cursor: not-allowed;
   opacity: 0.55;
   pointer-events: none;
-}
-
-.masthead__menu {
-  border-block-start: var(--rule-hair) solid var(--color-rule);
-}
-
-.masthead__menu summary {
-  display: grid;
-  min-height: 2.75rem;
-  cursor: pointer;
-  list-style: none;
-  place-items: center;
-  font-size: var(--text-sm);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.masthead__menu summary:hover,
-.masthead__menu summary:focus-visible {
-  color: var(--color-accent-dark);
-}
-
-.masthead__menu summary::-webkit-details-marker {
-  display: none;
-}
-
-.masthead__menu nav {
-  display: grid;
-  border-block-start: var(--rule-hair) solid var(--color-rule);
-}
-
-.masthead__menu nav a {
-  display: grid;
-  min-height: 2.75rem;
-  place-items: center;
-  border-block-end: var(--rule-hair) solid var(--color-rule);
-  text-decoration: none;
-}
-
-.masthead__rule {
-  height: var(--space-2xs);
-  border-block: var(--rule-hair) solid var(--color-rule-strong);
 }
 
 .site-main {
@@ -792,40 +711,18 @@ summary[aria-disabled="true"] {
 }
 
 @media (min-width: 40rem) {
-  .masthead,
   .site-main,
-  .site-footer {
+.site-footer {
     width: min(100% - 3rem, 76rem);
   }
 
-  .masthead__nav {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-xl);
-    min-height: 2.75rem;
-    align-items: center;
-    border-block-start: var(--rule-hair) solid var(--color-rule);
-    font-size: var(--text-sm);
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+  
 
-  .masthead__nav a {
-    padding-block: var(--space-xs);
-    text-decoration: none;
-  }
+  
 
-  .masthead__nav a:hover,
-  .masthead__nav a:focus-visible {
-    color: var(--color-accent-dark);
-    text-decoration: underline;
-    text-decoration-thickness: var(--rule-heavy);
-  }
+  
 
-  .masthead__menu {
-    display: none;
-  }
+  
 
   .index-intro {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.75fr);
@@ -873,13 +770,10 @@ summary[aria-disabled="true"] {
 }
 
 @media (pointer: coarse) {
-  .masthead__nav a,
-  .masthead__menu summary,
-  .masthead__menu a,
   .type-link,
-  .publication-row__action,
-  .edition-list a,
-  .site-footer a {
+.publication-row__action,
+.edition-list a,
+.site-footer a {
     min-height: 2.75rem;
   }
 }
@@ -892,10 +786,7 @@ summary[aria-disabled="true"] {
   }
 }
 
-/* Publication hierarchy,
-editorial context {
-  display: contents;
-}
+/* Publication hierarchy, editorial context, and responsive finishing pass */
 
 .club-note > div {
   display: grid;

@@ -47,3 +47,17 @@ test("the redesign stylesheet loads after the base styles so it can override the
 
   assert.ok(layout.indexOf('import "./globals.css"') < layout.indexOf('import "./front-page.css"'));
 });
+
+test("stylesheets have no unclosed comments that would swallow the rules after them", async () => {
+  for (const path of ["../src/app/globals.css", "../src/app/front-page.css", "../tokens.css"]) {
+    const css = await read(path);
+    let index = 0;
+    while ((index = css.indexOf("/*", index)) !== -1) {
+      const close = css.indexOf("*/", index + 2);
+      const nextOpen = css.indexOf("/*", index + 2);
+      const line = css.slice(0, index).split("\n").length;
+      assert.ok(close !== -1 && (nextOpen === -1 || close < nextOpen), `${path} has an unclosed comment at line ${line}`);
+      index = close + 2;
+    }
+  }
+});

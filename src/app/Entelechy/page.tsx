@@ -57,7 +57,7 @@ export default async function EntelechyPage() {
               <p>Latest in the archive</p>
               <h2 id="featured-entelechy-title">Edition {featuredEdition.edition}</h2>
               <p>Open the complete magazine in the Press Club reader, with page controls and an original-PDF fallback.</p>
-              <Link className="studio-link" href={`/Entelechy/${featuredEdition.id}`}>
+              <Link className="front-button front-button--entelechy" href={`/Entelechy/${featuredEdition.id}`}>
                 Read this edition <span aria-hidden="true">→</span>
               </Link>
             </div>
