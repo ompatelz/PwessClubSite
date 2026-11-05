@@ -4,21 +4,21 @@ import { nnnEditionTitle } from "@/lib/publications";
 import { formatStoryDate, NEW_POST_WINDOW_MS } from "@/lib/stories";
 import { teaEnabled } from "@/lib/tea";
 
-// The front page shows what is actually out, like every student paper's home page:
-// re-read every 5 minutes so a new edition or post appears without a redeploy.
+// The riso studio home page, now carrying what is actually out: the hero still
+// explains the Press Club, and each publication block shows its latest issue.
+// Re-read every 5 minutes so a new edition or post appears without a redeploy.
 export const revalidate = 300;
 
-export default async function FrontPage() {
+export default async function Home() {
   const now = new Date();
   const { entelechy, nnn, posts } = await getFrontPage();
   const [latestNNN, ...earlierNNN] = nnn;
   const tea = teaEnabled();
 
   return (
-    <main id="main-content" className="site-main front-page">
+    <main id="main-content" className="site-main home-page">
       <div className="front-dateline">
         <time dateTime={now.toISOString().slice(0, 10)}>{formatDateline(now)}</time>
-        <p className="front-dateline__motto">A campus, read at every speed.</p>
         {(entelechy || latestNNN) && (
           <p className="front-dateline__latest">
             <span>Latest</span>
@@ -28,64 +28,117 @@ export default async function FrontPage() {
         )}
       </div>
 
-      <div className="front-lead">
-        <section className="front-entelechy" aria-labelledby="front-entelechy-title">
-          <Link
-            href={entelechy ? `/Entelechy/${entelechy.id}` : "/Entelechy"}
-            className="front-cover"
-            aria-hidden="true"
-            tabIndex={-1}
-          >
-            <span className="front-cover__word">
-              <span>EN</span><span>TE</span><span>LECHY</span>
+      <section className="studio-hero" aria-labelledby="home-title">
+        <div className="studio-hero__copy">
+          <h1 id="home-title">A campus, read at every speed.</h1>
+          <p>
+            The Press Club at DAU publishes the quick pulse and the long view:
+            signed stories on the blog{tea ? ", anonymous Campus Tea" : ""}, a monthly newspaper, and a flagship magazine.
+          </p>
+        </div>
+        <div className="hero-issues" aria-label="Latest from our two publications">
+          <Link className="hero-issue hero-issue--entelechy" href={entelechy ? `/Entelechy/${entelechy.id}` : "/Entelechy"}>
+            <span className="hero-issue__label">Flagship magazine</span>
+            <strong>Entelechy</strong>
+            <span className="hero-issue__latest">
+              {entelechy ? `Read Edition ${entelechy.edition}` : "Browse the archive"} <span aria-hidden="true">→</span>
             </span>
-            {entelechy && <span className="front-cover__issue">No. {entelechy.edition}</span>}
           </Link>
-          <div className="front-entelechy__copy">
-            <p className="kicker kicker--entelechy">Entelechy · The flagship magazine</p>
-            <h1 id="front-entelechy-title">
-              {entelechy ? `Edition ${entelechy.edition}` : "The next edition is on the way"}
-            </h1>
-            <p className="front-dek">
-              Long-form writing and creative work from across the college, gathered edition by edition.
-            </p>
+          <Link className="hero-issue hero-issue--nnn" href={latestNNN ? `/NNN/${latestNNN.id}` : "/NNN"}>
+            <span className="hero-issue__label">Monthly newspaper</span>
+            <strong>News and Nonsense</strong>
+            <span className="hero-issue__latest">
+              {latestNNN ? `Read ${nnnEditionTitle(latestNNN)}` : "Browse the archive"} <span aria-hidden="true">→</span>
+            </span>
+          </Link>
+        </div>
+      </section>
+
+      <section className="publication-studios" aria-label="Press Club publications">
+        <article className="publication-studio publication-studio--entelechy">
+          <div className="publication-studio__poster" aria-hidden="true">
+            <span>EN</span><span>TE</span><span>LECHY</span>
+          </div>
+          <div className="publication-studio__copy">
+            <p className="kicker kicker--entelechy">The flagship</p>
+            <h2>Entelechy</h2>
+            <p>Long-form writing and creative work, gathered into the college magazine edition by edition.</p>
+            {entelechy && (
+              <p className="studio-latest">
+                <span>Latest</span>
+                <strong>Edition {entelechy.edition}</strong>
+              </p>
+            )}
             <div className="front-actions">
               {entelechy && (
                 <Link className="front-button front-button--entelechy" href={`/Entelechy/${entelechy.id}`}>
                   Read Edition {entelechy.edition} <span aria-hidden="true">→</span>
                 </Link>
               )}
-              <Link className="front-text-link" href="/Entelechy">All editions</Link>
+              <Link className="studio-link" href="/Entelechy">All editions</Link>
             </div>
           </div>
-        </section>
+        </article>
 
-        <section className="front-nnn" aria-labelledby="front-nnn-title">
-          <p className="kicker kicker--nnn">News and Nonsense · The newspaper</p>
-          <h2 id="front-nnn-title">
-            {latestNNN ? <Link href={`/NNN/${latestNNN.id}`}>{nnnEditionTitle(latestNNN)}</Link> : "First issue coming soon"}
-          </h2>
-          <p>Campus news, observations, and everything between the serious and the strange.</p>
-          {latestNNN && (
-            <Link className="front-button front-button--nnn" href={`/NNN/${latestNNN.id}`}>
-              Read this edition <span aria-hidden="true">→</span>
-            </Link>
-          )}
-          {earlierNNN.length > 0 && (
-            <div className="front-nnn__earlier">
-              <span>Earlier</span>
-              <ul>
-                {earlierNNN.map((edition) => (
-                  <li key={edition.id}>
-                    <Link href={`/NNN/${edition.id}`}>{nnnEditionTitle(edition)}</Link>
-                  </li>
-                ))}
-              </ul>
+        <article className="publication-studio publication-studio--nnn">
+          <div className="publication-studio__poster" aria-hidden="true">
+            <span>N</span><span>N</span><span>N</span>
+          </div>
+          <div className="publication-studio__copy">
+            <p className="kicker kicker--nnn">Every month</p>
+            <h2>News and Nonsense</h2>
+            <p>Campus news, observations, and everything between the serious and the strange.</p>
+            {latestNNN && (
+              <p className="studio-latest">
+                <span>Latest</span>
+                <strong>{nnnEditionTitle(latestNNN)}</strong>
+                {earlierNNN.length > 0 && (
+                  <span className="studio-latest__earlier">
+                    Earlier:{" "}
+                    {earlierNNN.map((edition, index) => (
+                      <span key={edition.id}>
+                        {index > 0 && ", "}
+                        <Link href={`/NNN/${edition.id}`}>{nnnEditionTitle(edition)}</Link>
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </p>
+            )}
+            <div className="front-actions">
+              {latestNNN && (
+                <Link className="front-button front-button--nnn" href={`/NNN/${latestNNN.id}`}>
+                  Read {nnnEditionTitle(latestNNN)} <span aria-hidden="true">→</span>
+                </Link>
+              )}
+              <Link className="studio-link" href="/NNN">All editions</Link>
             </div>
-          )}
-          <Link className="front-text-link" href="/NNN">All NNN editions</Link>
-        </section>
-      </div>
+          </div>
+        </article>
+      </section>
+
+      <section className="home-stories" aria-labelledby="home-stories-title">
+        <div>
+          <p className="publication-studio__cadence">Between editions</p>
+          <h2 id="home-stories-title">The campus keeps talking.</h2>
+        </div>
+        <div className="home-stories__copy">
+          <p>
+            Signed blogs from Press Club writers carry their name and date
+            {tea ? ". Campus Tea takes anonymous posts, and an editor reads each one before it goes up." : ", and appear here as soon as they are published."}
+          </p>
+          <div className="home-stories__actions">
+            <Link className="studio-link" href="/Blog">
+              Read the blog <span aria-hidden="true">→</span>
+            </Link>
+            {tea && (
+              <Link className="studio-link" href="/Tea">
+                Open Campus Tea <span aria-hidden="true">→</span>
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="front-blog" aria-labelledby="front-blog-title">
         <div className="front-section-head">
@@ -119,14 +172,6 @@ export default async function FrontPage() {
           </ol>
         )}
       </section>
-
-      {tea && (
-        <section className="front-tea" aria-labelledby="front-tea-title">
-          <p className="kicker kicker--tea">Campus Tea</p>
-          <h2 id="front-tea-title">Anonymous posts, read by an editor before they go up.</h2>
-          <Link className="front-text-link" href="/Tea">Open Campus Tea <span aria-hidden="true">→</span></Link>
-        </section>
-      )}
 
       <section className="club-note" aria-labelledby="club-note-title">
         <div>

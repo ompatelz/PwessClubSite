@@ -234,28 +234,15 @@
   box-shadow: 4px 4px 0 var(--color-ink);
 }
 
-.front-text-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  min-height: 2.75rem;
-  color: var(--color-ink);
-  font-weight: 800;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.25em;
-}
-
 .front-text-link:hover,
 .front-text-link:focus-visible {
   text-decoration-thickness: 3px;
 }
 
-/* Front page */
+/* Home page: the riso studio layout with live issues */
 
-.front-page {
-  padding-inline: var(--space-md);
-  padding-block-end: var(--space-3xl);
+.home-page > .front-dateline {
+  margin-inline: var(--space-md);
 }
 
 .front-dateline {
@@ -273,15 +260,6 @@
 .front-dateline time {
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-.front-dateline__motto {
-  display: none;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: var(--text-md);
-  font-weight: 800;
-  letter-spacing: -0.02em;
 }
 
 .front-dateline__latest {
@@ -302,143 +280,94 @@
   text-underline-offset: 0.2em;
 }
 
-.front-lead {
+/* Hero cards: one per publication, printed in its own ink, each opening the
+   latest issue (replaces the label/value grid that read like a spreadsheet). */
+.hero-issues {
   display: grid;
-  gap: var(--space-xl);
-  padding-block: var(--space-xl) var(--space-2xl);
-  border-block-end: var(--rule-heavy) solid var(--color-ink);
-}
-
-.front-entelechy {
-  display: grid;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   min-width: 0;
+  animation: studio-settle var(--dur-long) var(--ease-out) both;
 }
 
-.front-cover {
-  position: relative;
-  container-type: inline-size;
-  display: flex;
-  min-height: 17rem;
-  padding: var(--space-lg);
-  overflow: hidden;
-  border: var(--rule-heavy) solid var(--color-ink);
-  background: var(--paper-entelechy);
-  color: var(--color-ink);
-  text-decoration: none;
-}
-
-.front-cover__word {
+.hero-issue {
   display: grid;
-  align-content: start;
-  justify-items: start;
-  font-family: var(--font-display);
-  /* Sized to the cover's own width so LECHY never runs off the edge. */
-  font-size: clamp(3rem, 31cqi, 8rem);
-  font-weight: 800;
-  letter-spacing: -0.06em;
-  line-height: 0.82;
+  gap: var(--space-xs);
+  padding: var(--space-lg);
+  border: var(--rule-heavy) solid var(--color-ink);
+  color: var(--color-accent-ink);
+  text-decoration: none;
+  transition: transform var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
 }
 
-/* All three pieces align left so the word reads straight down; the blue middle
-   piece sits a fraction off register, which is the riso look. */
-.front-cover__word span:nth-child(2) {
-  color: var(--ink-entelechy);
-  transform: translateX(0.06em);
+.hero-issue--entelechy {
+  background: var(--ink-entelechy);
+}
+
+.hero-issue--nnn {
+  background: var(--ink-nnn);
+}
+
+.hero-issue:hover,
+.hero-issue:focus-visible {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.hero-issue__label {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.hero-issue strong {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-xl), 3vw, var(--text-2xl));
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.hero-issue__latest {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-block-start: var(--space-xs);
+  font-weight: 800;
+}
+
+.hero-issue__latest [aria-hidden] {
   transition: transform var(--dur-short) var(--ease-out);
 }
 
-/* Top-right sits beside the short first line (EN), so it never covers the word. */
-.front-cover__issue {
-  position: absolute;
-  inset-block-start: var(--space-md);
-  inset-inline-end: var(--space-md);
-  padding: 0.2em 0.55em;
-  background: var(--ink-entelechy);
-  color: var(--color-accent-ink);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+.hero-issue:hover .hero-issue__latest [aria-hidden] {
+  transform: translateX(0.3rem);
 }
 
-.front-entelechy__copy {
-  display: grid;
-  align-content: end;
-  gap: var(--space-md);
-  min-width: 0;
-}
-
-.front-entelechy__copy h1 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(var(--text-3xl), 6vw, 5rem);
-  letter-spacing: -0.05em;
-  line-height: 0.92;
-  text-wrap: balance;
-}
-
-.front-dek {
-  max-width: 38ch;
-  margin: 0;
-  color: var(--color-ink-2);
-  font-size: var(--text-md);
-}
-
-.front-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-sm) var(--space-lg);
-}
-
-.front-nnn {
-  display: grid;
-  align-content: start;
-  gap: var(--space-md);
-  min-width: 0;
-  padding: var(--space-lg);
-  border: var(--rule-heavy) solid var(--color-ink);
-  background: var(--paper-nnn);
-}
-
-.front-nnn h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(var(--text-2xl), 3.4vw, var(--text-3xl));
-  letter-spacing: -0.04em;
-  line-height: 0.98;
-}
-
-.front-nnn h2 a {
-  color: var(--color-ink);
-  text-decoration: none;
-}
-
-.front-nnn h2 a:hover,
-.front-nnn h2 a:focus-visible {
-  text-decoration: underline;
-  text-decoration-color: var(--ink-nnn);
-  text-decoration-thickness: 4px;
-}
-
-.front-nnn > p:not(.kicker) {
-  margin: 0;
-  color: var(--color-ink-2);
-}
-
-.front-nnn .front-button {
+/* Entelechy poster: all three pieces align left so the word reads straight
+   down; the blue middle piece sits a fraction off register. */
+.publication-studio--entelechy .publication-studio__poster span:nth-child(2) {
   justify-self: start;
+  transform: translateX(0.08em);
 }
 
-.front-nnn__earlier {
+.studio-latest {
   display: grid;
-  gap: var(--space-xs);
-  padding-block-start: var(--space-sm);
-  border-block-start: var(--rule-hair) solid var(--color-rule);
+  gap: 0.2rem;
+  margin: 0;
+  padding-inline-start: var(--space-md);
+  border-inline-start: 0.4rem solid var(--color-ink);
 }
 
-.front-nnn__earlier span {
+.publication-studio--entelechy .studio-latest {
+  border-color: var(--ink-entelechy);
+}
+
+.publication-studio--nnn .studio-latest {
+  border-color: var(--ink-nnn);
+}
+
+.studio-latest > span:first-child {
   color: var(--color-muted);
   font-size: var(--text-xs);
   font-weight: 800;
@@ -446,22 +375,33 @@
   text-transform: uppercase;
 }
 
-.front-nnn__earlier ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs) var(--space-md);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.studio-latest strong {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
-.front-nnn__earlier a {
+.studio-latest__earlier {
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+}
+
+.studio-latest__earlier a {
   color: var(--color-ink);
   font-weight: 700;
 }
 
+.front-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+
 .front-blog {
-  padding-block: var(--space-2xl);
+  padding: var(--space-2xl) var(--space-md);
 }
 
 .front-section-head {
@@ -478,11 +418,11 @@
   gap: var(--space-xs);
 }
 
-.front-section-head h2,
-.front-tea h2 {
+.front-section-head h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(var(--text-2xl), 4vw, var(--text-3xl));
+  font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -541,6 +481,7 @@
   overflow: hidden;
   font-family: var(--font-display);
   font-size: clamp(var(--text-lg), 2.2vw, var(--text-xl));
+  font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.02;
   -webkit-box-orient: vertical;
@@ -577,22 +518,16 @@
   font-size: var(--text-md);
 }
 
-.front-tea {
-  display: grid;
-  gap: var(--space-sm);
-  margin-block-end: var(--space-2xl);
-  padding: var(--space-xl) var(--space-lg);
-  border: var(--rule-heavy) solid var(--color-ink);
-  background: var(--ink-tea);
-}
-
-.front-tea h2 {
-  max-width: 24ch;
-  font-size: clamp(var(--text-xl), 3vw, var(--text-2xl));
-}
-
-.front-page .club-note {
-  padding-inline: 0;
+.front-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  color: var(--color-ink);
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
 }
 
 /* Blog index: shorter masthead; the newest week prints in blog pink, older
@@ -663,68 +598,56 @@
     display: none;
   }
 
-  .front-page {
-    padding-inline: var(--space-xl);
-  }
-
-  .front-entelechy {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    align-items: stretch;
-  }
-
   .headline-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .publication-studio__copy {
+    padding-inline: var(--space-xl);
+  }
+}
+
+/* Match the studio sections' side padding (they widen at 60rem). */
+@media (min-width: 60rem) {
+  .masthead__bar {
+    padding-inline: var(--space-2xl);
+  }
+
+  .home-page > .front-dateline {
+    margin-inline: var(--space-2xl);
+  }
+
+  .front-blog {
+    padding-inline: var(--space-2xl);
   }
 }
 
 @media (min-width: 64rem) {
-  .masthead__bar,
-  .front-page {
-    padding-inline: var(--space-2xl);
-  }
-
-  .front-dateline__motto {
-    display: block;
-  }
-
-  .front-lead {
-    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
-    align-items: stretch;
-  }
-
-  .front-cover {
-    min-height: 26rem;
-  }
-
   .headline-tiles {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .front-cover:hover .front-cover__word span:nth-child(2) {
-    transform: translateX(0.18em);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .front-button,
   .headline-tile a,
-  .front-cover__word span:nth-child(2) {
+  .hero-issue,
+  .hero-issue__latest [aria-hidden] {
     transition: none;
   }
 
+  .hero-issues {
+    animation: none;
+  }
+
   .front-button:hover,
-  .headline-tile a:hover {
+  .headline-tile a:hover,
+  .hero-issue:hover {
     transform: none;
   }
 }
 
-/* Bricolage headings print at the display weight everywhere in the redesign. */
-.front-entelechy__copy h1,
-.front-nnn h2,
-.front-section-head h2,
-.front-tea h2,
+/* Bricolage headings print at the display weight everywhere. */
 .headline-tile h3,
 .blog-card h3 {
   font-weight: 800;
