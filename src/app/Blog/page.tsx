@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getSupabaseClient } from "@/lib/supabase";
+import { teaEnabled } from "@/lib/tea";
 import { formatStoryDate, partitionPostsByAge, type BlogPost } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ export default async function BlogPage() {
   const renderPosts = (items: BlogPreview[], lead = false) => (
     <ol className="blog-grid">
       {items.map((post, index) => (
-        <li key={post.id} className={lead && index === 0 ? "blog-card blog-card--lead" : "blog-card"}>
+        <li key={post.id} className={["blog-card", lead && "blog-card--fresh", lead && index === 0 && "blog-card--lead"].filter(Boolean).join(" ")}>
           <Link href={`/Blog/${post.slug}`}>
             <div className="blog-card__meta">
               <span>{post.author}</span>
@@ -71,7 +72,7 @@ export default async function BlogPage() {
             <span>When the first signed story is published, it will appear here with its writer and date. Until then, read the flagship magazine or visit Campus Tea.</span>
             <div className="story-empty__actions">
               <Link className="story-stream__cta" href="/Entelechy">Read Entelechy</Link>
-              <Link className="story-stream__cta" href="/Tea">Open Campus Tea</Link>
+              {teaEnabled() && <Link className="story-stream__cta" href="/Tea">Open Campus Tea</Link>}
             </div>
           </div>
         ) : (

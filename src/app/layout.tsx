@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 import "./globals.css";
+import "./front-page.css";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 

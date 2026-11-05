@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 
 export default function ActiveNavLink({
   href,
+  className,
   children,
 }: {
   href: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -16,7 +18,7 @@ export default function ActiveNavLink({
     : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <Link href={href} aria-current={active ? "page" : undefined}>
+    <Link href={href} className={className} aria-current={active ? "page" : undefined}>
       {children}
     </Link>
   );

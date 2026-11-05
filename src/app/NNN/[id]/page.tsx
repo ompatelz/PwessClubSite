@@ -59,7 +59,7 @@ export default async function NNNEditionPage({ params }: EditionPageProps) {
 
   return (
     <main id="main-content" className="site-main reader-page">
-      <header className="reader-header">
+      <header className="reader-header reader-header--nnn">
         <Link className="type-link" href="/NNN">
           <span aria-hidden="true">←</span> NNN archive
         </Link>
