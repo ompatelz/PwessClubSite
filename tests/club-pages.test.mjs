@@ -78,3 +78,13 @@ test("the desk header keeps your account together, with real buttons", async () 
   assert.match(links, /https:\/\/www\.linkedin\.com\/company\/press-club-dau\//);
   assert.doesNotMatch(links, /dlrf=|WhatsApp/);
 });
+
+test("the phone menu closes after a choice, on Escape and on an outside tap", async () => {
+  const [menu, navbar] = await Promise.all([read("../src/Components/MastheadMenu.tsx"), read("../src/Components/Navbar.tsx")]);
+  assert.match(navbar, /<MastheadMenu>/);
+  assert.doesNotMatch(navbar, /<details/);
+  assert.match(menu, /\[pathname\]/);
+  assert.match(menu, /closest\("a"\)/);
+  assert.match(menu, /event\.key === "Escape"/);
+  assert.match(menu, /"pointerdown"/);
+});

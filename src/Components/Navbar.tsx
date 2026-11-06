@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ActiveNavLink from "./ActiveNavLink";
+import MastheadMenu from "./MastheadMenu";
 import { teaEnabled } from "@/lib/tea";
 
 // Newspaper masthead: nameplate on the left, sections on the right, each section
@@ -31,8 +32,7 @@ export default function Navbar() {
           </span>
         </nav>
 
-        <details className="masthead__menu">
-          <summary>Menu</summary>
+        <MastheadMenu>
           <nav aria-label="Mobile navigation">
             <ActiveNavLink href="/">Front page</ActiveNavLink>
             <span className="masthead__menu-label">Publications</span>
@@ -47,7 +47,7 @@ export default function Navbar() {
             <ActiveNavLink href="/Contact">Contact</ActiveNavLink>
             <ActiveNavLink href="/press-club" className="masthead__menu-staff">Staff sign in</ActiveNavLink>
           </nav>
-        </details>
+        </MastheadMenu>
       </div>
     </header>
   );
