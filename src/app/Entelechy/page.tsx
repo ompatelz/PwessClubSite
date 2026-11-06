@@ -52,7 +52,14 @@ export default async function EntelechyPage() {
       ) : (
         <div className="entelechy-archive">
           <section className="entelechy-feature" aria-labelledby="featured-entelechy-title">
-            <div className="entelechy-feature__mark" aria-hidden="true">E</div>
+            {/* An element-style tile: the edition number sits where an atomic number would. */}
+            <div className="entelechy-feature__mark" aria-hidden="true">
+              <span className="entelechy-feature__tile">
+                <span className="entelechy-feature__number">{featuredEdition.edition}</span>
+                <span className="entelechy-feature__symbol">En</span>
+                <span className="entelechy-feature__word">Entelechy</span>
+              </span>
+            </div>
             <div className="entelechy-feature__copy">
               <p>Latest in the archive</p>
               <h2 id="featured-entelechy-title">Edition {featuredEdition.edition}</h2>

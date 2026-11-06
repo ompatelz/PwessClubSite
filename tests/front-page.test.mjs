@@ -89,3 +89,23 @@ test("How we publish only describes Campus Tea when it is switched on", async ()
   assert.match(page, /\{tea && \(\s*<section>\s*<h2>Campus Tea<\/h2>/);
   assert.match(page, /\{tea \? "Four" : "Three"\} formats/);
 });
+
+test("Entelechy's mark is an En element tile in the magazine's inks", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const page = await readFile(new URL("../src/app/Entelechy/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.match(page, /entelechy-feature__symbol">En</);
+  assert.match(page, /entelechy-feature__number">\{featuredEdition\.edition\}/);
+  assert.match(css, /\.entelechy-feature__tile \{[\s\S]*?color: var\(--ink-entelechy\)/);
+  for (const card of ["../src/app/Entelechy/opengraph-image.tsx", "../src/app/Entelechy/[id]/opengraph-image.tsx"]) {
+    assert.match(await readFile(new URL(card, import.meta.url), "utf8"), /mark: "En"/);
+  }
+});
+
+test("the footer never sizes a column to the statement's full width", async () => {
+  // An old rule (minmax(0, 1fr) auto) squeezed "The Press Club" to one letter per
+  // line between 40rem and 48rem.
+  const { readFile } = await import("node:fs/promises");
+  const css = await readFile(new URL("../src/app/globals.css", import.meta.url), "utf8");
+  assert.doesNotMatch(css, /\.site-footer \{\s*grid-template-columns: minmax\(0, 1fr\) auto;/);
+});

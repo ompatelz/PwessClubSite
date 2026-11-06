@@ -11,7 +11,14 @@ export type StaffSession =
   | {
       state: "staff";
       email: string;
+      /** What the desk calls the member: their name, or their address until they set one. */
       name: string;
+      realName: string | null;
+      penName: string | null;
+      /** The default byline on their posts: the pen name if they chose one. */
+      byline: string;
+      /** True until the member has confirmed their name on the desk. */
+      needsProfile: boolean;
       role: StaffRole;
       supabase: NonNullable<Awaited<ReturnType<typeof getServerSupabase>>>;
     };
@@ -29,10 +36,24 @@ export async function getStaffSession(): Promise<StaffSession> {
 
   const { data: member } = await supabase
     .from("staff_members")
-    .select("email,name,role,active")
+    .select("email,name,pen_name,role,active,profile_completed_at")
     .eq("email", email)
     .maybeSingle();
 
   if (!member || !member.active) return { state: "not-staff", email };
-  return { state: "staff", email, name: member.name, role: member.role as StaffRole, supabase };
+
+  const realName: string | null = member.name ?? null;
+  const penName: string | null = member.pen_name ?? null;
+  const name = realName ?? email;
+  return {
+    state: "staff",
+    email,
+    name,
+    realName,
+    penName,
+    byline: penName ?? realName ?? "",
+    needsProfile: !member.profile_completed_at || !realName,
+    role: member.role as StaffRole,
+    supabase,
+  };
 }

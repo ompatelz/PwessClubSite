@@ -9,7 +9,7 @@ export default function Image() {
     kicker: "Flagship magazine",
     title: "Entelechy",
     detail: "Every edition of DAU's college magazine",
-    mark: "E",
+    mark: "En",
     ink: RISO_BLUE,
     overprint: RISO_RED,
   });

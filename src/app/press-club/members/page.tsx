@@ -16,7 +16,7 @@ export default async function StaffMembersPage() {
 
   const { data, error } = await session.supabase
     .from("staff_members")
-    .select("email,name,role,active,added_by,created_at")
+    .select("email,name,pen_name,role,active,added_by,created_at,profile_completed_at")
     .order("active", { ascending: false })
     .order("role", { ascending: true })
     .order("name", { ascending: true });

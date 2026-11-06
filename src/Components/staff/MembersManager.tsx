@@ -5,7 +5,19 @@ import { useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 import { ROLE_LABELS, type StaffRole } from "@/lib/staff-roles";
 
-type Member = { email: string; name: string; role: StaffRole; active: boolean; added_by: string | null; created_at: string };
+type Member = {
+  email: string;
+  name: string | null;
+  pen_name: string | null;
+  role: StaffRole;
+  active: boolean;
+  added_by: string | null;
+  created_at: string;
+  profile_completed_at: string | null;
+};
+
+// What to call a member before they have set their own name.
+const label = (member: Member) => member.name ?? member.email;
 
 const ROLE_HELP: Record<StaffRole, string> = {
   convenor: "Manages the team; can do everything an editor can.",
@@ -16,7 +28,7 @@ const ROLE_HELP: Record<StaffRole, string> = {
 function friendly(error: { code?: string; message?: string }) {
   if (error.code === "23505") return "That address is already on the team.";
   if (error.code === "23514" && /convenor/i.test(error.message ?? "")) return "The Press Club needs at least one active convenor. Make someone else convenor first.";
-  if (error.code === "23514") return "Use a @dau.ac.in address and a name of at least 2 characters.";
+  if (error.code === "23514") return "Use a @dau.ac.in address. A name, if you add one, needs at least 2 characters.";
   if (error.code === "42501" || /row-level security/i.test(error.message ?? "")) return "Only the convenor can change the team.";
   return "That didn't save. Check your connection and try again.";
 }
@@ -48,12 +60,15 @@ export default function MembersManager({ members, isConvenor, me }: { members: M
 
   async function add(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const address = email.trim().toLowerCase();
-    if (!/^[a-z0-9._%+-]+@dau\.ac\.in$/.test(address)) return setError("Use the member's @dau.ac.in address.");
-    if (name.trim().length < 2) return setError("Add the member's name.");
+    // A bare student ID is accepted and turned into their DAU address.
+    const typed = email.trim().toLowerCase();
+    const address = /^\d{6,12}$/.test(typed) ? `${typed}@dau.ac.in` : typed;
+    if (!/^[a-z0-9._%+-]+@dau\.ac\.in$/.test(address)) return setError("Use the member's @dau.ac.in address or student ID.");
+    const cleanName = name.trim().replace(/\s+/g, " ");
+    if (cleanName && cleanName.length < 2) return setError("A name needs at least 2 characters, or leave it empty.");
     const ok = await run(
-      () => getBrowserSupabase().from("staff_members").insert({ email: address, name: name.trim(), role }),
-      `${name.trim()} can now sign in with ${address}.`,
+      () => getBrowserSupabase().from("staff_members").insert({ email: address, name: cleanName || null, role }),
+      `${cleanName || address} can now sign in with ${address}.`,
     );
     if (ok) { setEmail(""); setName(""); setRole("writer"); }
   }
@@ -68,12 +83,12 @@ export default function MembersManager({ members, isConvenor, me }: { members: M
           <fieldset disabled={busy}>
             <div className="staff-row">
               <div>
-                <label htmlFor="member-email">DAU email</label>
-                <input id="member-email" type="email" placeholder="name@dau.ac.in" value={email} onChange={(event) => setEmail(event.target.value)} required />
+                <label htmlFor="member-email">DAU email or student ID</label>
+                <input id="member-email" inputMode="email" autoComplete="off" placeholder="202501082 or name@dau.ac.in" value={email} onChange={(event) => setEmail(event.target.value)} required />
               </div>
               <div>
-                <label htmlFor="member-name">Name</label>
-                <input id="member-name" value={name} onChange={(event) => setName(event.target.value)} maxLength={100} required />
+                <label htmlFor="member-name">Name <span>(optional)</span></label>
+                <input id="member-name" value={name} onChange={(event) => setName(event.target.value)} maxLength={100} />
               </div>
             </div>
             <label htmlFor="member-role">Role</label>
@@ -82,7 +97,7 @@ export default function MembersManager({ members, isConvenor, me }: { members: M
             </select>
             <button type="submit" className="staff-button staff-button--primary">Add member</button>
           </fieldset>
-          <p className="staff-hint">They sign in with their DAU Google account. No password to share.</p>
+          <p className="staff-hint">They sign in with their DAU Google account, no password to share, and add their own name and pen name the first time.</p>
         </form>
       )}
 
@@ -97,19 +112,24 @@ export default function MembersManager({ members, isConvenor, me }: { members: M
           {members.map((member) => (
             <li key={member.email} className={member.active ? undefined : "is-paused"}>
               <div>
-                <strong>{member.name}{member.email === me ? " (you)" : ""}</strong>
-                <span>{member.email}{member.active ? "" : " · access paused"}</span>
+                <strong>{label(member)}{member.email === me ? " (you)" : ""}</strong>
+                <span>
+                  {member.name ? member.email : ""}
+                  {member.pen_name ? `${member.name ? " · " : ""}writes as ${member.pen_name}` : ""}
+                  {!member.profile_completed_at ? `${member.name || member.pen_name ? " · " : ""}name not set up yet` : ""}
+                  {member.active ? "" : " · access paused"}
+                </span>
               </div>
               {isConvenor ? (
                 <div className="members-manager__controls">
-                  <label className="visually-hidden" htmlFor={`role-${member.email}`}>Role for {member.name}</label>
+                  <label className="visually-hidden" htmlFor={`role-${member.email}`}>Role for {label(member)}</label>
                   <select
                     id={`role-${member.email}`}
                     value={member.role}
                     disabled={busy}
                     onChange={(event) => run(
                       () => supabase().update({ role: event.target.value }, { count: "exact" }).eq("email", member.email),
-                      `${member.name} is now ${ROLE_LABELS[event.target.value as StaffRole].toLowerCase()}.`,
+                      `${label(member)} is now ${ROLE_LABELS[event.target.value as StaffRole].toLowerCase()}.`,
                     )}
                   >
                     {(Object.keys(ROLE_LABELS) as StaffRole[]).map((value) => <option key={value} value={value}>{ROLE_LABELS[value]}</option>)}
@@ -120,16 +140,16 @@ export default function MembersManager({ members, isConvenor, me }: { members: M
                     disabled={busy}
                     onClick={() => run(
                       () => supabase().update({ active: !member.active }, { count: "exact" }).eq("email", member.email),
-                      member.active ? `${member.name}'s access is paused.` : `${member.name} can sign in again.`,
+                      member.active ? `${label(member)}'s access is paused.` : `${label(member)} can sign in again.`,
                     )}
                   >
                     {member.active ? "Pause access" : "Restore access"}
                   </button>
                   {confirming === member.email ? (
                     <span className="post-editor__confirm">
-                      Remove {member.name}?
+                      Remove {label(member)}?
                       <button type="button" className="staff-button staff-button--danger" disabled={busy}
-                        onClick={async () => { if (await run(() => supabase().delete({ count: "exact" }).eq("email", member.email), `${member.name} was removed from the team.`)) setConfirming(null); }}>
+                        onClick={async () => { if (await run(() => supabase().delete({ count: "exact" }).eq("email", member.email), `${label(member)} was removed from the team.`)) setConfirming(null); }}>
                         Yes, remove
                       </button>
                       <button type="button" className="staff-button" onClick={() => setConfirming(null)}>Keep</button>

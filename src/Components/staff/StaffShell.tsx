@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import ProfileForm from "@/Components/staff/ProfileForm";
 import SignInPanel from "@/Components/staff/SignInPanel";
 import { ROLE_LABELS, type StaffSession } from "@/lib/staff";
 import { teaEnabled } from "@/lib/tea";
 import "@/app/staff-desk.css";
 
-type Section = "posts" | "editions" | "members";
+type Section = "posts" | "editions" | "members" | "profile";
 
 function SignOutButton() {
   return (
@@ -62,6 +63,18 @@ export default function StaffShell({
   ];
   if (teaEnabled()) tabs.push({ id: "tea", label: "Campus Tea", href: "/press-club/tea" });
 
+  // New members (and anyone whose name isn't set) say who they are first.
+  if (session.needsProfile) {
+    return (
+      <main id="main-content" className="site-main staff-desk">
+        <section className="staff-section staff-section--narrow" aria-label="Your name">
+          <ProfileForm email={session.email} name={session.realName} penName={session.penName} firstTime />
+          <SignOutButton />
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main id="main-content" className="site-main staff-desk">
       <header className="staff-bar">
@@ -70,13 +83,17 @@ export default function StaffShell({
           <p className="staff-bar__name">
             {session.name} <span className={`staff-role staff-role--${session.role}`}>{ROLE_LABELS[session.role]}</span>
           </p>
+          {session.penName && <p className="staff-bar__pen">Writes as {session.penName}</p>}
         </div>
         <nav className="staff-tabs" aria-label="Staff desk sections">
           {tabs.map((tab) => (
             <Link key={tab.id} href={tab.href} aria-current={tab.id === section ? "page" : undefined}>{tab.label}</Link>
           ))}
         </nav>
-        <SignOutButton />
+        <div className="staff-bar__account">
+          <Link href="/press-club/profile" className="staff-link-button" aria-current={section === "profile" ? "page" : undefined}>Your name</Link>
+          <SignOutButton />
+        </div>
       </header>
       {children}
     </main>

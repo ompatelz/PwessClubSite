@@ -20,7 +20,7 @@ export default async function NewPostPage() {
       <section className="staff-section" aria-labelledby="new-post-title">
         <Link className="type-link" href="/press-club"><span aria-hidden="true">←</span> All posts</Link>
         <h1 id="new-post-title">New post</h1>
-        <PostEditor post={null} role={session.role} memberName={session.name} memberEmail={session.email} />
+        <PostEditor post={null} role={session.role} memberName={session.byline} memberEmail={session.email} />
       </section>
     </StaffShell>
   );

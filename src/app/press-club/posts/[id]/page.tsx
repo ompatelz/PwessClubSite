@@ -29,7 +29,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
         {data ? (
           <>
             <h1 id="edit-post-title">Edit post</h1>
-            <PostEditor post={data as EditablePost} role={session.role} memberName={session.name} memberEmail={session.email} />
+            <PostEditor post={data as EditablePost} role={session.role} memberName={session.byline} memberEmail={session.email} />
           </>
         ) : (
           <>

@@ -74,6 +74,7 @@ test("staff pages check the member on every request and stay out of search", asy
     "../src/app/press-club/posts/[id]/page.tsx",
     "../src/app/press-club/editions/page.tsx",
     "../src/app/press-club/members/page.tsx",
+    "../src/app/press-club/profile/page.tsx",
   ];
   for (const path of pages) {
     const source = await read(path);
@@ -85,6 +86,32 @@ test("staff pages check the member on every request and stay out of search", asy
   const staff = await read("../src/lib/staff.ts");
   assert.match(staff, /auth\.getClaims\(\)/);
   assert.match(staff, /!member \|\| !member\.active/);
+});
+
+test("members set their own name and optional pen name on first sign-in", async () => {
+  const sql = await read("../supabase/migrations/20261107090000_staff_names_and_pen_names.sql");
+  // The convenor only needs an address; the name can wait for the member.
+  assert.match(sql, /alter column name drop not null/);
+  assert.match(sql, /add column if not exists pen_name text/);
+  // Members change only their own names, never their role or access.
+  assert.match(sql, /create or replace function public\.set_my_staff_profile[\s\S]*?security definer/);
+  assert.match(sql, /set name = clean_name,\s*pen_name = clean_pen,\s*profile_completed_at = now\(\)\s*where email = public\.staff_email\(\)\s*and active;/);
+  assert.doesNotMatch(sql.split("set_my_staff_profile")[1], /role\s*=/);
+  assert.match(sql, /revoke all on function public\.set_my_staff_profile\(text, text\) from public, anon;/);
+
+  const [shell, staff, form, newPost] = await Promise.all([
+    read("../src/Components/staff/StaffShell.tsx"),
+    read("../src/lib/staff.ts"),
+    read("../src/Components/staff/ProfileForm.tsx"),
+    read("../src/app/press-club/posts/new/page.tsx"),
+  ]);
+  assert.match(staff, /needsProfile: !member\.profile_completed_at \|\| !realName/);
+  assert.match(shell, /if \(session\.needsProfile\)[\s\S]*?<ProfileForm/);
+  assert.match(form, /rpc\("set_my_staff_profile"/);
+  assert.match(form, /Pen name <span>\(optional\)<\/span>/);
+  // A pen name, when chosen, is the default byline.
+  assert.match(staff, /byline: penName \?\? realName \?\? ""/);
+  assert.match(newPost, /memberName=\{session\.byline\}/);
 });
 
 test("Google sign-in asks for DAU accounts", async () => {

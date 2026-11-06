@@ -14,6 +14,12 @@ website can never grant more than these rules allow.
 The club always keeps at least one active convenor; the database refuses any change
 that would leave none.
 
+To add someone, the convenor needs only their student ID or DAU address (the name is
+optional). The first time a member signs in, the desk asks for their name and an
+optional pen name before anything else. A pen name becomes the default byline on
+their posts. Members can change either later from **Your name** on the desk; only
+the convenor can change roles or access.
+
 ## NNN is for the DAU community only
 
 NNN issues are never shown on the open web. The NNN storage bucket is private and
@@ -59,6 +65,17 @@ insert into public.staff_members (email, name, role)
 values ('your.name@dau.ac.in', 'Your Name', 'convenor');
 ```
 
+The current team (added as editors in the test project; repeat on live once the
+migrations have run, or add them from the Team page):
+
+```sql
+insert into public.staff_members (email, role) values
+  ('202403007@dau.ac.in', 'editor'),
+  ('202401164@dau.ac.in', 'editor'),
+  ('202401005@dau.ac.in', 'editor'),
+  ('202501062@dau.ac.in', 'editor');
+```
+
 ### 3. Database changes
 
 Run these in order:
@@ -66,6 +83,7 @@ Run these in order:
 1. `supabase/migrations/20261105090000_edition_pages_bucket.sql`
 2. `supabase/migrations/20261106090000_staff_desk_and_private_nnn.sql`
 3. `supabase/migrations/20261106100000_editors_read_edition_files.sql`
+4. `supabase/migrations/20261107090000_staff_names_and_pen_names.sql`
 
 The second one makes the NNN bucket private: any NNN file already uploaded stops
 being publicly downloadable at that moment, which is intended. The third lets editors

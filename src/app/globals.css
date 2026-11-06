@@ -752,15 +752,6 @@ summary[aria-disabled="true"] {
   .archive-header > p:last-child {
     padding-block-end: var(--space-sm);
   }
-
-  .site-footer {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
-
-  .site-footer nav {
-    justify-content: end;
-  }
 }
 
 @media (min-width: 60rem) {
@@ -807,18 +798,56 @@ summary[aria-disabled="true"] {
   background: var(--color-paper-blue);
 }
 
+/* Entelechy's mark: a printed element tile ("En") in the magazine's blue ink on
+   paper, with a pink second-ink offset like a riso misprint. */
 .entelechy-feature__mark {
   display: grid;
   min-height: 15rem;
-  overflow: hidden;
+  padding: var(--space-xl) var(--space-lg);
   place-items: center;
-  background: var(--color-accent-2);
-  color: var(--color-accent-ink);
+  border-block-end: var(--rule-heavy) solid var(--color-ink);
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in oklch, var(--ink-entelechy) 22%, transparent) 1px, transparent 0) 0 0 / 14px 14px,
+    var(--color-paper);
+  container-type: inline-size;
+}
+
+.entelechy-feature__tile {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: min(100%, 17rem);
+  aspect-ratio: 1;
+  padding: 0.9rem 1rem;
+  border: 5px solid var(--ink-entelechy);
+  background: var(--paper-entelechy);
+  box-shadow: 10px 10px 0 color-mix(in oklch, var(--ink-blog) 70%, transparent);
+  color: var(--ink-entelechy);
+}
+
+.entelechy-feature__number {
   font-family: var(--font-display);
-  font-size: clamp(11rem, 52vw, 25rem);
+  font-size: 1.6rem;
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 0.7;
+  line-height: 1;
+}
+
+.entelechy-feature__symbol {
+  align-self: center;
+  justify-self: center;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 40cqi, 9.5rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+  text-shadow: 0.035em 0.03em 0 color-mix(in oklch, var(--ink-blog) 55%, transparent);
+}
+
+.entelechy-feature__word {
+  justify-self: center;
+  font-size: var(--text-sm);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .entelechy-feature__copy {
@@ -997,6 +1026,11 @@ summary[aria-disabled="true"] {
 @media (min-width: 48rem) {
   .entelechy-feature {
     grid-template-columns: minmax(16rem, 0.72fr) minmax(0, 1.28fr);
+  }
+
+  .entelechy-feature__mark {
+    border-block-end: 0;
+    border-inline-end: var(--rule-heavy) solid var(--color-ink);
   }
 
   .editorial-page {
