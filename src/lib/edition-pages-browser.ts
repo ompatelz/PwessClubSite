@@ -16,7 +16,7 @@ function canvasToWebp(canvas: HTMLCanvasElement) {
 }
 
 export async function renderPdfPages(
-  file: File,
+  file: Blob,
   onProgress: (done: number, total: number) => void,
 ): Promise<RenderedPage[]> {
   const { pdfjs } = await import("react-pdf");

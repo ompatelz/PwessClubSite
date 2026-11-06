@@ -155,3 +155,20 @@ test("the media consent agreement reads as page images, with the PDF as fallback
     }
   }
 });
+
+test("editors can make page images for an edition that has none, keeping its link", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const read = async (path) => (await readFile(new URL(path, import.meta.url), "utf8")).replace(/\r\n/g, "\n");
+  const [manager, page] = await Promise.all([
+    read("../src/Components/staff/EditionsManager.tsx"),
+    read("../src/app/press-club/editions/page.tsx"),
+  ]);
+  // One shared routine makes and uploads images for new and existing editions.
+  assert.match(manager, /async function uploadPageImages\(/);
+  assert.match(manager, /await uploadPageImages\(supabase, row\.data\.id, file, setProgress\)/);
+  assert.match(manager, /await uploadPageImages\(supabase, edition\.id, pdf, setProgress\)/);
+  // The button only appears for editors and only on editions without images.
+  assert.match(manager, /canEdit && edition\.hasPages === false && \(/);
+  assert.match(page, /\.list\(`Entelechy\/\$\{edition\.id\}`/);
+  assert.match(page, /item\.name === "manifest\.json"/);
+});
