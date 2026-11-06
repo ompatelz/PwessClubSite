@@ -58,6 +58,7 @@ export default async function EntelechyEditionPage({ params }: EditionPageProps)
 
   return (
     <main id="main-content" className="site-main reader-page">
+      <div className="read-progress" aria-hidden="true" />
       <header className="reader-header">
         <Link className="type-link" href="/Entelechy">
           <span aria-hidden="true">←</span> Entelechy archive

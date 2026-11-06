@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 import "./globals.css";
 import "./front-page.css";
 import "./club-pages.css";
+import "./polish.css";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 
@@ -23,6 +24,11 @@ const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL
   ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000");
+
+// Phone browsers tint their address bar to match the paper.
+export const viewport: Viewport = {
+  themeColor: "#f8f1e0",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),

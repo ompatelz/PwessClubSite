@@ -35,6 +35,7 @@ export default async function BlogArticlePage({ params }: BlogArticleProps) {
 
   return (
     <main id="main-content" className="site-main story-reader">
+      <div className="read-progress read-progress--blog" aria-hidden="true" />
       <Link className="story-reader__back" href="/Blog">
         <span aria-hidden="true">←</span> All blog posts
       </Link>
