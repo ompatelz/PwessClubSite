@@ -8,7 +8,7 @@ export default function Image() {
   return renderShareCard({
     kicker: "The college newspaper",
     title: "News and Nonsense",
-    detail: "Every NNN edition, month by month",
+    detail: "Every NNN edition in one place",
     mark: "N",
     ink: RISO_RED,
     overprint: RISO_BLUE,

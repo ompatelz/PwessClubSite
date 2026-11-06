@@ -16,8 +16,8 @@ export default function ErrorPage({
   return (
     <main id="main-content" className="site-main">
       <div className="story-empty" role="alert">
-        <strong>This page hit a snag.</strong>
-        <span>No private error details were exposed. Please try the page again.</span>
+        <strong>Something went wrong loading this page.</strong>
+        <span>Please try again.</span>
         <button type="button" className="type-link" onClick={reset}>Try again</button>
       </div>
     </main>

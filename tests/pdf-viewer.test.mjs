@@ -5,6 +5,8 @@ import test from "node:test";
 const viewerUrl = new URL("../src/Components/PDFviewer.tsx", import.meta.url);
 const editionUrl = new URL("../src/app/Entelechy/[id]/page.tsx", import.meta.url);
 const mediaConsentUrl = new URL("../src/app/Media-Consent/page.tsx", import.meta.url);
+const mediaConsentPagesUrl = new URL("../src/app/Media-Consent/pages/page.tsx", import.meta.url);
+const agreementHeaderUrl = new URL("../src/Components/AgreementHeader.tsx", import.meta.url);
 
 test("Entelechy renders one responsive PDF page at a time", async () => {
   const viewer = await readFile(viewerUrl, "utf8");
@@ -27,10 +29,14 @@ test("the PDF reader has bounded controls and a direct fallback", async () => {
 });
 
 test("the media consent agreement has a dedicated reader page", async () => {
-  const page = await readFile(mediaConsentUrl, "utf8");
+  const [page, pagesView, header] = await Promise.all([
+    readFile(mediaConsentUrl, "utf8"),
+    readFile(mediaConsentPagesUrl, "utf8"),
+    readFile(agreementHeaderUrl, "utf8"),
+  ]);
 
   assert.match(page, /title: "Media Consent & Editorial Independence Agreement"/);
-  assert.match(page, /reader-header reader-header--document/);
-  assert.match(page, /const documentUrl = "\/documents\/media-consent-agreement\.pdf"/);
-  assert.match(page, /<PDFWrapper url=\{documentUrl\}/);
+  assert.match(header, /reader-header reader-header--document/);
+  assert.match(header, /export const AGREEMENT_PDF_URL = "\/documents\/media-consent-agreement\.pdf"/);
+  assert.match(pagesView, /<PDFWrapper url=\{documentUrl\}/);
 });

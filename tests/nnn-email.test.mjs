@@ -58,16 +58,25 @@ test("email API validates malformed JSON", async () => {
   });
 });
 
-test("email API uses Brevo without an Apps Script gateway", async () => {
-  const [source, issue] = await Promise.all([
-    readFile(new URL("../src/app/api/nnn/request/route.ts", import.meta.url), "utf8"),
-    readFile(new URL("../src/lib/nnn-email-issue.ts", import.meta.url), "utf8"),
-  ]);
+test("email API needs a DAU address and an issue number", async () => {
+  await withEmailFlag("true", async () => {
+    const outsider = await POST(request(JSON.stringify({ email: "reader@gmail.com", editionId: 1 })));
+    assert.equal(outsider.status, 400);
+    const noIssue = await POST(request(JSON.stringify({ email: "reader@dau.ac.in" })));
+    assert.equal(noIssue.status, 400);
+    assert.match((await noIssue.json()).message, /Choose an NNN issue/);
+  });
+});
+
+test("email API sends the chosen issue from private storage with Brevo", async () => {
+  const source = await readFile(new URL("../src/app/api/nnn/request/route.ts", import.meta.url), "utf8");
 
   assert.match(source, /https:\/\/api\.brevo\.com\/v3\/smtp\/email/);
   assert.match(source, /process\.env\.BREVO_API_KEY/);
   assert.match(source, /attachment:/);
-  assert.match(source, /NNN_EMAIL_ISSUE/);
-  assert.match(issue, /August 2026, Part 1/);
-  assert.doesNotMatch(source, /script\.google\.com|NNN_GMAIL_SCRIPT/);
+  assert.match(source, /\.storage\.from\("NNN"\)\.download\(/);
+  assert.match(source, /@dau\\.ac\\.in/);
+  assert.doesNotMatch(source, /script\.google\.com|NNN_GMAIL_SCRIPT|readFile\(/);
+  // The trial-only outbox is opt-in and only used when no Brevo key is set.
+  assert.match(source, /else if \(trialMailDir\)/);
 });

@@ -14,7 +14,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
     kicker: "Entelechy · flagship magazine",
     title: result.status === "found" ? `Edition ${result.edition.edition}` : "Entelechy",
     detail: "Read the full edition online",
-    mark: "E",
+    mark: "En",
     ink: RISO_BLUE,
     overprint: RISO_RED,
   });

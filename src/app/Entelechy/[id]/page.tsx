@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PDFWrapper from "@/Components/PDF_wrapper";
+import PageImageReader from "@/Components/PageImageReader";
 import ArchiveState from "@/Components/ArchiveState";
 import ShareLinks from "@/Components/ShareLinks";
 import { shareMetadata } from "@/lib/share";
+import { getEditionPages } from "@/lib/edition-pages";
 import { getEntelechyEdition, publicPdfUrl } from "@/lib/publications";
 
 // Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
@@ -51,7 +53,8 @@ export default async function EntelechyEditionPage({ params }: EditionPageProps)
   }
 
   const { edition } = result;
-  const documentUrl = publicPdfUrl("Entelechy", edition.pdf_url);
+  const pages = await getEditionPages("Entelechy", edition.id);
+  const documentUrl = publicPdfUrl(edition.pdf_url);
 
   return (
     <main id="main-content" className="site-main reader-page">
@@ -60,13 +63,14 @@ export default async function EntelechyEditionPage({ params }: EditionPageProps)
           <span aria-hidden="true">←</span> Entelechy archive
         </Link>
         <h1>Edition {edition.edition}</h1>
-        <p>Entelechy · digital reading copy</p>
         <ShareLinks
           title={`Entelechy, Edition ${edition.edition}`}
           path={`/Entelechy/${edition.id}`}
         />
       </header>
-      <PDFWrapper url={documentUrl} />
+      {pages
+        ? <PageImageReader pages={pages} pdfUrl={documentUrl} title={`Entelechy, Edition ${edition.edition}`} />
+        : <PDFWrapper url={documentUrl} />}
     </main>
   );
 }

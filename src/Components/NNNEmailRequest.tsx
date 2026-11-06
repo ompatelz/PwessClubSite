@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { NNN_EMAIL_ISSUE } from "@/lib/nnn-email-issue";
-
-export default function NNNEmailRequest() {
+// Sends one NNN issue to a @dau.ac.in inbox. NNN is never shown on the open web.
+export default function NNNEmailRequest({ editionId, title }: { editionId: number; title: string }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
@@ -22,7 +21,7 @@ export default function NNNEmailRequest() {
       const response = await fetch("/api/nnn/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: address }),
+        body: JSON.stringify({ email: address, editionId }),
       });
       const result = (await response.json()) as { message?: string };
       setStatus(result.message ?? "We couldn't process your request. Please try again.");
@@ -37,8 +36,8 @@ export default function NNNEmailRequest() {
   return (
     <section className="nnn-email" aria-labelledby="nnn-email-title">
       <div>
-        <h2 id="nnn-email-title">Request the available NNN issue.</h2>
-        <p>Enter your DAU email and we’ll send the {NNN_EMAIL_ISSUE.label} reading copy currently available through email delivery.</p>
+        <h2 id="nnn-email-title">Get {title} by email.</h2>
+        <p>NNN is shared with the DAU community only. Enter your @dau.ac.in address and we’ll send this issue to your inbox as a PDF.</p>
       </div>
       <form onSubmit={submit}>
         <label htmlFor="nnn-email-address">DAU email address</label>

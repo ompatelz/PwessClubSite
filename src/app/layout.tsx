@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 import "./globals.css";
+import "./front-page.css";
+import "./club-pages.css";
 import Navbar from "@/Components/Navbar";
 import Footer from "@/Components/Footer";
 
@@ -35,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s · The Press Club",
   },
   description:
-    "The Press Club at DAU — Entelechy, NNN, signed blog writing, and moderated anonymous Tea.",
+    "The Press Club at Dhirubhai Ambani University: the Entelechy magazine, the NNN newspaper and signed stories on the blog.",
 };
 
 export default function RootLayout({

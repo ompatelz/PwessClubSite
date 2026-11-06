@@ -17,6 +17,18 @@
   --color-danger: oklch(48% 0.190 24);
   --color-success: oklch(42% 0.105 145);
 
+  /* Format inks: each kind of writing prints in one riso ink, the way the
+     professional newsrooms colour-code their sections. Blue and red carry
+     light text; pink and yellow carry ink-coloured text. */
+  --ink-entelechy: var(--color-accent-2);
+  --ink-nnn: var(--color-accent);
+  --ink-blog: oklch(70% 0.19 355);
+  --ink-tea: oklch(86% 0.15 92);
+  --paper-entelechy: var(--color-paper-blue);
+  --paper-nnn: var(--color-paper-red);
+  --paper-blog: oklch(92% 0.045 355);
+  --paper-tea: oklch(95% 0.06 95);
+
   --font-display: var(--font-bricolage), ui-sans-serif, sans-serif;
   --font-body: var(--font-geist-sans), ui-sans-serif, sans-serif;
 
