@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import PDFWrapper from "@/Components/PDF_wrapper";
-import PageImageReader from "@/Components/PageImageReader";
 import ArchiveState from "@/Components/ArchiveState";
+import NNNEmailRequest from "@/Components/NNNEmailRequest";
 import ShareLinks from "@/Components/ShareLinks";
 import { shareMetadata } from "@/lib/share";
-import { getEditionPages } from "@/lib/edition-pages";
-import { getNNNEdition, nnnEditionTitle, publicPdfUrl } from "@/lib/publications";
+import { getNNNEdition, nnnEditionTitle } from "@/lib/publications";
 
 // Re-read Supabase at most every 5 minutes, so a new edition appears without a redeploy.
 export const revalidate = 300;
@@ -21,11 +19,13 @@ export async function generateMetadata({ params }: EditionPageProps): Promise<Me
   if (result.status !== "found") return { title: "NNN edition" };
 
   const title = `NNN, ${nnnEditionTitle(result.edition)}`;
-  const description = "Read this edition of News and Nonsense, the Press Club's newspaper at DAU.";
+  const description = "Get this issue of News and Nonsense by email with your @dau.ac.in address.";
 
   return shareMetadata({ title, description, path: `/NNN/${result.edition.id}` });
 }
 
+// NNN is shared with the DAU community only. This page never shows the issue
+// itself; it sends the PDF to a college inbox.
 export default async function NNNEditionPage({ params }: EditionPageProps) {
   const { id } = await params;
   const result = await getNNNEdition(id);
@@ -53,12 +53,11 @@ export default async function NNNEditionPage({ params }: EditionPageProps) {
   }
 
   const { edition } = result;
-  const pages = await getEditionPages("NNN", edition.id);
-  const documentUrl = publicPdfUrl("NNN", edition.Pdf_url);
   const editionTitle = nnnEditionTitle(edition);
+  const emailEnabled = process.env.NNN_EMAIL_ENABLED === "true";
 
   return (
-    <main id="main-content" className="site-main reader-page">
+    <main id="main-content" className="site-main reader-page nnn-request-page">
       <header className="reader-header reader-header--nnn">
         <Link className="type-link" href="/NNN">
           <span aria-hidden="true">←</span> NNN archive
@@ -66,9 +65,16 @@ export default async function NNNEditionPage({ params }: EditionPageProps) {
         <h1>{editionTitle}</h1>
         <ShareLinks title={`NNN, ${editionTitle}`} path={`/NNN/${edition.id}`} />
       </header>
-      {pages
-        ? <PageImageReader pages={pages} pdfUrl={documentUrl} title={`NNN, ${editionTitle}`} />
-        : <PDFWrapper url={documentUrl} />}
+
+      {emailEnabled ? (
+        <NNNEmailRequest editionId={edition.id} title={editionTitle} />
+      ) : (
+        <ArchiveState
+          tone="pending"
+          title="Email delivery is being set up."
+          message="NNN is shared with the DAU community by email. Check back soon to request this issue."
+        />
+      )}
     </main>
   );
 }

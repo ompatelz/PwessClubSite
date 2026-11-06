@@ -103,13 +103,17 @@ test("the generator writes WebP pages at both widths and a matching manifest", a
   }
 });
 
-test("edition pages use page images when present and keep the PDF reader otherwise", async () => {
-  for (const path of ["../src/app/Entelechy/[id]/page.tsx", "../src/app/NNN/[id]/page.tsx"]) {
-    const page = await read(path);
-    assert.match(page, /getEditionPages\("(Entelechy|NNN)", edition\.id\)/);
-    assert.match(page, /<PageImageReader /);
-    assert.match(page, /<PDFWrapper url=\{documentUrl\} \/>/);
-  }
+test("Entelechy pages use page images when present and keep the PDF reader otherwise", async () => {
+  const page = await read("../src/app/Entelechy/[id]/page.tsx");
+  assert.match(page, /getEditionPages\("Entelechy", edition\.id\)/);
+  assert.match(page, /<PageImageReader /);
+  assert.match(page, /<PDFWrapper url=\{documentUrl\} \/>/);
+});
+
+test("NNN pages never show the issue; they offer it by email", async () => {
+  const page = await read("../src/app/NNN/[id]/page.tsx");
+  assert.match(page, /<NNNEmailRequest editionId=\{edition\.id\}/);
+  assert.doesNotMatch(page, /PDFWrapper|PageImageReader|getEditionPages|publicPdfUrl|Pdf_url/);
 });
 
 test("page images get their own bucket and the PDF buckets stay PDF-only", async () => {

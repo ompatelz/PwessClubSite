@@ -44,7 +44,7 @@ try {
   log("checking route and access-control guards");
   await expectStatus("/Blog", {}, 200);
   await expectStatus("/Tea", {}, 200);
-  await expectStatus("/press-club", {}, 200);
+  await expectStatus("/press-club/tea", {}, 200);
   await expectStatus("/api/tea/submit", {
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: "https://invalid.example" },

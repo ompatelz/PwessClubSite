@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ArchiveState from "@/Components/ArchiveState";
-import NNNEmailRequest from "@/Components/NNNEmailRequest";
 import { getSupabaseClient } from "@/lib/supabase";
-import { nnnEditionTitle, type NNNEdition } from "@/lib/publications";
+import { NNN_PUBLIC_COLUMNS, nnnEditionTitle, type NNNEdition } from "@/lib/publications";
 
 export const metadata: Metadata = {
   title: "NNN",
@@ -15,9 +14,8 @@ export const revalidate = 300;
 
 export default async function NNNPage() {
   const supabase = getSupabaseClient();
-  const emailEnabled = process.env.NNN_EMAIL_ENABLED === "true";
   const result = supabase
-    ? await supabase.from("NNN").select("id,Month,Year,Pdf_url").order("id", { ascending: false })
+    ? await supabase.from("NNN").select(NNN_PUBLIC_COLUMNS).order("Year", { ascending: false }).order("Month", { ascending: false })
     : { data: null, error: new Error("Supabase is not configured") };
   const editions = (result.data ?? []) as NNNEdition[];
 
@@ -28,10 +26,9 @@ export default async function NNNPage() {
         <p>
           NNN is the college newspaper: a record of campus news,
           observations, and everything between the serious and the strange.
+          It is shared with the DAU community only, by email to your college address.
         </p>
       </header>
-
-      {emailEnabled && <NNNEmailRequest />}
 
       {!supabase ? (
         <ArchiveState
@@ -58,7 +55,7 @@ export default async function NNNPage() {
                   {nnnEditionTitle(edition)}
                 </span>
                 <span className="edition-list__action">
-                  Read edition <span aria-hidden="true">→</span>
+                  Get it by email <span aria-hidden="true">→</span>
                 </span>
               </Link>
             </li>

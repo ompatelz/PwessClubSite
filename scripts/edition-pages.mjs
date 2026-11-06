@@ -28,7 +28,6 @@ export async function renderEditionPages(pdfPath, outDir, { log = console.log, w
   const data = new Uint8Array(await readFile(pdfPath));
   const task = getDocument({
     data,
-    isEvalSupported: false,
     standardFontDataUrl: STANDARD_FONTS,
     cMapUrl: CMAPS,
     cMapPacked: true,

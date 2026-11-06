@@ -49,7 +49,7 @@ export default async function Home() {
             <span className="hero-issue__label">Campus newspaper</span>
             <strong>News and Nonsense</strong>
             <span className="hero-issue__latest">
-              {latestNNN ? `Read ${nnnEditionTitle(latestNNN)}` : "Browse the archive"} <span aria-hidden="true">→</span>
+              {latestNNN ? `Get ${nnnEditionTitle(latestNNN)} by email` : "Browse the archive"} <span aria-hidden="true">→</span>
             </span>
           </Link>
         </div>
@@ -109,7 +109,7 @@ export default async function Home() {
             <div className="front-actions">
               {latestNNN && (
                 <Link className="front-button front-button--nnn" href={`/NNN/${latestNNN.id}`}>
-                  Read {nnnEditionTitle(latestNNN)} <span aria-hidden="true">→</span>
+                  Get {nnnEditionTitle(latestNNN)} by email <span aria-hidden="true">→</span>
                 </Link>
               )}
               <Link className="studio-link" href="/NNN">All editions</Link>

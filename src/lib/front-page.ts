@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase";
-import type { EntelechyEdition, NNNEdition } from "@/lib/publications";
+import { NNN_PUBLIC_COLUMNS, type EntelechyEdition, type NNNEdition } from "@/lib/publications";
 import type { BlogPost } from "@/lib/stories";
 
 export type FrontPagePost = Pick<BlogPost, "id" | "slug" | "title" | "excerpt" | "author" | "published_at">;
@@ -18,7 +18,7 @@ export async function getFrontPage(): Promise<FrontPage> {
 
   const [entelechy, nnn, posts] = await Promise.all([
     db.from("Entelechy").select("id,edition,pdf_url").order("id", { ascending: false }).limit(1),
-    db.from("NNN").select("id,Month,Year,Pdf_url").order("id", { ascending: false }).limit(3),
+    db.from("NNN").select(NNN_PUBLIC_COLUMNS).order("Year", { ascending: false }).order("Month", { ascending: false }).limit(3),
     db.from("blog_posts")
       .select("id,slug,title,excerpt,author,published_at")
       .eq("status", "published")

@@ -54,7 +54,7 @@ export default async function EntelechyEditionPage({ params }: EditionPageProps)
 
   const { edition } = result;
   const pages = await getEditionPages("Entelechy", edition.id);
-  const documentUrl = publicPdfUrl("Entelechy", edition.pdf_url);
+  const documentUrl = publicPdfUrl(edition.pdf_url);
 
   return (
     <main id="main-content" className="site-main reader-page">
