@@ -6,11 +6,38 @@ import { getBrowserSupabase } from "@/lib/supabase/browser";
 import { buildManifest, pageFileName, renderPdfPages } from "@/lib/edition-pages-browser";
 import { formatNNNMonth } from "@/lib/nnn-title";
 
-type Entelechy = { id: number; edition: number; pdf_url: string; created_at: string };
+type Entelechy = { id: number; edition: number; pdf_url: string; created_at: string; hasPages?: boolean };
 type NNN = { id: number; Month: number; Year: number; Pdf_url: string; created_at: string };
 
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
+
+type DeskSupabase = ReturnType<typeof getBrowserSupabase>;
+
+// Draws a PDF's pages in the browser and uploads them as the edition's page images,
+// replacing any that are already there. Used when adding an edition and when
+// making images for an edition that was added without them.
+async function uploadPageImages(
+  supabase: DeskSupabase,
+  editionId: number,
+  pdf: Blob,
+  report: (message: string) => void,
+) {
+  const pages = await renderPdfPages(pdf, (done, total) => report(`Making page images: ${done} of ${total}…`));
+  const folder = `Entelechy/${editionId}`;
+  for (const page of pages) {
+    report(`Uploading page ${page.number} of ${pages.length}…`);
+    for (const [width, blob] of Object.entries(page.blobs)) {
+      const put = await supabase.storage.from("edition-pages")
+        .upload(`${folder}/${pageFileName(page.number, Number(width))}`, blob, { contentType: "image/webp", upsert: true });
+      if (put.error) throw new Error("upload");
+    }
+  }
+  const manifest = new Blob([JSON.stringify(buildManifest(pages), null, 2)], { type: "application/json" });
+  const put = await supabase.storage.from("edition-pages").upload(`${folder}/manifest.json`, manifest, { contentType: "application/json", upsert: true });
+  if (put.error) throw new Error("upload");
+  return pages.length;
+}
 
 function friendly(error: { code?: string; message?: string }, what: string) {
   if (error.code === "23505") return `${what} is already in the archive.`;
@@ -77,19 +104,11 @@ export default function EditionsManager({
         setEditionNumber(String(number + 1));
 
         if (makePages) {
-          const pages = await renderPdfPages(file, (done, total) => setProgress(`Making page images: ${done} of ${total}…`));
-          const folder = `Entelechy/${row.data.id}`;
-          for (const page of pages) {
-            setProgress(`Uploading page ${page.number} of ${pages.length}…`);
-            for (const [width, blob] of Object.entries(page.blobs)) {
-              const put = await supabase.storage.from("edition-pages")
-                .upload(`${folder}/${pageFileName(page.number, Number(width))}`, blob, { contentType: "image/webp", upsert: true });
-              if (put.error) throw new Error("The edition was added, but its page images didn't upload. It will open in the PDF reader for now.");
-            }
+          try {
+            await uploadPageImages(supabase, row.data.id, file, setProgress);
+          } catch {
+            throw new Error("The edition was added, but its page images didn't upload. It will open in the PDF reader for now. Use Make page images to try again.");
           }
-          const manifest = new Blob([JSON.stringify(buildManifest(pages), null, 2)], { type: "application/json" });
-          const put = await supabase.storage.from("edition-pages").upload(`${folder}/manifest.json`, manifest, { contentType: "application/json", upsert: true });
-          if (put.error) throw new Error("The edition was added, but its page images didn't upload. It will open in the PDF reader for now.");
         }
         setNotice(`Edition ${number} is in the archive. It appears on the site within 5 minutes.`);
       } else {
@@ -121,6 +140,34 @@ export default function EditionsManager({
         (event.target as HTMLFormElement).reset();
         router.refresh();
       }
+    }
+  }
+
+  // For editions added before the desk existed (or whose images failed): fetch the
+  // published PDF and make its page images, keeping the edition's link unchanged.
+  async function makeImagesFor(edition: Entelechy) {
+    const supabase = getBrowserSupabase();
+    setError("");
+    setNotice("");
+    setBusy(true);
+    try {
+      setProgress(`Downloading Edition ${edition.edition}…`);
+      const pdfUrl = /^https?:/.test(edition.pdf_url)
+        ? edition.pdf_url
+        : supabase.storage.from("Entelechy").getPublicUrl(edition.pdf_url).data.publicUrl;
+      const response = await fetch(pdfUrl);
+      if (!response.ok) throw new Error("download");
+      const pdf = await response.blob();
+      const count = await uploadPageImages(supabase, edition.id, pdf, setProgress);
+      setNotice(`Edition ${edition.edition} now has ${count} page images. The smooth reader appears on the site within 5 minutes.`);
+      router.refresh();
+    } catch (caught) {
+      setError(caught instanceof Error && caught.message === "download"
+        ? `Edition ${edition.edition}'s PDF couldn't be downloaded. Check your connection and try again.`
+        : `Page images for Edition ${edition.edition} didn't finish. Try again; finished pages are simply replaced.`);
+    } finally {
+      setBusy(false);
+      setProgress("");
     }
   }
 
@@ -235,8 +282,16 @@ export default function EditionsManager({
               <li key={edition.id}>
                 <a href={`/Entelechy/${edition.id}`} target="_blank" rel="noreferrer">
                   <strong>Edition {edition.edition}</strong>
-                  <span>Added {new Date(edition.created_at).toLocaleDateString("en-IN")}</span>
+                  <span>
+                    Added {new Date(edition.created_at).toLocaleDateString("en-IN")}
+                    {edition.hasPages === false && " · PDF reader only"}
+                  </span>
                 </a>
+                {canEdit && edition.hasPages === false && (
+                  <button type="button" className="staff-button staff-button--small" disabled={busy} onClick={() => makeImagesFor(edition)}>
+                    Make page images
+                  </button>
+                )}
                 <RemoveControl id={`e-${edition.id}`} label={`Edition ${edition.edition}`} onConfirm={() => removeEntelechy(edition)} />
               </li>
             ))}
