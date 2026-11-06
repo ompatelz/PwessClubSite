@@ -6,9 +6,8 @@ export const CLUB_EMAIL = "pressclub@dau.ac.in";
 type SocialLink = { label: string; href: string; note: string };
 
 const SOCIAL: SocialLink[] = [
-  { label: "Instagram", href: "", note: "Photos, edition launches and event coverage" },
-  { label: "LinkedIn", href: "", note: "Club updates and alumni" },
-  { label: "WhatsApp", href: "", note: "New editions and calls for writers" },
+  { label: "Instagram", href: "https://www.instagram.com/pressclubdau/", note: "@pressclubdau: photos, edition launches and event coverage" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/press-club-dau/", note: "Press Club DAU: club updates and alumni" },
 ];
 
 // Only complete https links are shown, so a half-pasted address never becomes a broken link.

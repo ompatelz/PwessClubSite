@@ -18,7 +18,7 @@ test("staff can find the sign-in from any page", async () => {
 test("contact details live in one place and empty social links stay hidden", async () => {
   const links = await read("../src/lib/club-links.ts");
   assert.match(links, /CLUB_EMAIL = "pressclub@dau\.ac\.in"/);
-  for (const label of ["Instagram", "LinkedIn", "WhatsApp"]) assert.match(links, new RegExp(`label: "${label}"`));
+  for (const label of ["Instagram", "LinkedIn"]) assert.match(links, new RegExp(`label: "${label}"`));
   assert.match(links, /new URL\(link\.href\)\.protocol === "https:"/);
 
   const footer = await read("../src/Components/Footer.tsx");
@@ -67,4 +67,14 @@ test("the photo viewer is centred and the email never breaks mid-word", async ()
   const contact = await read("../src/app/Contact/page.tsx");
   assert.match(contact, /\{CLUB_EMAIL_PARTS\[0\]\}@<wbr \/>\{CLUB_EMAIL_PARTS\[1\]\}/);
   assert.doesNotMatch(css, /\.contact-email__address \{[^}]*overflow-wrap: anywhere/);
+});
+
+test("the desk header keeps your account together, with real buttons", async () => {
+  const shell = await read("../src/Components/staff/StaffShell.tsx");
+  assert.match(shell, /className="staff-bar__account"[\s\S]*?Edit profile[\s\S]*?<SignOutButton \/>/);
+  assert.match(shell, /<div className="staff-bar__top">[\s\S]*?<\/div>\s*<nav className="staff-tabs"/);
+  const links = await read("../src/lib/club-links.ts");
+  assert.match(links, /https:\/\/www\.instagram\.com\/pressclubdau\//);
+  assert.match(links, /https:\/\/www\.linkedin\.com\/company\/press-club-dau\//);
+  assert.doesNotMatch(links, /dlrf=|WhatsApp/);
 });

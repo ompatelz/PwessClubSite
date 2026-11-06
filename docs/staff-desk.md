@@ -17,7 +17,7 @@ that would leave none.
 To add someone, the convenor needs only their student ID or DAU address (the name is
 optional). The first time a member signs in, the desk asks for their name and an
 optional pen name before anything else. A pen name becomes the default byline on
-their posts. Members can change either later from **Your name** on the desk; only
+their posts. Members can change either later from **Edit profile** on the desk; only
 the convenor can change roles or access.
 
 ## NNN is for the DAU community only
@@ -114,7 +114,7 @@ afterwards. iPhone HEIC photos need exporting as JPG first.
 
 ## Contact and social links
 
-The club email and the Instagram, LinkedIn and WhatsApp links live in
+The club email and the Instagram and LinkedIn links live in
 `src/lib/club-links.ts`. A social link with an empty address is hidden everywhere until
 it is filled in. Staff find **Staff sign in** in the footer, at the bottom of the phone
 menu and on the Contact page.

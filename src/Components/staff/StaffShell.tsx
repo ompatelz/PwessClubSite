@@ -8,10 +8,10 @@ import "@/app/staff-desk.css";
 
 type Section = "posts" | "editions" | "gallery" | "members" | "profile";
 
-function SignOutButton() {
+function SignOutButton({ className = "staff-button staff-button--small" }: { className?: string }) {
   return (
-    <form action="/auth/signout" method="post">
-      <button type="submit" className="staff-link-button">Sign out</button>
+    <form action="/auth/signout" method="post" className="staff-signout">
+      <button type="submit" className={className}>Sign out</button>
     </form>
   );
 }
@@ -68,9 +68,11 @@ export default function StaffShell({
   if (session.needsProfile) {
     return (
       <main id="main-content" className="site-main staff-desk">
-        <section className="staff-section staff-section--narrow" aria-label="Your name">
+        <section className="staff-section staff-section--narrow" aria-label="Your profile">
           <ProfileForm email={session.email} name={session.realName} penName={session.penName} firstTime />
-          <SignOutButton />
+          <p className="staff-hint">
+            Not you? <SignOutButton className="staff-link-button" />
+          </p>
         </section>
       </main>
     );
@@ -79,22 +81,33 @@ export default function StaffShell({
   return (
     <main id="main-content" className="site-main staff-desk">
       <header className="staff-bar">
-        <div className="staff-bar__who">
-          <p className="kicker">Staff desk</p>
-          <p className="staff-bar__name">
-            {session.name} <span className={`staff-role staff-role--${session.role}`}>{ROLE_LABELS[session.role]}</span>
-          </p>
-          {session.penName && <p className="staff-bar__pen">Writes as {session.penName}</p>}
+        <div className="staff-bar__top">
+          <div className="staff-bar__who">
+            <p className="kicker">Staff desk</p>
+            <p className="staff-bar__name">
+              {session.name} <span className={`staff-role staff-role--${session.role}`}>{ROLE_LABELS[session.role]}</span>
+            </p>
+            {session.penName && <p className="staff-bar__pen">Writes as {session.penName}</p>}
+          </div>
+          <div className="staff-bar__account" aria-label="Your account">
+            <span className="staff-bar__email">Signed in as {session.email}</span>
+            <div className="staff-bar__actions">
+              <Link
+                href="/press-club/profile"
+                className="staff-button staff-button--small"
+                aria-current={section === "profile" ? "page" : undefined}
+              >
+                Edit profile
+              </Link>
+              <SignOutButton />
+            </div>
+          </div>
         </div>
         <nav className="staff-tabs" aria-label="Staff desk sections">
           {tabs.map((tab) => (
             <Link key={tab.id} href={tab.href} aria-current={tab.id === section ? "page" : undefined}>{tab.label}</Link>
           ))}
         </nav>
-        <div className="staff-bar__account">
-          <Link href="/press-club/profile" className="staff-link-button" aria-current={section === "profile" ? "page" : undefined}>Your name</Link>
-          <SignOutButton />
-        </div>
       </header>
       {children}
     </main>

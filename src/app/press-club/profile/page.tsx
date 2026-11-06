@@ -6,7 +6,7 @@ import { getStaffSession } from "@/lib/staff";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Your name · Staff desk",
+  title: "Your profile · Staff desk",
   robots: { index: false, follow: false },
 };
 
@@ -16,7 +16,7 @@ export default async function StaffProfilePage() {
 
   return (
     <StaffShell session={session} section="profile">
-      <section className="staff-section staff-section--narrow" aria-label="Your name">
+      <section className="staff-section staff-section--narrow" aria-label="Your profile">
         <ProfileForm email={session.email} name={session.realName} penName={session.penName} firstTime={false} />
       </section>
     </StaffShell>

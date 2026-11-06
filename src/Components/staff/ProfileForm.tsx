@@ -12,7 +12,7 @@ function friendly(error: { code?: string; message?: string }) {
 }
 
 // Asks a member for their name and an optional pen name. Shown on first sign-in,
-// and on the "Your name" page whenever they want to change either.
+// and on the "Edit profile" page whenever they want to change either.
 export default function ProfileForm({
   email,
   name,
@@ -56,7 +56,7 @@ export default function ProfileForm({
 
   return (
     <form className="staff-card profile-form" onSubmit={save}>
-      <h2>{firstTime ? "Welcome to the staff desk" : "Your name"}</h2>
+      <h2>{firstTime ? "Welcome to the staff desk" : "Your profile"}</h2>
       {firstTime && (
         <p className="profile-form__intro">
           You&apos;re signed in as <strong>{email}</strong>. Tell the team who you are before you start.
