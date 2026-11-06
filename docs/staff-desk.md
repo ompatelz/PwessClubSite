@@ -61,10 +61,16 @@ values ('your.name@dau.ac.in', 'Your Name', 'convenor');
 
 ### 3. Database changes
 
-Run `supabase/migrations/20261105090000_edition_pages_bucket.sql` and then
-`supabase/migrations/20261106090000_staff_desk_and_private_nnn.sql`. The second
-one makes the NNN bucket private: any NNN file already uploaded stops being
-publicly downloadable at that moment, which is intended.
+Run these in order:
+
+1. `supabase/migrations/20261105090000_edition_pages_bucket.sql`
+2. `supabase/migrations/20261106090000_staff_desk_and_private_nnn.sql`
+3. `supabase/migrations/20261106100000_editors_read_edition_files.sql`
+
+The second one makes the NNN bucket private: any NNN file already uploaded stops
+being publicly downloadable at that moment, which is intended. The third lets editors
+read edition files, which Supabase requires when the desk replaces page images or
+clears them while removing an edition.
 
 ### 4. NNN email
 

@@ -53,6 +53,9 @@ export default function EditionsManager({
 
     const supabase = getBrowserSupabase();
     const stamp = Date.now();
+    // Set once the edition's row exists, so the list refreshes even if a later
+    // step (the page images) fails.
+    let added = false;
     setBusy(true);
 
     try {
@@ -70,6 +73,8 @@ export default function EditionsManager({
           await supabase.storage.from("Entelechy").remove([path]);
           throw new Error(friendly(row.error ?? {}, `Edition ${number}`));
         }
+        added = true;
+        setEditionNumber(String(number + 1));
 
         if (makePages) {
           const pages = await renderPdfPages(file, (done, total) => setProgress(`Making page images: ${done} of ${total}…`));
@@ -87,7 +92,6 @@ export default function EditionsManager({
           if (put.error) throw new Error("The edition was added, but its page images didn't upload. It will open in the PDF reader for now.");
         }
         setNotice(`Edition ${number} is in the archive. It appears on the site within 5 minutes.`);
-        setEditionNumber(String(number + 1));
       } else {
         const monthNumber = Number(month);
         const yearNumber = Number(year);
@@ -104,16 +108,19 @@ export default function EditionsManager({
           await supabase.storage.from("NNN").remove([path]);
           throw new Error(friendly(row.error ?? {}, label));
         }
+        added = true;
         setNotice(`${label} is listed. DAU readers can request it by email within 5 minutes.`);
       }
-      setFile(null);
-      (event.target as HTMLFormElement).reset();
-      router.refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "That didn't work. Try again.");
     } finally {
       setBusy(false);
       setProgress("");
+      if (added) {
+        setFile(null);
+        (event.target as HTMLFormElement).reset();
+        router.refresh();
+      }
     }
   }
 

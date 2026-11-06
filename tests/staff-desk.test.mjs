@@ -43,6 +43,16 @@ test("NNN is college-only: visitors never see where an issue is stored", async (
   }
 });
 
+test("editors can read the edition files they replace and clear", async () => {
+  // Supabase Storage needs SELECT for upsert uploads and for listing a folder.
+  const sql = await read("../supabase/migrations/20261106100000_editors_read_edition_files.sql");
+  assert.match(sql, /for select to authenticated[\s\S]*?bucket_id in \('Entelechy', 'NNN', 'edition-pages'\)[\s\S]*?staff_role\(\) in \('convenor', 'editor'\)/);
+
+  // The list refreshes once the edition exists, even if the page images fail.
+  const manager = await read("../src/Components/staff/EditionsManager.tsx");
+  assert.match(manager, /finally \{[\s\S]*?if \(added\) \{[\s\S]*?router\.refresh\(\)/);
+});
+
 test("sign-in runs only on the staff desk and returns only to it", async () => {
   const [proxy, callback, signout] = await Promise.all([
     read("../src/proxy.ts"),
