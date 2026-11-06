@@ -84,6 +84,7 @@ Run these in order:
 2. `supabase/migrations/20261106090000_staff_desk_and_private_nnn.sql`
 3. `supabase/migrations/20261106100000_editors_read_edition_files.sql`
 4. `supabase/migrations/20261107090000_staff_names_and_pen_names.sql`
+5. `supabase/migrations/20261108090000_past_members_gallery.sql`
 
 The second one makes the NNN bucket private: any NNN file already uploaded stops
 being publicly downloadable at that moment, which is intended. The third lets editors
@@ -101,6 +102,22 @@ sending them.
 
 The August 2026 issue that used to be bundled with the code is no longer used by the
 website. Upload it from **Staff desk → Editions** so readers can request it.
+
+## Past members gallery
+
+`/Past-members` shows photos of each Press Club batch, newest batch first. Editors and
+the convenor add them from **Staff desk → Gallery**: type the batch (use the academic
+year, like 2024–25), optionally who is in the photo and a caption, and choose up to 20
+photos. Photos are resized on the uploader's device to a 1600px viewing copy and a
+640px grid copy, so phone photos upload quickly. Each photo can be edited or removed
+afterwards. iPhone HEIC photos need exporting as JPG first.
+
+## Contact and social links
+
+The club email and the Instagram, LinkedIn and WhatsApp links live in
+`src/lib/club-links.ts`. A social link with an empty address is hidden everywhere until
+it is filled in. Staff find **Staff sign in** in the footer, at the bottom of the phone
+menu and on the Contact page.
 
 ## Campus Tea
 

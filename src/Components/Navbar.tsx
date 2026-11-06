@@ -24,7 +24,11 @@ export default function Navbar() {
             <ActiveNavLink href="/Blog" className="masthead__link masthead__link--blog">Blog</ActiveNavLink>
             {tea && <ActiveNavLink href="/Tea" className="masthead__link masthead__link--tea">Campus Tea</ActiveNavLink>}
           </span>
-          <ActiveNavLink href="/Editorial" className="masthead__link masthead__link--plain">How we publish</ActiveNavLink>
+          <span className="masthead__group masthead__group--last" role="group" aria-label="About the club">
+            <ActiveNavLink href="/Editorial" className="masthead__link masthead__link--plain">How we publish</ActiveNavLink>
+            <ActiveNavLink href="/Past-members" className="masthead__link masthead__link--plain">Past members</ActiveNavLink>
+            <ActiveNavLink href="/Contact" className="masthead__link masthead__link--plain">Contact</ActiveNavLink>
+          </span>
         </nav>
 
         <details className="masthead__menu">
@@ -39,6 +43,9 @@ export default function Navbar() {
             {tea && <ActiveNavLink href="/Tea" className="masthead__link--tea">Campus Tea</ActiveNavLink>}
             <span className="masthead__menu-label">About</span>
             <ActiveNavLink href="/Editorial">How we publish</ActiveNavLink>
+            <ActiveNavLink href="/Past-members">Past members</ActiveNavLink>
+            <ActiveNavLink href="/Contact">Contact</ActiveNavLink>
+            <ActiveNavLink href="/press-club" className="masthead__menu-staff">Staff sign in</ActiveNavLink>
           </nav>
         </details>
       </div>

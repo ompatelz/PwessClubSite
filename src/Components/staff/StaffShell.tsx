@@ -6,7 +6,7 @@ import { ROLE_LABELS, type StaffSession } from "@/lib/staff";
 import { teaEnabled } from "@/lib/tea";
 import "@/app/staff-desk.css";
 
-type Section = "posts" | "editions" | "members" | "profile";
+type Section = "posts" | "editions" | "gallery" | "members" | "profile";
 
 function SignOutButton() {
   return (
@@ -59,6 +59,7 @@ export default function StaffShell({
   const tabs: { id: Section | "tea"; label: string; href: string }[] = [
     { id: "posts", label: "Blog posts", href: "/press-club" },
     { id: "editions", label: "Editions", href: "/press-club/editions" },
+    { id: "gallery", label: "Gallery", href: "/press-club/gallery" },
     { id: "members", label: "Team", href: "/press-club/members" },
   ];
   if (teaEnabled()) tabs.push({ id: "tea", label: "Campus Tea", href: "/press-club/tea" });
