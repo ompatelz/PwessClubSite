@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { EditionPage } from "@/lib/edition-pages-manifest";
 
 type PageImageReaderProps = {
@@ -16,10 +16,11 @@ export default function PageImageReader({ pages, pdfUrl, title }: PageImageReade
   const figures = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
-    // The page being read is the last one whose top has passed 40% of the screen.
-    let frame = 0;
+    // The page being read is the last one whose top has passed a line 40% down the
+    // screen. The browser tells us when a page crosses that line, and only then do
+    // we work out the page, so nothing runs on each scroll frame. Working it out
+    // from scratch also covers jumps (to the top, or to a linked page).
     const update = () => {
-      frame = 0;
       const line = window.innerHeight * 0.4;
       let reading = 1;
       figures.current.forEach((figure, index) => {
@@ -27,15 +28,28 @@ export default function PageImageReader({ pages, pdfUrl, title }: PageImageReade
       });
       setCurrent(reading);
     };
-    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    const observer = new IntersectionObserver(update, { rootMargin: "-40% 0px -60% 0px" });
+    figures.current.forEach((figure) => figure && observer.observe(figure));
 
-    update();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+    // Backstop for big jumps the observer can miss: once scrolling settles, check
+    // once. While scrolling, this only resets a timer.
+    let settle = 0;
+    const onScrollSettled = () => {
+      window.clearTimeout(settle);
+      settle = window.setTimeout(update, 120);
+    };
+    window.addEventListener("scroll", onScrollSettled, { passive: true });
+
+    // Pages already loaded (from the cache, before this ran) drop their placeholder.
+    figures.current.forEach((figure) => {
+      const image = figure?.querySelector("img");
+      if (image?.complete && image.naturalWidth) figure?.setAttribute("data-loaded", "");
+    });
+
     return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      if (frame) window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("scroll", onScrollSettled);
+      window.clearTimeout(settle);
     };
   }, [pages]);
 
@@ -83,6 +97,9 @@ export default function PageImageReader({ pages, pdfUrl, title }: PageImageReade
             data-page={page.number}
             ref={(element) => { figures.current[index] = element; }}
             className="page-reader__page"
+            // The page's shape lets the browser reserve its height while it skips
+            // drawing pages far off screen (content-visibility in polish.css).
+            style={{ "--page-ratio": page.height / page.width } as CSSProperties}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized WebP files from storage; next/image would re-encode them */}
             <img
@@ -95,6 +112,7 @@ export default function PageImageReader({ pages, pdfUrl, title }: PageImageReade
               loading={index < 2 ? "eager" : "lazy"}
               fetchPriority={index === 0 ? "high" : "auto"}
               decoding="async"
+              onLoad={(event) => event.currentTarget.parentElement?.setAttribute("data-loaded", "")}
             />
           </figure>
         ))}
