@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
-import { buildManifest, pageFileName, renderPdfPages } from "@/lib/edition-pages-browser";
+import { makeImagesForEdition, uploadPageImages } from "@/lib/edition-pages-upload";
 import { formatNNNMonth } from "@/lib/nnn-title";
 
 type Entelechy = { id: number; edition: number; pdf_url: string; created_at: string; hasPages?: boolean };
@@ -11,33 +11,6 @@ type NNN = { id: number; Month: number; Year: number; Pdf_url: string; created_a
 
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
-
-type DeskSupabase = ReturnType<typeof getBrowserSupabase>;
-
-// Draws a PDF's pages in the browser and uploads them as the edition's page images,
-// replacing any that are already there. Used when adding an edition and when
-// making images for an edition that was added without them.
-async function uploadPageImages(
-  supabase: DeskSupabase,
-  editionId: number,
-  pdf: Blob,
-  report: (message: string) => void,
-) {
-  const pages = await renderPdfPages(pdf, (done, total) => report(`Making page images: ${done} of ${total}…`));
-  const folder = `Entelechy/${editionId}`;
-  for (const page of pages) {
-    report(`Uploading page ${page.number} of ${pages.length}…`);
-    for (const [width, blob] of Object.entries(page.blobs)) {
-      const put = await supabase.storage.from("edition-pages")
-        .upload(`${folder}/${pageFileName(page.number, Number(width))}`, blob, { contentType: "image/webp", upsert: true });
-      if (put.error) throw new Error("upload");
-    }
-  }
-  const manifest = new Blob([JSON.stringify(buildManifest(pages), null, 2)], { type: "application/json" });
-  const put = await supabase.storage.from("edition-pages").upload(`${folder}/manifest.json`, manifest, { contentType: "application/json", upsert: true });
-  if (put.error) throw new Error("upload");
-  return pages.length;
-}
 
 function friendly(error: { code?: string; message?: string }, what: string) {
   if (error.code === "23505") return `${what} is already in the archive.`;
@@ -63,7 +36,6 @@ export default function EditionsManager({
   const [month, setMonth] = useState(String(now.getMonth() + 1));
   const [year, setYear] = useState(String(now.getFullYear()));
   const [file, setFile] = useState<File | null>(null);
-  const [makePages, setMakePages] = useState(true);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState("");
   const [notice, setNotice] = useState("");
@@ -103,9 +75,9 @@ export default function EditionsManager({
         added = true;
         setEditionNumber(String(number + 1));
 
-        if (makePages) {
+        {
           try {
-            await uploadPageImages(supabase, row.data.id, file, setProgress);
+            await uploadPageImages(supabase, row.data.id, file, (step) => setProgress(`Page images: ${step}…`));
           } catch {
             throw new Error("The edition was added, but its page images didn't upload. It will open in the PDF reader for now. Use Make page images to try again.");
           }
@@ -151,14 +123,7 @@ export default function EditionsManager({
     setNotice("");
     setBusy(true);
     try {
-      setProgress(`Downloading Edition ${edition.edition}…`);
-      const pdfUrl = /^https?:/.test(edition.pdf_url)
-        ? edition.pdf_url
-        : supabase.storage.from("Entelechy").getPublicUrl(edition.pdf_url).data.publicUrl;
-      const response = await fetch(pdfUrl);
-      if (!response.ok) throw new Error("download");
-      const pdf = await response.blob();
-      const count = await uploadPageImages(supabase, edition.id, pdf, setProgress);
+      const count = await makeImagesForEdition(supabase, edition, (step) => setProgress(`Edition ${edition.edition}: ${step}…`));
       setNotice(`Edition ${edition.edition} now has ${count} page images. The smooth reader appears on the site within 5 minutes.`);
       router.refresh();
     } catch (caught) {
@@ -254,10 +219,7 @@ export default function EditionsManager({
             <input id="edition-file" type="file" accept="application/pdf" onChange={(event) => setFile(event.target.files?.[0] ?? null)} required />
 
             {kind === "Entelechy" ? (
-              <label className="staff-check">
-                <input type="checkbox" checked={makePages} onChange={(event) => setMakePages(event.target.checked)} />
-                Make page images for the smooth scrolling reader (recommended; takes about a second per page)
-              </label>
+              <p className="staff-hint">Page images for the smooth reader are made automatically after the upload (about a second per page). Keep this tab open until it finishes.</p>
             ) : (
               <p className="staff-hint">NNN stays private. It is never shown on the site; DAU readers request it and receive the PDF by email.</p>
             )}

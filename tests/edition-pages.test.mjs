@@ -164,11 +164,48 @@ test("editors can make page images for an edition that has none, keeping its lin
     read("../src/app/press-club/editions/page.tsx"),
   ]);
   // One shared routine makes and uploads images for new and existing editions.
-  assert.match(manager, /async function uploadPageImages\(/);
-  assert.match(manager, /await uploadPageImages\(supabase, row\.data\.id, file, setProgress\)/);
-  assert.match(manager, /await uploadPageImages\(supabase, edition\.id, pdf, setProgress\)/);
+  assert.match(manager, /import \{ makeImagesForEdition, uploadPageImages \} from "@\/lib\/edition-pages-upload";/);
+  assert.match(manager, /await uploadPageImages\(supabase, row\.data\.id, file,/);
+  assert.match(manager, /await makeImagesForEdition\(supabase, edition,/);
   // The button only appears for editors and only on editions without images.
   assert.match(manager, /canEdit && edition\.hasPages === false && \(/);
   assert.match(page, /\.list\(`Entelechy\/\$\{edition\.id\}`/);
   assert.match(page, /item\.name === "manifest\.json"/);
+});
+
+test("every Entelechy edition gets page images automatically", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const read = async (path) => (await readFile(new URL(path, import.meta.url), "utf8")).replace(/\r\n/g, "\n");
+  const [manager, shell, autopilot, upload] = await Promise.all([
+    read("../src/Components/staff/EditionsManager.tsx"),
+    read("../src/Components/staff/StaffShell.tsx"),
+    read("../src/Components/staff/PageImagesAutopilot.tsx"),
+    read("../src/lib/edition-pages-upload.ts"),
+  ]);
+  // New uploads always make them: there is no opt-out any more.
+  assert.doesNotMatch(manager, /makePages/);
+  // Editions missing them are found for editors and made when the desk opens.
+  assert.match(shell, /if \(!canPublish\(session\.role\)\) return \[\];/);
+  assert.match(shell, /<PageImagesAutopilot editions=\{await editionsMissingPageImages\(session\)\} \/>/);
+  assert.match(autopilot, /const inProgress = new Set<number>\(\);/);
+  // The manifest is uploaded last, so readers only switch once every page exists.
+  assert.ok(upload.indexOf("manifest.json") > upload.lastIndexOf("pageFileName(page.number"));
+});
+
+test("the reader toolbar is a compact row, and a bottom pill on phones", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const read = async (path) => (await readFile(new URL(path, import.meta.url), "utf8")).replace(/\r\n/g, "\n");
+  const [css, images, pdf] = await Promise.all([
+    read("../src/app/polish.css"),
+    read("../src/Components/PageImageReader.tsx"),
+    read("../src/Components/PDFviewer.tsx"),
+  ]);
+  for (const reader of [images, pdf]) {
+    assert.match(reader, /aria-label="Previous page"/);
+    assert.match(reader, /aria-label="Next page"/);
+    assert.match(reader, /className="reader-pdf-after"/);
+  }
+  assert.match(pdf, /className="pdf-toolbar__group pdf-toolbar__zoom"/);
+  assert.match(css, /@media \(max-width: 47\.99rem\) \{[\s\S]*?position: sticky;[\s\S]*?border-radius: 999px;/);
+  assert.match(css, /\.pdf-reader \.pdf-toolbar__zoom,[\s\S]*?display: none !important;/);
 });

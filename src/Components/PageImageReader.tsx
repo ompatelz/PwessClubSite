@@ -59,14 +59,15 @@ export default function PageImageReader({ pages, pdfUrl, title }: PageImageReade
     <section className="pdf-reader page-reader" aria-label={`${title} reader`}>
       <div className="pdf-toolbar page-reader__toolbar" aria-label="Reader controls">
         <div className="pdf-toolbar__group" aria-label="Page controls">
-          <button type="button" onClick={goToPrevious} disabled={current <= 1}>
-            Previous
+          <button type="button" className="reader-step" onClick={goToPrevious} disabled={current <= 1} aria-label="Previous page">
+            <span aria-hidden="true">‹</span><span className="reader-step__word" aria-hidden="true">Previous</span>
           </button>
           <output className="pdf-page-status" aria-live="polite">
-            Page {current} of {pages.length}
+            <span className="reader-status__word">Page </span>{current}
+            <span className="reader-status__word"> of </span><span className="reader-status__slash" aria-hidden="true"> / </span>{pages.length}
           </output>
-          <button type="button" onClick={goToNext} disabled={current >= pages.length}>
-            Next
+          <button type="button" className="reader-step" onClick={goToNext} disabled={current >= pages.length} aria-label="Next page">
+            <span className="reader-step__word" aria-hidden="true">Next</span><span aria-hidden="true">›</span>
           </button>
         </div>
         <a className="pdf-original-link" href={pdfUrl} target="_blank" rel="noreferrer">
@@ -98,6 +99,9 @@ export default function PageImageReader({ pages, pdfUrl, title }: PageImageReade
           </figure>
         ))}
       </div>
+      <a className="reader-pdf-after" href={pdfUrl} target="_blank" rel="noreferrer">
+        Open the original PDF <span aria-hidden="true">↗</span>
+      </a>
     </section>
   );
 }

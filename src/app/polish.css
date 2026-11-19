@@ -332,6 +332,165 @@ body {
   }
 }
 
+/* ------------------------------------------------------ Reader toolbar ---- */
+/* One compact row of controls. On phones it becomes a small pill floating at the
+   bottom of the screen, so the pages get the whole height; zoom is left to the
+   phone's own pinch-zoom, and the PDF link moves below the pages. */
+
+.pdf-reader .pdf-toolbar {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xs) var(--space-xs);
+  border: var(--rule-heavy) solid var(--color-ink);
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.pdf-reader .pdf-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+.pdf-reader .pdf-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-width: 2.75rem;
+  min-height: 2.5rem;
+  padding: 0 var(--space-sm);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-weight: 800;
+}
+
+.pdf-reader .pdf-toolbar button > span[aria-hidden="true"]:not(.reader-step__word) {
+  font-size: 1.35em;
+  line-height: 1;
+}
+
+.pdf-reader .pdf-toolbar button:hover:not(:disabled),
+.pdf-reader .pdf-toolbar button:focus-visible {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.pdf-reader .pdf-toolbar button:disabled {
+  opacity: 0.3;
+}
+
+.pdf-reader .pdf-page-status {
+  min-width: 0 !important;
+  padding-inline: var(--space-xs);
+  font-size: var(--text-sm);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.reader-status__slash {
+  display: none;
+}
+
+.pdf-reader .pdf-toolbar__zoom {
+  padding-inline-start: var(--space-sm);
+  border-inline-start: var(--rule-hair) solid var(--color-rule);
+}
+
+.pdf-reader .pdf-toolbar__zoom output {
+  min-width: 3.5rem;
+  font-size: var(--text-sm);
+  font-weight: 800;
+}
+
+.pdf-reader .pdf-original-link {
+  align-self: center;
+  margin-inline-start: auto;
+  min-height: 2.5rem;
+  white-space: nowrap;
+}
+
+.reader-pdf-after {
+  display: none;
+}
+
+@media (max-width: 47.99rem) {
+  /* The floating pill: placed after the pages and stuck to the bottom of the
+     screen, so it rides along while reading and settles at the end of the edition. */
+  .pdf-reader {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pdf-reader > * {
+    order: 0;
+  }
+
+  .pdf-reader .pdf-toolbar {
+    order: 1;
+    position: sticky;
+    inset: auto auto calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-sticky, 20);
+    align-self: center;
+    width: auto;
+    margin: var(--space-md) 0 0;
+    padding: var(--space-2xs);
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    box-shadow: 3px 3px 0 color-mix(in oklch, var(--ink-blog) 70%, transparent);
+  }
+
+  .pdf-reader .pdf-toolbar button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+    border-radius: 999px;
+    color: var(--color-paper);
+  }
+
+  .pdf-reader .pdf-toolbar button:hover:not(:disabled),
+  .pdf-reader .pdf-toolbar button:focus-visible {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .pdf-reader .pdf-page-status {
+    color: var(--color-paper);
+  }
+
+  .reader-step__word,
+  .reader-status__word,
+  .pdf-reader .pdf-toolbar__zoom,
+  .pdf-reader .pdf-original-link {
+    display: none !important;
+  }
+
+  .reader-status__slash {
+    display: inline;
+  }
+
+  /* Pages no longer sit under a sticky bar, and the pill needs room at the end. */
+  .page-reader__page {
+    scroll-margin-top: var(--space-md);
+  }
+
+  .reader-pdf-after {
+    order: 2;
+    align-self: center;
+    display: inline-flex;
+    gap: 0.4em;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-block-start: var(--space-md);
+    color: var(--color-ink);
+    font-size: var(--text-sm);
+    font-weight: 800;
+  }
+}
+
 /* Printing an article or the agreement gives plain, readable pages. */
 @media print {
   body {
