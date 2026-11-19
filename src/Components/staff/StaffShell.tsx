@@ -7,7 +7,7 @@ import { ROLE_LABELS, canPublish, type StaffSession } from "@/lib/staff";
 import { teaEnabled } from "@/lib/tea";
 import "@/app/staff-desk.css";
 
-type Section = "posts" | "editions" | "gallery" | "members" | "profile";
+type Section = "posts" | "editions" | "gallery" | "members" | "profile" | "tea";
 
 function SignOutButton({ className = "staff-button staff-button--small" }: { className?: string }) {
   return (
@@ -57,7 +57,7 @@ export default async function StaffShell({
           {session.state === "unconfigured" && <p>The staff desk is not connected in this environment.</p>}
           {session.state === "signed-out" && (
             <>
-              <p>Write and publish blog posts, add Entelechy and NNN editions, and manage the team.</p>
+              <p>Write and publish blog posts, add Entelechy and NNN editions, review Campus Tea, and manage the team.</p>
               <SignInPanel failed={signInFailed} />
             </>
           )}
@@ -75,13 +75,13 @@ export default async function StaffShell({
     );
   }
 
-  const tabs: { id: Section | "tea"; label: string; href: string }[] = [
+  const tabs: { id: Section; label: string; href: string }[] = [
     { id: "posts", label: "Blog posts", href: "/press-club" },
     { id: "editions", label: "Editions", href: "/press-club/editions" },
     { id: "gallery", label: "Gallery", href: "/press-club/gallery" },
     { id: "members", label: "Team", href: "/press-club/members" },
   ];
-  if (teaEnabled()) tabs.push({ id: "tea", label: "Campus Tea", href: "/press-club/tea" });
+  if (teaEnabled() && canPublish(session.role)) tabs.push({ id: "tea", label: "Campus Tea", href: "/press-club/tea" });
 
   // New members (and anyone whose name isn't set) say who they are first.
   if (session.needsProfile) {
