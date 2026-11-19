@@ -24,3 +24,20 @@ test("small details: arrows spaced, NNN in its own colours, drop cap, progress b
   assert.match(blog, /className="read-progress read-progress--blog" aria-hidden="true"/);
   assert.match(edition, /<div className="read-progress" aria-hidden="true" \/>\s*<header className="reader-header">/);
 });
+
+test("phone scrolling stays light in the edition reader", async () => {
+  const [css, reader] = await Promise.all([read("../src/app/polish.css"), read("../src/Components/PageImageReader.tsx")]);
+  // No paint-heavy work while scrolling: a pre-made grain tile, no endless shimmer.
+  assert.match(css, /background-image: url\("\/paper-grain\.png"\);/);
+  assert.doesNotMatch(css, /feTurbulence|polish-shimmer/);
+  // Off-screen pages are skipped, with their height reserved from their shape.
+  assert.match(css, /\.page-reader__page \{\s*content-visibility: auto;[\s\S]*?contain-intrinsic-block-size: auto [^;]*var\(--page-ratio/);
+  // An intrinsic width would widen the reader column on tablets.
+  assert.doesNotMatch(css, /contain-intrinsic-size:/);
+  assert.match(css, /\.page-reader__page\[data-loaded\]::before \{\s*content: none;/);
+  // The page counter is worked out on page crossings and once scrolling settles,
+  // never on every scroll frame.
+  assert.match(reader, /new IntersectionObserver\(update/);
+  assert.match(reader, /settle = window\.setTimeout\(update, 120\)/);
+  assert.doesNotMatch(reader, /requestAnimationFrame/);
+});
