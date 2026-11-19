@@ -121,5 +121,7 @@ menu and on the Contact page.
 
 ## Campus Tea
 
-Campus Tea moderation moved to `/press-club/tea` and still uses its shared reviewer
-password. It can move onto staff accounts later.
+When Campus Tea is on (`TEA_ENABLED=true`), editors and the convenor get a **Campus
+Tea** tab on the desk to edit, publish, unpublish or set aside anonymous posts. There is
+no separate password: the same DAU Google sign-in and staff list apply. Writers don't
+see the tab. See `docs/tea-setup.md`.

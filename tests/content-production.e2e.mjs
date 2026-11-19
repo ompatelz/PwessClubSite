@@ -23,7 +23,6 @@ if (!supabaseUrl || !serviceKey || !publicKey) {
   throw new Error("Supabase URL, service key, and publishable key are required.");
 }
 
-const reviewerPassword = required("TEA_REVIEW_PASSWORD");
 const serviceDb = createClient(supabaseUrl, serviceKey, clientOptions());
 const publicDb = createClient(supabaseUrl, publicKey, clientOptions());
 const runId = `${Date.now()}-${randomUUID().slice(0, 8)}`;
@@ -44,13 +43,13 @@ try {
   log("checking route and access-control guards");
   await expectStatus("/Blog", {}, 200);
   await expectStatus("/Tea", {}, 200);
+  // Signed out, the staff desk shows its sign-in gate.
   await expectStatus("/press-club/tea", {}, 200);
   await expectStatus("/api/tea/submit", {
     method: "POST",
     headers: { "Content-Type": "application/json", Origin: "https://invalid.example" },
     body: JSON.stringify({ title: teaTitle, body: teaBody, agreed: true }),
   }, 403);
-  await expectStatus("/api/tea/login", jsonRequest({ password: `${reviewerPassword}-wrong` }), 401);
 
   log("checking public Supabase write protection");
   const anonAttempt = await publicDb.from("blog_posts").insert({
@@ -103,43 +102,20 @@ try {
   assert.equal(tea.status, "pending");
   assert.ok(!(await pageText("/Tea")).includes(teaTitle), "Pending Tea appeared publicly.");
 
-  log("signing in and publishing through the moderation API");
-  const login = await fetchUrl("/api/tea/login", jsonRequest({ password: reviewerPassword }));
-  assert.equal(login.status, 200, `Reviewer login returned ${login.status}.`);
-  const reviewerCookie = extractCookie(login.headers.get("set-cookie"));
+  // Reviewing needs a staff Google sign-in, which a script can't do, so the API is
+  // checked to refuse anyone signed out, and the post is published directly.
+  log("checking the moderation API refuses signed-out requests");
   await expectStatus(`/api/tea/review/${teaId}`, {
     ...jsonRequest({ title: teaTitle, body: teaBody, action: "publish" }),
     method: "PATCH",
   }, 401);
-  await expectStatus(`/api/tea/review/${teaId}`, {
-    ...jsonRequest({ title: teaTitle, body: teaBody, action: "publish" }),
-    method: "PATCH",
-    headers: {
-      ...jsonRequest({}).headers,
-      Cookie: reviewerCookie,
-    },
-  }, 200);
+  assert.equal((await selectOne("tea_posts", "id", teaId, "status")).status, "pending");
 
+  log("publishing and unpublishing the Tea post");
+  await updateOne("tea_posts", teaId, { status: "published", published_at: new Date().toISOString() });
   await eventually("published Tea post appears", async () => (await pageText("/Tea")).includes(teaTitle));
-  const publishedTea = await selectOne("tea_posts", "id", teaId, "status,published_at");
-  assert.equal(publishedTea.status, "published");
-  assert.ok(publishedTea.published_at);
-
-  log("unpublishing the Tea post through the moderation API");
-  await expectStatus(`/api/tea/review/${teaId}`, {
-    ...jsonRequest({ title: teaTitle, body: teaBody, action: "unpublish" }),
-    method: "PATCH",
-    headers: {
-      ...jsonRequest({}).headers,
-      Cookie: reviewerCookie,
-    },
-  }, 200);
+  await updateOne("tea_posts", teaId, { status: "pending", published_at: null });
   await eventually("unpublished Tea post disappears", async () => !(await pageText("/Tea")).includes(teaTitle));
-  const logout = await fetchUrl("/api/tea/logout", {
-    method: "POST",
-    headers: { Origin: baseUrl.origin, Cookie: reviewerCookie },
-  });
-  assert.equal(logout.status, 200);
 
   log("all live content checks passed");
 } finally {
@@ -184,10 +160,9 @@ async function pageText(path) {
   return response.text();
 }
 
-function extractCookie(setCookie) {
-  const match = setCookie?.match(/(?:^|,\s*)(press_club_review=[^;]+)/);
-  assert.ok(match, "Reviewer login did not return the session cookie.");
-  return match[1];
+async function updateOne(table, id, values) {
+  const { error } = await serviceDb.from(table).update(values).eq("id", id);
+  if (error) throw new Error(`Could not update ${table} test row: ${error.message}`);
 }
 
 async function insertOne(table, row) {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createReviewerSession, passwordMatches, validReviewerSession } from "../src/lib/tea-auth.ts";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { cleanPost, getTeaCredentials, getTeaDb, sameOrigin } from "../src/lib/tea.ts";
 
 test("review desk accepts server-only Supabase integration credentials", () => {
@@ -41,26 +42,26 @@ test("review desk accepts server-only Supabase integration credentials", () => {
   }
 });
 
-test("reviewer sessions are signed and stop working after a password change", () => {
-  const previousPassword = process.env.TEA_REVIEW_PASSWORD;
-  const previousSecret = process.env.TEA_SESSION_SECRET;
-  try {
-    process.env.TEA_REVIEW_PASSWORD = "a-long-press-club-test-password";
-    process.env.TEA_SESSION_SECRET = "test-secret-that-is-long-and-different";
-    const token = createReviewerSession();
-    assert.ok(token);
-    assert.equal(passwordMatches("a-long-press-club-test-password"), true);
-    assert.equal(passwordMatches("wrong-password"), false);
-    assert.equal(validReviewerSession(token), true);
-    assert.equal(validReviewerSession(`${token}x`), false);
-    process.env.TEA_REVIEW_PASSWORD = "rotated-password";
-    assert.equal(validReviewerSession(token), false);
-  } finally {
-    if (previousPassword === undefined) delete process.env.TEA_REVIEW_PASSWORD;
-    else process.env.TEA_REVIEW_PASSWORD = previousPassword;
-    if (previousSecret === undefined) delete process.env.TEA_SESSION_SECRET;
-    else process.env.TEA_SESSION_SECRET = previousSecret;
+const read = async (path) => (await readFile(new URL(path, import.meta.url), "utf8")).replace(/\r\n/g, "\n");
+
+test("Campus Tea is reviewed by signed-in editors and the convenor, not a shared password", async () => {
+  const [route, page, shell] = await Promise.all([
+    read("../src/app/api/tea/review/[id]/route.ts"),
+    read("../src/app/press-club/tea/page.tsx"),
+    read("../src/Components/staff/StaffShell.tsx"),
+  ]);
+  // Every review change checks the staff list and the member's role first.
+  assert.match(route, /const staff = await getStaffSession\(\);\s*if \(staff\.state !== "staff"\) return teaJson\([^)]*, 401\);\s*if \(!canPublish\(staff\.role\)\) return teaJson\([^)]*, 403\);/);
+  assert.ok(route.indexOf("getStaffSession()") < route.indexOf("getTeaDb()"), "role check runs before the database is touched");
+  // The queue is only read for editors and the convenor, inside the staff desk.
+  assert.match(page, /const allowed = canPublish\(session\.role\);\s*[\s\S]*?const db = allowed \? getTeaDb\(\) : null;/);
+  assert.match(page, /<StaffShell session=\{session\} section="tea">/);
+  assert.match(shell, /if \(teaEnabled\(\) && canPublish\(session\.role\)\) tabs\.push\(/);
+  // The password login is gone.
+  for (const gone of ["../src/lib/tea-auth.ts", "../src/app/api/tea/login/route.ts", "../src/app/api/tea/logout/route.ts", "../src/Components/TeaReviewerLogin.tsx"]) {
+    assert.equal(existsSync(new URL(gone, import.meta.url)), false, `${gone} should be removed`);
   }
+  assert.doesNotMatch(route + page, /TEA_REVIEW_PASSWORD|reviewerCookie|tea-auth/);
 });
 
 test("submission normalization keeps post text and drops unsolicited identity fields", () => {

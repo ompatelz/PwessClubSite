@@ -1,5 +1,4 @@
-import { cookies } from "next/headers";
-import { reviewerCookie, reviewerSessionRevoked, validReviewerSession } from "@/lib/tea-auth";
+import { canPublish, getStaffSession } from "@/lib/staff";
 import { cleanPost, getTeaDb, sameOrigin, teaEnabled, teaJson } from "@/lib/tea";
 import { readJsonBody } from "@/lib/request-security";
 
@@ -10,11 +9,13 @@ type Context = { params: Promise<{ id: string }> };
 export async function PATCH(request: Request, context: Context) {
   if (!teaEnabled()) return teaJson("The review desk is not open yet.", 503);
   if (!sameOrigin(request)) return teaJson("Request rejected.", 403);
-  const session = (await cookies()).get(reviewerCookie)?.value;
-  if (!validReviewerSession(session)) return teaJson("Sign in to review posts.", 401);
+  // Reviewers are staff signed in with their DAU Google account; the staff list
+  // is checked on every request, so a removed member loses access at once.
+  const staff = await getStaffSession();
+  if (staff.state !== "staff") return teaJson("Sign in to the staff desk to review posts.", 401);
+  if (!canPublish(staff.role)) return teaJson("Only editors and the convenor review Campus Tea posts.", 403);
   const db = getTeaDb();
   if (!db) return teaJson("The review desk is not configured yet.", 503);
-  if (await reviewerSessionRevoked(db, session!)) return teaJson("Sign in to review posts.", 401);
   const { id } = await context.params;
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
     return teaJson("Post not found.", 404);

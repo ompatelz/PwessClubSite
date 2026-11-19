@@ -71,22 +71,10 @@ function ReviewItem({ post }: { post: TeaPost }) {
 }
 
 export default function TeaReviewDesk({ posts }: { posts: TeaPost[] }) {
-  const [busy, setBusy] = useState(false);
-  async function logout() {
-    setBusy(true);
-    try {
-      const response = await fetch("/api/tea/logout", { method: "POST" });
-      if (response.ok) window.location.reload();
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <div className="tea-desk">
       <div className="tea-desk__toolbar">
         <p>Only published posts appear on the public page. Original submissions stay here for reference.</p>
-        <button onClick={logout} disabled={busy}>Sign out</button>
       </div>
       {groups.map(({ status, title }) => {
         const matching = posts.filter((post) => post.status === status);
