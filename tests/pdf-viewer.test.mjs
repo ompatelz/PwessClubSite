@@ -14,7 +14,9 @@ test("Entelechy renders one responsive PDF page at a time", async () => {
   assert.match(viewer, /pageNumber=\{pageNumber\}/);
   assert.doesNotMatch(viewer, /Array\.from\(\{ length: numPages \}/);
   assert.match(viewer, /new ResizeObserver/);
-  assert.match(viewer, /Page \$\{pageNumber\} of \$\{numPages\}/);
+  // "Page 3 of 26" on larger screens, "3 / 26" in the phone pill.
+  assert.match(viewer, /<span className="reader-status__word">Page <\/span>\{pageNumber\}/);
+  assert.match(viewer, /aria-hidden="true"> \/ <\/span>\{numPages\}/);
 });
 
 test("the PDF reader has bounded controls and a direct fallback", async () => {

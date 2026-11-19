@@ -52,29 +52,33 @@ export default function PDFviewer(
     <section className="pdf-reader" aria-label="Publication reader">
       <div className="pdf-toolbar" aria-label="Reader controls">
         <div className="pdf-toolbar__group" aria-label="Page controls">
-          <button type="button" onClick={() => changePage(-1)} disabled={pageNumber <= 1}>
-            Previous
+          <button type="button" className="reader-step" onClick={() => changePage(-1)} disabled={pageNumber <= 1} aria-label="Previous page">
+            <span aria-hidden="true">‹</span><span className="reader-step__word" aria-hidden="true">Previous</span>
           </button>
           <output className="pdf-page-status" aria-live="polite">
-            {numPages ? `Page ${pageNumber} of ${numPages}` : "Loading pages"}
+            {numPages ? (
+              <>
+                <span className="reader-status__word">Page </span>{pageNumber}
+                <span className="reader-status__word"> of </span><span className="reader-status__slash" aria-hidden="true"> / </span>{numPages}
+              </>
+            ) : "Loading"}
           </output>
-          <button type="button" onClick={() => changePage(1)} disabled={!numPages || pageNumber >= numPages}>
-            Next
+          <button type="button" className="reader-step" onClick={() => changePage(1)} disabled={!numPages || pageNumber >= numPages} aria-label="Next page">
+            <span className="reader-step__word" aria-hidden="true">Next</span><span aria-hidden="true">›</span>
           </button>
         </div>
 
-        <div className="pdf-toolbar__group" aria-label="Zoom controls">
-          <button type="button" onClick={() => changeZoom(-0.25)}
-            disabled={zoom <= minZoom}>
-            Zoom out
+        {/* Phones pinch to zoom, so these only show on larger screens. */}
+        <div className="pdf-toolbar__group pdf-toolbar__zoom" aria-label="Zoom controls">
+          <button type="button" onClick={() => changeZoom(-0.25)} disabled={zoom <= minZoom} aria-label="Zoom out">
+            <span aria-hidden="true">−</span>
           </button>
           <output aria-live="polite">{Math.round(zoom * 100)}%</output>
-          <button type="button" onClick={() => changeZoom(0.25)}
-            disabled={zoom >= maxZoom}>
-            Zoom in
+          <button type="button" onClick={() => changeZoom(0.25)} disabled={zoom >= maxZoom} aria-label="Zoom in">
+            <span aria-hidden="true">+</span>
           </button>
           <button type="button" onClick={() => changeZoom("fit")} disabled={zoom === 1} aria-pressed={zoom === 1}>
-            Fit width
+            Fit
           </button>
         </div>
 
@@ -112,6 +116,9 @@ export default function PDFviewer(
           </Suspense>
         </Document>
       </div>
+      <a className="reader-pdf-after" href={url} target="_blank" rel="noreferrer">
+        Open the original PDF <span aria-hidden="true">↗</span>
+      </a>
     </section>
   );
 }

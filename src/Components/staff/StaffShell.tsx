@@ -1,8 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import PageImagesAutopilot from "@/Components/staff/PageImagesAutopilot";
 import ProfileForm from "@/Components/staff/ProfileForm";
 import SignInPanel from "@/Components/staff/SignInPanel";
-import { ROLE_LABELS, type StaffSession } from "@/lib/staff";
+import { ROLE_LABELS, canPublish, type StaffSession } from "@/lib/staff";
 import { teaEnabled } from "@/lib/tea";
 import "@/app/staff-desk.css";
 
@@ -16,9 +17,27 @@ function SignOutButton({ className = "staff-button staff-button--small" }: { cla
   );
 }
 
+type StaffOnly = Extract<StaffSession, { state: "staff" }>;
+
+// Entelechy editions that have no page images yet (no manifest in their folder).
+// Only editors and the convenor can list that bucket or upload to it.
+async function editionsMissingPageImages(session: StaffOnly) {
+  if (!canPublish(session.role)) return [];
+  const { data: editions } = await session.supabase.from("Entelechy").select("id,edition,pdf_url");
+  const checked = await Promise.all(
+    (editions ?? []).map(async (edition) => {
+      const { data, error } = await session.supabase.storage
+        .from("edition-pages")
+        .list(`Entelechy/${edition.id}`, { limit: 10, search: "manifest" });
+      return { edition, missing: !error && !data?.some((item) => item.name === "manifest.json") };
+    }),
+  );
+  return checked.filter((item) => item.missing).map((item) => item.edition);
+}
+
 // Everything on the staff desk renders inside this shell. When the visitor is
 // not active staff it shows the right message instead of the page's content.
-export default function StaffShell({
+export default async function StaffShell({
   session,
   section,
   signInFailed,
@@ -109,6 +128,7 @@ export default function StaffShell({
           ))}
         </nav>
       </header>
+      <PageImagesAutopilot editions={await editionsMissingPageImages(session)} />
       {children}
     </main>
   );
