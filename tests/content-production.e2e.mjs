@@ -96,6 +96,7 @@ try {
     title: teaTitle,
     body: teaBody,
     agreed: true,
+    rulesVersion: "2026-11-24",
   }), 201);
   const tea = await selectOne("tea_posts", "submitted_title", teaTitle, "id,status");
   teaId = tea.id;

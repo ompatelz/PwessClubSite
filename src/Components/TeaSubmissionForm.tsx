@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { TEA_RULES_VERSION } from "@/lib/tea-discussion";
 
 export default function TeaSubmissionForm({ available }: { available: boolean }) {
   const [title, setTitle] = useState("");
@@ -17,7 +18,7 @@ export default function TeaSubmissionForm({ available }: { available: boolean })
       const response = await fetch("/api/tea/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body, agreed }),
+        body: JSON.stringify({ title, body, agreed, rulesVersion: TEA_RULES_VERSION }),
       });
       const result = (await response.json()) as { message?: string };
       setNotice(result.message ?? "Please try again.");
@@ -40,20 +41,20 @@ export default function TeaSubmissionForm({ available }: { available: boolean })
         <p>No account or display name. Your words go to the Press Club review desk before anything appears here. Leave out details that identify you if you want to stay anonymous.</p>
       </div>
       {!available && <p className="tea-form__notice">Submissions will open after the review desk is ready.</p>}
-      <fieldset disabled={!available} className="tea-form__fields">
+      <fieldset disabled={!available || busy} className="tea-form__fields">
       <label htmlFor="tea-title">A title for your post</label>
       <input id="tea-title" name="title" value={title} onChange={(event) => setTitle(event.target.value)}
-        minLength={4} maxLength={120} required placeholder="What’s the story?" aria-describedby="tea-title-count" />
+        minLength={4} maxLength={120} required placeholder="What's the story?" aria-describedby="tea-title-count" />
       <span id="tea-title-count" className="tea-form__count" aria-live="polite">{title.length} / 120</span>
       <label htmlFor="tea-body">Your post</label>
       <textarea id="tea-body" name="body" value={body} onChange={(event) => setBody(event.target.value)}
-        minLength={20} maxLength={5000} required rows={8} placeholder="Write it in your own words…" aria-describedby="tea-body-count" />
+        minLength={20} maxLength={5000} required rows={8} placeholder="Write it in your own words." aria-describedby="tea-body-count" />
       <span id="tea-body-count" className="tea-form__count" aria-live="polite">{body.length} / 5000</span>
       <label className="tea-form__agreement">
         <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
-        <span>I understand the Press Club may edit this before deciding whether to publish it.</span>
+        <span>I have read the <a href="#tea-rules">community rules</a>. I understand the Press Club may edit this before deciding whether to publish it.</span>
       </label>
-      <button type="submit" disabled={busy}>{busy ? "Sending for review…" : "Submit for review"}</button>
+      <button type="submit" disabled={busy}>{busy ? "Sending for review." : "Submit for review"}</button>
       </fieldset>
       {notice && <p className="tea-form__notice" role="status">{notice}</p>}
     </form>

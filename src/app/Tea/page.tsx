@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import TeaSubmissionForm from "@/Components/TeaSubmissionForm";
-import { teaEnabled, type TeaPost } from "@/lib/tea";
+import TeaRules from "@/Components/TeaRules";
+import { TeaPostActions } from "@/Components/TeaDiscussion";
+import Link from "next/link";
+import { getTeaDb, teaEnabled, type TeaPost } from "@/lib/tea";
 import { getSupabaseClient } from "@/lib/supabase";
 import { partitionPostsByAge } from "@/lib/stories";
+import "@/app/tea-discussion.css";
 
 export const dynamic = "force-dynamic";
 
@@ -18,12 +22,16 @@ export default async function TeaPage() {
   const now = new Date();
   const result = db ? await db.from("tea_posts")
     .select("id,edited_title,edited_body,published_at")
+    .eq("status", "published")
     .lte("published_at", now.toISOString())
     .order("published_at", { ascending: false })
     .limit(50) : null;
   const posts = (result?.data ?? []) as Pick<TeaPost, "id" | "edited_title" | "edited_body" | "published_at">[];
   const { newest, older } = partitionPostsByAge(posts, now);
   const ready = Boolean(db && !result?.error);
+  const discussionDb = getTeaDb();
+  const counts = discussionDb && posts.length ? await discussionDb.rpc("tea_discussion_counts", { p_post_ids: posts.map(post => post.id) }) : null;
+  const byPost = new Map<string, { votes: number; replies: number }>((counts?.data ?? []).map((row: { post_id: string; votes: number; replies: number }) => [row.post_id, row]));
 
   const renderPosts = (items: typeof posts) => items.map((post) => (
     <article className="tea-post" key={post.id}>
@@ -33,8 +41,9 @@ export default async function TeaPage() {
           {new Date(post.published_at).toLocaleDateString("en-IN", { dateStyle: "medium", timeZone: "UTC" })}
         </time>}
       </div>
-      <h3>{post.edited_title}</h3>
+      <h3><Link href={`/Tea/${post.id}`}>{post.edited_title}</Link></h3>
       <p>{post.edited_body}</p>
+      <TeaPostActions postId={post.id} votes={byPost.has(post.id) ? Number(byPost.get(post.id)!.votes) : null} replies={byPost.has(post.id) ? Number(byPost.get(post.id)!.replies) : null} />
     </article>
   ));
 
@@ -43,7 +52,8 @@ export default async function TeaPage() {
       <header className="tea-header">
         <h1>Campus Tea.</h1>
         <p>Anonymous posts from around DAU. Every submission reaches the Press Club review desk before it can appear here.</p>
-        <a className="tea-header__login" href="#submit-tea">Submit Tea <span aria-hidden="true">↓</span></a>
+        <a className="tea-header__login" href="#submit-tea">Submit Tea</a>
+        <p>Open a post to follow the conversation. Members can reply and upvote; every reply is reviewed. <a href="#tea-rules">Community rules</a>.</p>
       </header>
 
       <div className="tea-page__columns">
@@ -65,7 +75,7 @@ export default async function TeaPage() {
                 )}
               </>}
         </section>
-        <TeaSubmissionForm available={ready} />
+        <div><TeaSubmissionForm available={ready} /><TeaRules /></div>
       </div>
     </main>
   );

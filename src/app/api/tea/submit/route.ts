@@ -1,5 +1,6 @@
 import { getTeaDb, cleanPost, sameOrigin, teaEnabled, teaJson } from "@/lib/tea";
 import { consumeRateLimit, readJsonBody } from "@/lib/request-security";
+import { acceptsTeaRules } from "@/lib/tea-discussion";
 
 export const runtime = "nodejs";
 
@@ -20,9 +21,9 @@ export async function POST(request: Request) {
   }
   const input = parsed.value;
   const post = cleanPost(input);
-  if (!post) return teaJson("Use a title of 4–120 characters and a post of 20–5000 characters.", 400);
-  if (typeof input !== "object" || input === null || !("agreed" in input) || input.agreed !== true) {
-    return teaJson("Please acknowledge that Press Club may edit your post.", 400);
+  if (!post) return teaJson("Use a title of 4-120 characters and a post of 20-5000 characters.", 400);
+  if (typeof input !== "object" || input === null || !acceptsTeaRules(input as Record<string, unknown>)) {
+    return teaJson("Please read and accept the current community rules and editing acknowledgement.", 400);
   }
 
   try {

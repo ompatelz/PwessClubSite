@@ -34,4 +34,8 @@ The expected tables and public PDF-only storage buckets are `Entelechy` and `NNN
 
 The August NNN email form is **off by default** while delivery is being set up. After the [Gmail gateway setup](docs/nnn-email-setup.md) is complete and a test email arrives, set `NNN_EMAIL_ENABLED=true` in Vercel Production and redeploy to show the form. Keep the gateway URL and secret server-side; never prefix them with `NEXT_PUBLIC_`.
 
-Anonymous campus posts and the Press Club review desk are also **off by default**. See [the campus posts setup](docs/tea-setup.md) for the database migration, shared reviewer password, and feature flag. This feature has no public login or email notifications.
+Anonymous campus posts are **off by default**. See [the campus posts setup](docs/tea-setup.md) for database migrations, staff Google sign-in, and the feature flag. This feature sends no email notifications.
+
+Campus Tea also supports [reviewed member discussions](docs/tea-discussions.md):
+threaded replies, member upvotes, public reporting and a private editor queue.
+The existing staff sign-in controls participation; there is no shared password.
