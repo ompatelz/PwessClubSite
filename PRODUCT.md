@@ -27,6 +27,9 @@ Readers browse the public site without an account. Tea submissions go to a priva
 - Entelechy and NNN are PDF publication archives, with Entelechy treated as the flagship throughout the interface.
 - Blogs are signed Press Club stories with a public index and individual reading pages.
 - Tea is anonymous, but every submission must be reviewed before it becomes public.
+- Tea discussions use signed member bylines, threaded replies and one reversible
+  upvote per member. Every reply passes editorial review; readers can report
+  content privately. Writers participate; editors and the convenor moderate.
 - Service credentials remain server-only; public database reads are limited with row-level security.
 - The editorial interface for creating blogs remains an open decision; initial publishing uses the private Supabase project dashboard.
 

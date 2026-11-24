@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import TeaReviewDesk from "@/Components/TeaReviewDesk";
+import TeaDiscussionReview from "@/Components/TeaDiscussionReview";
+import "@/app/tea-discussion.css";
 import StaffShell from "@/Components/staff/StaffShell";
 import { canPublish, getStaffSession } from "@/lib/staff";
 import { getTeaDb, teaEnabled, type TeaPost } from "@/lib/tea";
@@ -8,7 +10,7 @@ import { getTeaDb, teaEnabled, type TeaPost } from "@/lib/tea";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Campus Tea · Staff desk",
+  title: "Campus Tea � Staff desk",
   robots: { index: false, follow: false },
 };
 
@@ -37,6 +39,7 @@ export default async function StaffTeaPage() {
           : !db ? <p className="tea-feed__empty">The review queue will open when storage is connected.</p>
             : result?.error ? <p className="tea-feed__empty">Posts could not be loaded. Please refresh the page.</p>
               : <TeaReviewDesk posts={posts} />}
+        {allowed && db && <TeaDiscussionReview />}
       </section>
     </StaffShell>
   );

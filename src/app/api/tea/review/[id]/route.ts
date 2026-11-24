@@ -34,7 +34,7 @@ export async function PATCH(request: Request, context: Context) {
     return teaJson("Choose a review action.", 400);
   }
   const post = cleanPost(input);
-  if (!post) return teaJson("Use a title of 4–120 characters and a post of 20–5000 characters.", 400);
+  if (!post) return teaJson("Use a title of 4-120 characters and a post of 20-5000 characters.", 400);
 
   const { data: existing, error: lookupError } = await db
     .from("tea_posts")
@@ -42,6 +42,9 @@ export async function PATCH(request: Request, context: Context) {
     .eq("id", id)
     .single();
   if (lookupError || !existing) return teaJson("Post not found.", 404);
+  if ((action === "publish" || (action === "save" && existing.status === "published")) && fields.rulesReviewed !== true) {
+    return teaJson("Check this post against the community rules before publishing.", 400);
+  }
 
   const nextStatus = action === "publish" ? "published"
     : action === "reject" ? "rejected"

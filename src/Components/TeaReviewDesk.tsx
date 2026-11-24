@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import type { TeaPost, TeaStatus } from "@/lib/tea";
 
@@ -16,6 +17,7 @@ function ReviewItem({ post }: { post: TeaPost }) {
   const [body, setBody] = useState(post.edited_body);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
+  const [rulesReviewed, setRulesReviewed] = useState(false);
 
   async function update(action: "save" | "publish" | "reject" | "unpublish" | "restore") {
     setBusy(true);
@@ -24,7 +26,7 @@ function ReviewItem({ post }: { post: TeaPost }) {
       const response = await fetch(`/api/tea/review/${post.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body, action }),
+        body: JSON.stringify({ title, body, action, rulesReviewed }),
       });
       const result = (await response.json()) as { message?: string };
       setNotice(result.message ?? "Please try again.");
@@ -48,19 +50,20 @@ function ReviewItem({ post }: { post: TeaPost }) {
         <p>{post.submitted_body}</p>
       </details>
       <label htmlFor={`title-${post.id}`}>Publication title</label>
-      <input id={`title-${post.id}`} value={title} onChange={(event) => setTitle(event.target.value)}
+      <input id={`title-${post.id}`} value={title} onChange={(event) => { setTitle(event.target.value); setRulesReviewed(false); }}
         minLength={4} maxLength={120} />
       <label htmlFor={`body-${post.id}`}>Publication text</label>
-      <textarea id={`body-${post.id}`} value={body} onChange={(event) => setBody(event.target.value)}
+      <textarea id={`body-${post.id}`} value={body} onChange={(event) => { setBody(event.target.value); setRulesReviewed(false); }}
         minLength={20} maxLength={5000} rows={7} />
+      <label className="tea-review-check"><input type="checkbox" checked={rulesReviewed} onChange={event => setRulesReviewed(event.target.checked)} /><span>I checked privacy, consent, allegations, harassment and spam against the <Link href="/Tea#tea-rules">community rules</Link>.</span></label>
       <div className="tea-review-item__actions">
         {post.status === "pending" && <>
           <button disabled={busy} onClick={() => update("save")}>Save edit</button>
-          <button disabled={busy} onClick={() => update("publish")}>Publish</button>
+          <button disabled={busy || !rulesReviewed} onClick={() => update("publish")}>Publish</button>
           <button disabled={busy} onClick={() => update("reject")}>Set aside</button>
         </>}
         {post.status === "published" && <>
-          <button disabled={busy} onClick={() => update("save")}>Update live post</button>
+          <button disabled={busy || !rulesReviewed} onClick={() => update("save")}>Update live post</button>
           <button disabled={busy} onClick={() => update("unpublish")}>Unpublish</button>
         </>}
         {post.status === "rejected" && <button disabled={busy} onClick={() => update("restore")}>Return to review</button>}
