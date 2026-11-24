@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useState } from "react";
 import type { TeaPost, TeaStatus } from "@/lib/tea";
 
@@ -26,7 +25,7 @@ function ReviewItem({ post }: { post: TeaPost }) {
       const response = await fetch(`/api/tea/review/${post.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body, action, rulesReviewed }),
+        body: JSON.stringify({ title, body, action, rulesReviewed, updatedAt: post.updated_at }),
       });
       const result = (await response.json()) as { message?: string };
       setNotice(result.message ?? "Please try again.");
@@ -50,12 +49,12 @@ function ReviewItem({ post }: { post: TeaPost }) {
         <p>{post.submitted_body}</p>
       </details>
       <label htmlFor={`title-${post.id}`}>Publication title</label>
-      <input id={`title-${post.id}`} value={title} onChange={(event) => { setTitle(event.target.value); setRulesReviewed(false); }}
+      <input disabled={busy} id={`title-${post.id}`} value={title} onChange={(event) => { setTitle(event.target.value); setRulesReviewed(false); }}
         minLength={4} maxLength={120} />
       <label htmlFor={`body-${post.id}`}>Publication text</label>
-      <textarea id={`body-${post.id}`} value={body} onChange={(event) => { setBody(event.target.value); setRulesReviewed(false); }}
+      <textarea disabled={busy} id={`body-${post.id}`} value={body} onChange={(event) => { setBody(event.target.value); setRulesReviewed(false); }}
         minLength={20} maxLength={5000} rows={7} />
-      <label className="tea-review-check"><input type="checkbox" checked={rulesReviewed} onChange={event => setRulesReviewed(event.target.checked)} /><span>I checked privacy, consent, allegations, harassment and spam against the <Link href="/Tea#tea-rules">community rules</Link>.</span></label>
+      <label className="tea-review-check"><input type="checkbox" disabled={busy} checked={rulesReviewed} onChange={event => setRulesReviewed(event.target.checked)} /><span>I checked privacy, consent, allegations, harassment and spam against the <a href="#tea-rules">community rules</a>.</span></label>
       <div className="tea-review-item__actions">
         {post.status === "pending" && <>
           <button disabled={busy} onClick={() => update("save")}>Save edit</button>

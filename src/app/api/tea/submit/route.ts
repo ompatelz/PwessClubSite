@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   if (rateLimit === "limited") {
     return teaJson("Too many submissions. Please wait and try again.", 429);
   }
-  const parsed = await readJsonBody(request, 7000);
+  const parsed = await readJsonBody(request, 24000);
   if (!parsed.ok && parsed.reason === "too_large") return teaJson("This post is too long.", 413);
   if (!parsed.ok) {
     return teaJson("Add a title and your post, then try again.", 400);

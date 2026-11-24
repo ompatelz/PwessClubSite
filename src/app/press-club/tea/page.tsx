@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import Link from "next/link";
 import TeaReviewDesk from "@/Components/TeaReviewDesk";
 import TeaDiscussionReview from "@/Components/TeaDiscussionReview";
+import TeaPostComposer from "@/Components/TeaPostComposer";
+import TeaRules from "@/Components/TeaRules";
 import "@/app/tea-discussion.css";
 import StaffShell from "@/Components/staff/StaffShell";
 import { canPublish, getStaffSession } from "@/lib/staff";
@@ -10,14 +12,13 @@ import { getTeaDb, teaEnabled, type TeaPost } from "@/lib/tea";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Campus Tea � Staff desk",
+  title: "Campus Tea | Staff desk",
   robots: { index: false, follow: false },
 };
 
 // Campus Tea moderation lives on the staff desk: staff sign in with their DAU
 // Google account, and editors and the convenor review the anonymous posts.
 export default async function StaffTeaPage() {
-  if (!teaEnabled()) notFound();
   const session = await getStaffSession();
   if (session.state !== "staff") return <StaffShell session={session} section="tea">{null}</StaffShell>;
 
@@ -34,12 +35,15 @@ export default async function StaffTeaPage() {
     <StaffShell session={session} section="tea">
       <section className="staff-section" aria-labelledby="tea-title">
         <h1 id="tea-title">Campus Tea</h1>
+        {allowed && <p role="status">{teaEnabled() ? <Link href="/Tea">Campus Tea is live · View public feed</Link> : "Public Campus Tea is paused. The private review desk remains open for drafts and moderation."}</p>}
         <p className="staff-hint">Read the original, prepare the public version, and decide when it goes on the page.</p>
+        {allowed && db && !result?.error && <TeaPostComposer publicEnabled={teaEnabled()} />}
         {!allowed ? <p className="tea-feed__empty">Only editors and the convenor review Campus Tea posts.</p>
           : !db ? <p className="tea-feed__empty">The review queue will open when storage is connected.</p>
             : result?.error ? <p className="tea-feed__empty">Posts could not be loaded. Please refresh the page.</p>
               : <TeaReviewDesk posts={posts} />}
         {allowed && db && <TeaDiscussionReview />}
+        {allowed && <TeaRules />}
       </section>
     </StaffShell>
   );

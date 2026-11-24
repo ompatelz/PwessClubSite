@@ -56,7 +56,7 @@ test("Campus Tea is reviewed by signed-in editors and the convenor, not a shared
   // The queue is only read for editors and the convenor, inside the staff desk.
   assert.match(page, /const allowed = canPublish\(session\.role\);\s*[\s\S]*?const db = allowed \? getTeaDb\(\) : null;/);
   assert.match(page, /<StaffShell session=\{session\} section="tea">/);
-  assert.match(shell, /if \(teaEnabled\(\) && canPublish\(session\.role\)\) tabs\.push\(/);
+  assert.match(shell, /if \(canPublish\(session\.role\)\) tabs\.push\(/);
   // The password login is gone.
   for (const gone of ["../src/lib/tea-auth.ts", "../src/app/api/tea/login/route.ts", "../src/app/api/tea/logout/route.ts", "../src/Components/TeaReviewerLogin.tsx"]) {
     assert.equal(existsSync(new URL(gone, import.meta.url)), false, `${gone} should be removed`);

@@ -36,5 +36,8 @@
 .tea-page .tea-form { margin-bottom: 1.5rem; }
 .tea-review-check { display: flex; gap: .7rem; align-items: flex-start; margin: 1rem 0; }
 .tea-review-check input { width: 1.2rem; height: 1.2rem; flex: 0 0 auto; }
+.tea-composer { background: var(--paper-tea); border: 1px solid var(--color-rule); padding: 1.5rem; margin: 1.5rem 0 2rem; }
+.tea-composer fieldset { border: 0; padding: 0; min-width: 0; display: grid; gap: .75rem; }
+.tea-composer input:not([type="checkbox"]), .tea-composer textarea { width: 100%; border: 1px solid var(--color-rule-strong); padding: .75rem; background: var(--color-paper); color: var(--color-ink); font: inherit; }
 .tea-discussion :focus-visible, .tea-rules :focus-visible, .tea-discussion-actions :focus-visible, .tea-report :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
 @media (max-width: 600px) { .tea-comment__children { padding-left: .5rem; margin-left: 0; } .tea-rules, .tea-reply-form { padding: 1rem; } .tea-discussion-actions { gap: .75rem; } }
