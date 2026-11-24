@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   }
   const input = parsed.value;
   const post = cleanPost(input);
-  if (!post) return teaJson("Use a title of 4-120 characters and a post of 20-5000 characters.", 400);
+  if (!post) return teaJson("Use a title of 4–120 characters and a post of 20–5000 characters.", 400);
   if (typeof input !== "object" || input === null || !acceptsTeaRules(input as Record<string, unknown>)) {
     return teaJson("Please read and accept the current community rules and editing acknowledgement.", 400);
   }
