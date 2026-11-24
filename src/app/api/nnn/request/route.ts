@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getTeaDb as getServiceDb } from "../../../../lib/tea.ts";
-import { consumeRateLimit, readJsonBody } from "../../../../lib/request-security.ts";
+import { consumeIdentityRateLimit, consumeRateLimit, readJsonBody } from "../../../../lib/request-security.ts";
 import { nnnEditionTitle } from "../../../../lib/nnn-title.ts";
 
 export const runtime = "nodejs";
@@ -86,9 +86,15 @@ export async function POST(request: Request) {
   const db = getServiceDb();
   if (!db) return json("Email delivery is temporarily unavailable.", 503, "delivery_unavailable");
 
-  const rateLimit = await consumeRateLimit(db, request, `nnn-email:${editionId}:${email}`, 1, 5 * 60);
+  // Bound all issue requests from an address, and protect a recipient even when
+  // an attacker changes IP or chooses another edition. Do this before storage
+  // downloads or calling the mail provider.
+  const ipLimit = await consumeRateLimit(db, request, "nnn-email", 3, 3600);
+  if (ipLimit === "unavailable") return json("Email delivery is temporarily unavailable.", 503, "delivery_unavailable");
+  if (ipLimit === "limited") return json("Too many email requests. Please try again later.", 429);
+  const rateLimit = await consumeIdentityRateLimit(db, `nnn-recipient:${email}`, 1, 5 * 60);
   if (rateLimit === "unavailable") return json("Email delivery is temporarily unavailable.", 503, "delivery_unavailable");
-  if (rateLimit === "limited") return json("This issue was just sent to that address. Check your inbox, or try again in a few minutes.", 429);
+  if (rateLimit === "limited") return json("An issue was just requested for that address. Check your inbox, or try again in a few minutes.", 429);
 
   const { data: edition, error } = await db
     .from("NNN")
