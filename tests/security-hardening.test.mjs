@@ -21,6 +21,7 @@ test("JSON request limits measure real bytes even without content-length", async
 
 test("deployment config supplies browser security headers", async () => {
   const config = await readFile(new URL("../next.config.ts", import.meta.url), "utf8");
+  const policy = await readFile(new URL("../src/lib/content-security-policy.ts", import.meta.url), "utf8");
 
   for (const header of [
     "Content-Security-Policy",
@@ -29,8 +30,8 @@ test("deployment config supplies browser security headers", async () => {
     "Referrer-Policy",
     "Permissions-Policy",
   ]) assert.match(config, new RegExp(header));
-  assert.match(config, /frame-ancestors 'none'/);
-  assert.match(config, /worker-src 'self' blob:/);
+  assert.match(policy, /frame-ancestors 'none'/);
+  assert.match(policy, /worker-src 'self' blob:/);
 });
 
 test("durable limiter and published-only Tea policy are migration-backed", async () => {

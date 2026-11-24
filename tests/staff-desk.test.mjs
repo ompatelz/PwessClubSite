@@ -60,7 +60,8 @@ test("sign-in runs only on the staff desk and returns only to it", async () => {
     read("../src/app/auth/signout/route.ts"),
   ]);
 
-  assert.match(proxy, /matcher: \["\/press-club\/:path\*", "\/auth\/:path\*"\]/);
+  assert.match(proxy, /if \(!staffPath\) return secureResponse/);
+  assert.match(proxy, /pathname\.startsWith\("\/press-club\/"\)/);
   assert.match(proxy, /auth\.getClaims\(\)/);
   assert.match(callback, /\/\^\\\/press-club/);
   assert.match(callback, /exchangeCodeForSession/);

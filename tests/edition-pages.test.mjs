@@ -120,14 +120,14 @@ test("page images get their own bucket and the PDF buckets stay PDF-only", async
   const [migration, archives, config] = await Promise.all([
     read("../supabase/migrations/20261105090000_edition_pages_bucket.sql"),
     read("../supabase/migrations/20261022044134_publication_archives.sql"),
-    read("../next.config.ts"),
+    read("../src/lib/content-security-policy.ts"),
   ]);
 
   assert.match(migration, /'edition-pages', 'edition-pages', true/);
   assert.match(migration, /array\['image\/webp', 'application\/json'\]/);
   assert.doesNotMatch(migration, /'(NNN|Entelechy)'/);
   assert.match(archives, /\('NNN', 'NNN', true, 52428800, array\['application\/pdf'\]/);
-  assert.match(config, /img-src 'self' data: blob: \$\{supabaseSources\}/);
+  assert.match(config, /img-src 'self' data: blob: \$\{source\}/);
 });
 
 test("the PDF reader never sends readers back to page 1 on its own", async () => {

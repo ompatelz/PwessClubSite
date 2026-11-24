@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { connection } from "next/server";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 import "./globals.css";
 import "./front-page.css";
@@ -46,11 +47,13 @@ export const metadata: Metadata = {
     "The Press Club at Dhirubhai Ambani University: the Entelechy magazine, the NNN newspaper and signed stories on the blog.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // CSP nonces only work when the HTML is rendered for the current request.
+  await connection();
   return (
     <html
       lang="en"
