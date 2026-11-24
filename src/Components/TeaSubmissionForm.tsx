@@ -44,17 +44,17 @@ export default function TeaSubmissionForm({ available }: { available: boolean })
       <fieldset disabled={!available || busy} className="tea-form__fields">
       <label htmlFor="tea-title">A title for your post</label>
       <input id="tea-title" name="title" value={title} onChange={(event) => setTitle(event.target.value)}
-        minLength={4} maxLength={120} required placeholder="What's the story?" aria-describedby="tea-title-count" />
+        minLength={4} maxLength={120} required placeholder="What’s the story?" aria-describedby="tea-title-count" />
       <span id="tea-title-count" className="tea-form__count" aria-live="polite">{title.length} / 120</span>
       <label htmlFor="tea-body">Your post</label>
       <textarea id="tea-body" name="body" value={body} onChange={(event) => setBody(event.target.value)}
-        minLength={20} maxLength={5000} required rows={8} placeholder="Write it in your own words." aria-describedby="tea-body-count" />
+        minLength={20} maxLength={5000} required rows={8} placeholder="Write it in your own words…" aria-describedby="tea-body-count" />
       <span id="tea-body-count" className="tea-form__count" aria-live="polite">{body.length} / 5000</span>
       <label className="tea-form__agreement">
         <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} required />
         <span>I have read the <a href="#tea-rules">community rules</a>. I understand the Press Club may edit this before deciding whether to publish it.</span>
       </label>
-      <button type="submit" disabled={busy}>{busy ? "Sending for review." : "Submit for review"}</button>
+      <button type="submit" disabled={busy}>{busy ? "Sending for review…" : "Submit for review"}</button>
       </fieldset>
       {notice && <p className="tea-form__notice" role="status">{notice}</p>}
     </form>
