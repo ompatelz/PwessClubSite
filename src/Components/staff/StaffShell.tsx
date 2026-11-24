@@ -4,7 +4,6 @@ import PageImagesAutopilot from "@/Components/staff/PageImagesAutopilot";
 import ProfileForm from "@/Components/staff/ProfileForm";
 import SignInPanel from "@/Components/staff/SignInPanel";
 import { ROLE_LABELS, canPublish, type StaffSession } from "@/lib/staff";
-import { teaEnabled } from "@/lib/tea";
 import "@/app/staff-desk.css";
 
 type Section = "posts" | "editions" | "gallery" | "members" | "profile" | "tea";
@@ -58,7 +57,7 @@ export default async function StaffShell({
           {session.state === "signed-out" && (
             <>
               <p>Write and publish blog posts, add Entelechy and NNN editions, review Campus Tea, and manage the team.</p>
-              <SignInPanel failed={signInFailed} />
+              <SignInPanel failed={signInFailed} next={section === "tea" ? "/press-club/tea" : "/press-club"} />
             </>
           )}
           {session.state === "not-staff" && (
@@ -81,7 +80,7 @@ export default async function StaffShell({
     { id: "gallery", label: "Gallery", href: "/press-club/gallery" },
     { id: "members", label: "Team", href: "/press-club/members" },
   ];
-  if (teaEnabled() && canPublish(session.role)) tabs.push({ id: "tea", label: "Campus Tea", href: "/press-club/tea" });
+  if (canPublish(session.role)) tabs.push({ id: "tea", label: "Campus Tea", href: "/press-club/tea" });
 
   // New members (and anyone whose name isn't set) say who they are first.
   if (session.needsProfile) {

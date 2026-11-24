@@ -6,7 +6,7 @@ import { getBrowserSupabase } from "@/lib/supabase/browser";
 // One button: sign in with the member's DAU Google account. The `hd` hint asks
 // Google to show only dau.ac.in accounts; the server still checks the address
 // against the staff list, so a hint alone never grants access.
-export default function SignInPanel({ failed }: { failed?: boolean }) {
+export default function SignInPanel({ failed, next = "/press-club" }: { failed?: boolean; next?: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(failed ? "Sign-in didn't finish. Please try again." : "");
 
@@ -16,7 +16,7 @@ export default function SignInPanel({ failed }: { failed?: boolean }) {
     const { error: signInError } = await getBrowserSupabase().auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/press-club`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         queryParams: { hd: "dau.ac.in", prompt: "select_account" },
       },
     });

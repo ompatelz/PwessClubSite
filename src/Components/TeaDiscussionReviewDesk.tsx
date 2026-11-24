@@ -25,12 +25,12 @@ function CommentReview({ comment }: { comment: ReviewComment }) {
     catch (error) { setNotice(error instanceof Error ? error.message : "Could not save."); }
     finally { setBusy(false); }
   }
-  return <article className="tea-review-item"><p><strong>{comment.author_name}</strong> � {comment.status} � {comment.parent_id ? "Nested reply" : "Top-level reply"}</p>
+  return <article className="tea-review-item"><p><strong>{comment.author_name}</strong> · {comment.status} · {comment.parent_id ? "Nested reply" : "Top-level reply"}</p>
     <Link href={`/Tea/${comment.post_id}`}>Open parent post</Link>
     <details><summary>Original reply</summary><p style={{ whiteSpace: "pre-wrap" }}>{comment.submitted_body}</p></details>
     <label htmlFor={`comment-${comment.id}`}>Publication text</label>
     <textarea id={`comment-${comment.id}`} disabled={busy} rows={4} minLength={2} maxLength={2000} value={body} onChange={e => { setBody(e.target.value); setChecked(false); }} />
-    <label className="tea-review-check"><input type="checkbox" checked={checked} onChange={e => setChecked(e.target.checked)} /><span>I checked privacy, consent, allegations, harassment and spam against the <Link href="/Tea#tea-rules">community rules</Link>.</span></label>
+    <label className="tea-review-check"><input type="checkbox" checked={checked} onChange={e => setChecked(e.target.checked)} /><span>I checked privacy, consent, allegations, harassment and spam against the <a href="#tea-rules">community rules</a>.</span></label>
     <div className="tea-review-item__actions"><button disabled={busy || !checked} onClick={() => update("published")}>{comment.status === "published" ? "Update approved reply" : "Approve reply"}</button>
       {comment.status === "published" && <button disabled={busy} onClick={() => update("pending")}>Unpublish reply and hide its thread</button>}
       {comment.status !== "rejected" && <button disabled={busy} onClick={() => update("rejected")}>Set aside</button>}
@@ -49,7 +49,7 @@ function ReportReview({ report }: { report: ReviewReport }) {
     catch (error) { setNotice(error instanceof Error ? error.message : "Could not save."); }
     finally { setBusy(false); }
   }
-  return <article className="tea-review-item"><h3>{report.reason}</h3><p>Reported {report.comment_id ? "reply" : "post"} � <Link href={`/Tea/${report.post_id}`}>Open discussion</Link></p>
+  return <article className="tea-review-item"><h3>{report.reason}</h3><p>Reported {report.comment_id ? "reply" : "post"} · <Link href={`/Tea/${report.post_id}`}>Open discussion</Link></p>
     {report.targetBody && <p style={{ whiteSpace: "pre-wrap" }}>{report.targetBody}</p>}
     <p>Use the post or reply review controls to remove harmful content before resolving this report. Resolving a report does not unpublish content.</p>
     <div className="tea-review-item__actions"><button disabled={busy} onClick={() => update("resolved", true)}>Unpublish content and resolve</button><button disabled={busy} onClick={() => update("resolved")}>Mark handled</button><button disabled={busy} onClick={() => update("dismissed")}>Dismiss report</button></div>

@@ -1,12 +1,11 @@
 import { canPublish, getStaffSession } from "@/lib/staff";
-import { getTeaDb, sameOrigin, teaEnabled, teaJson } from "@/lib/tea";
+import { getTeaDb, sameOrigin, teaJson } from "@/lib/tea";
 import { cleanReply, isUuid } from "@/lib/tea-discussion";
 import { readJsonBody } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 
 export async function PATCH(request: Request) {
-  if (!teaEnabled()) return teaJson("Campus Tea is not open yet.", 503);
   if (!sameOrigin(request)) return teaJson("Request rejected.", 403);
   const staff = await getStaffSession();
   if (staff.state !== "staff") return teaJson("Sign in to review discussions.", 401);
